@@ -42,7 +42,7 @@ Consequently, all content will be made available primarily in English. We also a
 
 ## Documentation
 
-The full documentation for the telekom can be found in _TBD_
+The full documentation for the telekom nlu-bridge can be found in _TBD_
 ## Support and Feedback
 The following channels are available for discussions, feedback, and support requests:
 
