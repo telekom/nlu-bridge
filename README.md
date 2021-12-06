@@ -1,5 +1,5 @@
 <h1 align="center">
-    telekom nlu-bridge
+    Telekom NLU Bridge
 </h1>
 
 <p align="center">
@@ -16,11 +16,109 @@
   <a href="#licensing">Licensing</a>
 </p>
 
-The goal of this project is ... _TBD_
+The goal of this project is to provide a unified API to several popular intent recognition 
+applications.
 
 ## About this component
 
-_TBD_
+
+### Installation
+
+The core package including NLUdataset and Baseline vendors can be installed 
+using pip
+
+```pip install nlubridge```
+
+To include optional dependencies for the vendors, e.g. Watson Assistant, type
+
+```
+pip install nlubridge[watson]
+```
+
+Some vendors require access credentials like API tokens, URLs etc. These can be passed 
+on construction of the objects. Alternatively, such arguments can be passed as 
+environment variables, where the vendor will look for variables named variable 
+VENDORNAME_PARAM_NAME.
+
+Some vendors require additional dependencies. E.g., Spacy requires a model that
+can be downloaded (for the  model de_core_news_sm) with
+
+```
+python -m spacy download de_core_news_sm
+```
+
+
+### Usage
+
+Here is an example for the TfidfIntentClassifier:
+
+```python
+import os
+
+import pandas as pd
+
+from nlubridge.vendors import TfidfIntentClassifier
+from nlubridge import NLUdataset 
+
+dataset = NLUdataset(texts, intents)
+dataset = dataset.shuffle()
+
+classifier = TfidfIntentClassifier()
+
+train, test = dataset.train_test_split(test_size=0.25, random_state=0)
+classifier = classifier.train_intent(train)
+predicted = classifier.test_intent(test)
+res = pd.DataFrame(list(zip(test.intents, predicted)), columns=['true', 'predicted'])
+```
+
+Most of the code uses python logging to report its progress. To get logs printed out
+to console or Jupyter notebook, a logger needs to be configured, before the nlutests 
+code. Usually, log messages are on INFO level. This can be configured like this:
+
+````python
+import logging
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+logger.addHandler(logging.StreamHandler())
+````
+
+
+### Concepts / Architecture
+
+* **Vendors**  
+The [`vendors`](/nlubridge/vendors/) module implements standardized interfaces to the 
+  specific vendors. A specific `Vendor` instance is in charge of dealing with converting 
+  the data to the required format, uploading data to the cloud if applicable, training 
+  models and making predictions.
+  
+* **Datasets**  
+The [`datasets`](/nlubridge/datasets/) module provides a standard interface to 
+  NLU data. Data stored in different vendor's custom format can be loaded as a dataset
+  and provided to any different vendor.
+
+
+### List of supported vendors
+
+**NOTE:** Currently entity recognition is not implemented for any of the vendors!
+
+| Vendor | Status | Intents | Entities | Algorithm |
+| ------ | ------ | ------- | -------- | --------- |
+| [TfidfIntentClassifier](/nlubridge/vendors/tfidf_intent_classifier.py) |  ✓  | ✓ | ✗ |  BoW + SVM |
+| [fasttext](https://fasttext.cc) |  ✓  | ✓ | ✗ |  fasttext |
+| [spacy](https://spacy.io/usage/training#section-textcat) | ✓ | ✓ | ✓ | BoW linear + CNN |
+| [IBM Watson Assistant](https://www.ibm.com/watson/services/conversation/) | ✓  | ✓ | ✗ | Propietary (probably LR) |
+| [Microsoft LUIS](https://www.luis.ai/home) | needs testing | ✓ | ✓ | Propietary (probably LR) |
+| [TelekomModel](/nlubridge/vendors/telekom.py)  | ✓ | ✓ | ✗ | tf-idf on char n-grams + LR |
+| [Rasa NLU](https://github.com/RasaHQ/rasa) | ✓ | ✓ | ✓ |  starspace like |
+
+
+### Features
+
+* Abstract class for Vendors with convenience methods (ex: scoring and scikit-learn compatibility)
+* Abstract class for datasets with convenience methods (ex: train_test_split, indexing, iteration)
+* Rate limiting to comply with cloud providers requirements
+
 
 ## Development
 

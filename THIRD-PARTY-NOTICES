@@ -28,6 +28,12 @@ Website: https://github.com/theskumar/python-dotenv
 Repository: https://github.com/theskumar/python-dotenv
 License: 3-clause BSD
 
+Component: ratelimit
+Version:
+Website: https://github.com/tomasbasham/ratelimit
+Repository: https://github.com/tomasbasham/ratelimit
+License: MIT License
+
 
 # Optional
 
