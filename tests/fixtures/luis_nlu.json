@@ -1,0 +1,55 @@
+[
+    {
+        "text": "i'm looking for a place to eat",
+        "intentName": "restaurant_search",
+        "entityLabels": []
+    },
+    {
+        "text": "testing umläuts",
+        "intentName": "restaurant_search",
+        "entityLabels": [
+            {
+                "startCharIndex": 31,
+                "endCharIndex": 35,
+                "value": "north",
+                "entityName": "location"
+            }
+        ]
+    },
+    {
+        "text": "show me chinese restaurants",
+        "intentName": "restaurant_search",
+        "entityLabels": [
+            {
+                "startCharIndex": 8,
+                "endCharIndex": 14,
+                "value": "chinese",
+                "entityName": "cuisine"
+            }
+        ]
+    },
+    {
+        "text": "yes",
+        "intentName": "affirm",
+        "entityLabels": []
+    },
+    {
+        "text": "show me a mexican place in the centre",
+        "intentName": "restaurant_search",
+        "entityLabels": [
+            {
+                "startCharIndex": 31,
+                "endCharIndex": 36,
+                "value": "centre",
+                "entityName": "location",
+                "role": "restaurant_location"
+            },
+            {
+                "startCharIndex": 10,
+                "endCharIndex": 16,
+                "value": "mexican",
+                "entityName": "cuisine"
+            }
+        ]
+    }
+]

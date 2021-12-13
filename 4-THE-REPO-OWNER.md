@@ -9,8 +9,4 @@ By initializing your repository the OSPO has generated some useful documents. So
   
 -->>>> ERASE?
 
-* **templates/fileheader.txt**: a template for initializing any new files.
-  - Each file must contain an instantiated version of the fileheader.txt
-  - You must adopt the copyright line to your reality.
-  
--->>>> MAKE SURE HEADERS INCLUDE ALL REQUIRED DETAILS
+

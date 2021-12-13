@@ -1,0 +1,61 @@
+{
+    "rasa_nlu_data": {
+        "common_examples": [
+            {
+                "text": "i'm looking for a place to eat",
+                "intent": "restaurant_search",
+                "entities": []
+            },
+            {
+                "text": "testing umläuts",
+                "intent": "restaurant_search",
+                "entities": [
+                    {
+                        "start": 31,
+                        "end": 36,
+                        "value": "north",
+                        "entity": "location"
+                    }
+                ]
+            },
+            {
+                "text": "show me chinese restaurants",
+                "intent": "restaurant_search",
+                "entities": [
+                    {
+                        "start": 8,
+                        "end": 15,
+                        "value": "chinese",
+                        "entity": "cuisine"
+                    }
+                ]
+            },
+            {
+                "text": "yes",
+                "intent": "affirm",
+                "entities": []
+            },
+            {
+                "text": "show me a mexican place in the centre",
+                "intent": "restaurant_search",
+                "entities": [
+                    {
+                        "start": 31,
+                        "end": 37,
+                        "value": "centre",
+                        "entity": "location",
+                        "role": "restaurant_location"
+                    },
+                    {
+                        "start": 10,
+                        "end": 17,
+                        "value": "mexican",
+                        "entity": "cuisine"
+                    }
+                ]
+            }
+        ],
+        "regex_features": [],
+        "entity_synonyms": []
+    }
+}

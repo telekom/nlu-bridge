@@ -1,0 +1,7 @@
+{"id":"0","text":"blabla","label":"class A","tokens":["@paulwalk","It","'s","the","view","from","where","I","'m","living","for","two","weeks",".","Empire","State","Building","=","ESB",".","Pretty","bad","storm","here","last","evening","."],"ner_tags":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,8,8,0,7,0,0,0,0,0,0,0,0]}
+{"id":"1","text":"bla bla","label":"class A","tokens":["From","Green","Newsfeed",":","AHFA","extends","deadline","for","Sage","Award","to","Nov",".","5","http:\/\/tinyurl.com\/24agj38"],"ner_tags":[0,0,0,0,5,0,0,0,0,0,0,0,0,0,0]}
+{"id":"2","text":"bla blub","label":"class B","tokens":["Pxleyes","Top","50","Photography","Contest","Pictures","of","August","2010","...","http:\/\/bit.ly\/bgCyZ0","#photography"],"ner_tags":[1,0,0,0,0,0,0,0,0,0,0,0]}
+{"id":"4","text":"blabla","label":"class B","tokens":["4Dbling","'s","place","til","monday",",","party","party","party",".","&lt;","3"],"ner_tags":[9,0,0,0,0,0,0,0,0,0,0,0]}
+{"id":"5","text":"blabla","label":"class C","tokens":["watching","the","VMA","pre-show","again","lol","it","was","n't","even","a","good","show","the","first","time","...","so","bored","!"],"ner_tags":[0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]}
+{"id":"8","text":"blabla","label":"class C","tokens":["Friday","Night","Eats","http:\/\/twitpic.com\/2pdvtr"],"ner_tags":[0,0,0,11]}
+{"id":"10","text":"blabla","label":"class C","tokens":["@Suzie55","whispering","cause","I","may","have","had","1","too","many","vodka","'s","last","night","and","am","a","lil","fragile",",","hold","me","?"],"ner_tags":[0,0,0,0,0,0,0,0,0,0,11,0,0,0,0,0,0,0,0,0,0,0,11]}

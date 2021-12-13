@@ -1,0 +1,5 @@
+text,intent
+"wie lange muß man auf eine antwort bei einer beschwerde, welche an den kundenservice gesendet wurde, warten. mit freundlichen grüßen",intent1
+"blabla, bla",intent2
+testing umläuts,intent1
+warum ist die Banane krumm?,intent2
