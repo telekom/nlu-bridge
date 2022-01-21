@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class TfidfIntentClassifier(Vendor):
-    alias = "bow"
+    alias = "tfidf"
 
     def __init__(self):
         """
