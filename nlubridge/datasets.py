@@ -311,7 +311,7 @@ class NLUdataset:
                 entities.append(entity_list)
         return NLUdataset(texts, intents, entities)
 
-    def train_test_split(self, test_size=0.25, random_state=0, **args):
+    def train_test_split(self, test_size=0.25, random_state=0, stratification="intents", **args):
         """
         Split dataset into train and test partitions.
 
@@ -319,10 +319,38 @@ class NLUdataset:
         :type test_size: float
         :param random_state: random seed
         :type random_state: int
+        :param stratification: TODO
+        :type stratification: TODO
         :param args: additional args for sklearn's train_test_split
             provided as dictionary
         :type args: dict
         """
+
+        def configure_stratification():
+            """
+            Allows configuring stratification options.
+
+            The default setting, "intents", is used when we want to
+            use stratification by intent strings. If we want to use
+            anything else, we can specify it in the (parent) method's
+            stratification parameter, e.g. None, which would turn
+            stratification off (using the underlying
+            sklearn.model_selection.train_test_split() method).
+
+            The default setting, which is passed as a string, will be
+            converted into the appropriate self.intents, which isn't
+            accessible from the parent methodd's parameters.
+
+            Returns the stratify setting (either self.intents or
+            whatever is passed) to the sklearn train_test_split
+            method.
+            """
+            if stratification == "intents":
+                stratify = self.intents
+            else:
+                stratify = stratification
+            return stratify
+
         (
             texts_train,
             texts_test,
@@ -334,7 +362,7 @@ class NLUdataset:
             self.texts,
             self.intents,
             self.entities,
-            stratify=self.intents,
+            stratify=configure_stratification(),
             test_size=test_size,
             random_state=random_state,
             **args
