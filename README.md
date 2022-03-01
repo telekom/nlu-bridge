@@ -70,6 +70,12 @@ classifier = classifier.train_intent(train)
 predicted = classifier.test_intent(test)
 res = pd.DataFrame(list(zip(test.intents, predicted)), columns=['true', 'predicted'])
 ```
+If you need to configure **stratification**, use the `stratification` parameter (defaults to `"intents"` and uses the intents in the dataset as stratification basis; whatever _else_ you pass along has to conform to `sklearn.model_selection.train_test_split(stratify=)`:
+```python
+train, test = dataset.train_test_split(test_size=0.25, random_state=0, stratification=None)    # deactivate stratification (sklearn default for train_test_split)
+```
+
+### Logging
 
 Most of the code uses python logging to report its progress. To get logs printed out
 to console or Jupyter notebook, a logger needs to be configured, before the nlutests 
