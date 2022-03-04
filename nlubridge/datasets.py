@@ -311,7 +311,9 @@ class NLUdataset:
                 entities.append(entity_list)
         return NLUdataset(texts, intents, entities)
 
-    def train_test_split(self, test_size=0.25, random_state=0, stratification="intents", **args):
+    def train_test_split(
+        self, test_size=0.25, random_state=0, stratification="intents", **args
+    ):
         """
         Split dataset into train and test partitions.
 
