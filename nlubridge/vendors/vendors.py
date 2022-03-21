@@ -49,7 +49,7 @@ class Vendor(BaseEstimator, ClassifierMixin):
         """Return the class's name as a hint to the vendor name."""
         return self.__class__.__name__
 
-    def f1_score(self, test_dataset):
+    def f1_score(self, test_dataset, average="micro"):
         """
         Predict intent f1 score.
 
@@ -58,7 +58,7 @@ class Vendor(BaseEstimator, ClassifierMixin):
         """
         y_pred = self.test_intent(test_dataset)
         y_true = test_dataset.intents
-        return f1_score(y_true, y_pred, average="micro")
+        return f1_score(y_true, y_pred, average=average)
 
     def out_of_scope_accuracy(self, test_dataset):
         """Test OOS accuracy."""
@@ -104,9 +104,9 @@ class Vendor(BaseEstimator, ClassifierMixin):
         y = self.test_intent(ds)
         return y
 
-    def score(self, X, y=None):
+    def score(self, X, y=None, average="micro"):
         """scikit-learn compatibility."""
         texts = X
         intents = y
         ds = NLUdataset(texts, intents)
-        return self.f1_score(ds)
+        return self.f1_score(ds, average=average)
