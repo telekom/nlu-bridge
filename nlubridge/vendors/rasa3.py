@@ -1,21 +1,23 @@
-# Copyright (c) 2021 Klaus-Peter Engelbrecht, Deutsche Telekom AG
+# Copyright (c) 2022 Ralf Kirchherr, Deutsche Telekom AG
 # This software is distributed under the terms of the MIT license
 # which is available at https://opensource.org/licenses/MIT
 from __future__ import annotations
-from typing import List, Optional, Union, Tuple
 import os
+import logging
+import asyncio
+import tempfile
 import pathlib
+from typing import List, Optional, Union, Tuple
 
 from lazy_imports import try_import
 
-with try_import() as optional_rasa_import:
-    from rasa.nlu import config
-    from rasa.nlu.model import Trainer
-    from rasa.shared.nlu.training_data.message import Message
-    from rasa.shared.nlu.training_data.formats.rasa import RasaReader
-    from rasa.shared.nlu.training_data.formats.rasa_yaml import RasaYAMLWriter, RasaYAMLReader
-    from rasa.shared.nlu.training_data.formats.rasa import RasaWriter
+with try_import() as optional_rasa3_import:
+    from rasa.model_training import train_nlu
+    from rasa.core.agent import Agent
     from rasa.shared.nlu.training_data.training_data import TrainingData
+    from rasa.shared.nlu.training_data.message import Message
+    from rasa.shared.nlu.training_data.formats.rasa_yaml import RasaYAMLWriter, RasaYAMLReader
+    from rasa.shared.nlu.training_data.formats.rasa import RasaWriter, RasaReader
     from rasa.shared.utils.io import write_yaml
     from rasa.shared.nlu.constants import (
         TEXT,
@@ -32,14 +34,15 @@ with try_import() as optional_rasa_import:
 from .vendors import Vendor
 from nlubridge.datasets import NLUdataset, EntityKeys
 
+logger = logging.getLogger(__name__)
+
 DEFAULT_INTENT_RASA_CONFIG_PATH = os.path.join(
     pathlib.Path(__file__).parent.absolute(), "config", "rasa_nlu_config.yml"
 )
-ENTITY_KEY_VALUE = 'value'  # Rasa provides an explicit value parameter for its entities
 
 
-class Rasa(Vendor):
-    alias = "rasa"
+class Rasa3(Vendor):
+    alias = "rasa3"
 
     def __init__(self, model_config: Optional[str] = None):
         """
@@ -52,30 +55,37 @@ class Rasa(Vendor):
 
         :param model_config: filepath to a Rasa config file
         """
-        optional_rasa_import.check()
+        optional_rasa3_import.check()
         self.config = model_config
-        self.interpreter = None
+        self.agent = None
 
-    def train(self, dataset: NLUdataset) -> Rasa:
+    def train(self, dataset: NLUdataset) -> Rasa3:
         """
         Train intent and/or entity classification
 
         :param dataset: Training data
-        :return: It's own Rasa object
+        :return: It's own Rasa3 object
         """
         self.config = self.config if self.config else DEFAULT_INTENT_RASA_CONFIG_PATH
-        training_data = self._convert(dataset)
-        trainer = Trainer(config.load(self.config))
-        self.interpreter = trainer.train(training_data)
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            nlu_yml_file = os.path.join(pathlib.Path(tmpdirname), "nlu.yml")  # output path for temporary nlu.yml
+            write_data(dataset, nlu_yml_file)
+            logger.info(f"Start training (using {self.config!r})...")
+            model_archive = train_nlu(self.config, nlu_yml_file, tmpdirname)
+            logger.info(f"Training completed!")
+
+            logger.info("Load model...")
+            self.agent = Agent.load(model_path=model_archive)
+            logger.info("Model loaded!")
         return self
 
-    def train_intent(self, dataset: NLUdataset) -> Rasa:
+    def train_intent(self, dataset: NLUdataset) -> Rasa3:
         """
         Train intent classification.
         This method is mainly for compatibility reasons, as it in case of Rasa identical to the `train` method.
 
         :param dataset: Training data
-        :return: It's own Rasa object
+        :return: It's own Rasa3 object
        """
         return self.train(dataset)
 
@@ -89,12 +99,13 @@ class Rasa(Vendor):
         :return: NLUdataset object comprising the classification results. The list of the predicted intent
                  classification probabilities are accessible via the additional attribute 'probs' (List[float]).
         """
-
+        if self.agent is None:
+            logger.error("Rasa3 classifier has to be trained first!")
         intents = []
         probs = []
         entities_list = []
         for text in dataset.texts:
-            result = self.interpreter.parse(text)
+            result = asyncio.run(self.agent.parse_message(text))  # agent's parse method is a coroutine
             intent = result.get(INTENT, {}).get(INTENT_NAME_KEY)
             prob = result.get(INTENT, {}).get(PREDICTED_CONFIDENCE_KEY)
             entities = [
@@ -125,59 +136,21 @@ class Rasa(Vendor):
         :return: Either a list of predicted intent classification results or a tuple of predicted intent classification
                  and probabilites results (depeding on argument 'return_probs')
         """
+        if self.agent is None:
+            logger.error("Rasa3 classifier has to be trained first!")
         intents = []
         probs = []
         for text in dataset.texts:
-            result = self.interpreter.parse(text)
+            result = asyncio.run(self.agent.parse_message(text))  # agent's parse method is a coroutine
             intent = result.get(INTENT, {}).get(INTENT_NAME_KEY)
             prob = result.get(INTENT, {}).get(PREDICTED_CONFIDENCE_KEY)
             intents.append(intent)
             probs.append(prob)
         if return_probs:
-            return intents, probs
-        return intents
-
-    @staticmethod
-    def _convert(dataset: NLUdataset) -> TrainingData:
-        """
-        Convert a NLUdataset to a Rasa TrainingData object.
-
-        :param dataset: NLUdataset to be converted
-        :return: Rasa TrainingData object
-        """
-        examples = []
-
-        for text, intent, entities in dataset:
-            example = {
-                TEXT: text,
-                INTENT: intent if intent is not None else "default_intent",
-                ENTITIES: []
-            }
-            for entity in entities:
-                formatted_entity = {
-                    ENTITY_ATTRIBUTE_TYPE: entity[EntityKeys.TYPE],
-                    ENTITY_ATTRIBUTE_START: entity[EntityKeys.START],
-                    ENTITY_ATTRIBUTE_END: entity[EntityKeys.END],
-                    # Please note: This sets just the default 'value' (if the input dataset provides an explicit 'value'
-                    # parameter, it will be adapted accordingly in the section for custom keys below)
-                    ENTITY_ATTRIBUTE_VALUE: text[entity[EntityKeys.START]:entity[EntityKeys.END]]
-                }
-                # Add any custom keys defined in the source structure
-                for key in entity.keys():
-                    if key not in [EntityKeys.TYPE, EntityKeys.START, EntityKeys.END]:
-                        formatted_entity[key] = entity[key]
-                example[ENTITIES].append(formatted_entity)
-            examples.append(example)
-
-        training_data = {
-            "rasa_nlu_data": {
-                "common_examples": examples,
-                "regex_features": [],
-                "entity_synonyms": [],
-            }
-        }
-
-        return RasaReader().read_from_json(training_data)
+            res = (intents, probs)
+        else:
+            res = intents
+        return res
 
 
 def load_data(filepath: Union[str, pathlib.Path], format: str = "yml") -> NLUdataset:

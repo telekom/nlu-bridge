@@ -28,20 +28,29 @@ class Vendor(BaseEstimator, ClassifierMixin):
         fake_data = NLUdataset(texts, intents, entities=[])
         self.train_intent(fake_data)
 
+    def train(self, dataset: NLUdataset):
+        """
+        Train intent and/or entity classification
+
+        :param dataset: Training data
+        """
+        raise NotImplementedError
+
+    def test(self, dataset: NLUdataset) -> NLUdataset:
+        """
+        Test a given dataset and obtain the intent and/or entity classification results in the NLUdataset format
+
+        :param dataset: Input dataset to be tested
+        :return: NLUdataset object comprising the classification results
+        """
+        raise NotImplementedError
+
     def train_intent(self, dataset):
         """Train intent classification."""
         raise NotImplementedError
 
     def test_intent(self, dataset):
         """Test intent classification."""
-        raise NotImplementedError
-
-    def train_entity(self, dataset):
-        """Train entity recognition."""
-        raise NotImplementedError
-
-    def test_entity(self, dataset):
-        """Test entity recognition."""
         raise NotImplementedError
 
     @property

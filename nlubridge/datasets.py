@@ -33,7 +33,7 @@ class NLUdataset:
         self,
         texts: List[str],
         intents: List[str] = None,
-        entities: List[dict] = None,
+        entities: List[List[dict]] = None,
         out_of_scope=False,
         max_intent_length=None,
         seed=42,
@@ -164,7 +164,7 @@ class NLUdataset:
         self.texts, self.intents, self.entities = zip(*self.data)
         return self
 
-    def sample(self, size=0.1, random_state=0):
+    def sample(self, size=0.1, random_state=0, stratification="intents"):
         """
         Sample the dataset preserving intent proportions.
 
@@ -173,11 +173,17 @@ class NLUdataset:
         :type size: float or int
         :param random_state: seed for random processes
         :type random_state: int
+        :param stratification: If not None, data is split in a stratified fashion, using this as the class labels.
+                               Default is using the intent labels for stratification.
         """
         if isinstance(size, numbers.Integral):
             size = size / self.n_samples
 
-        _, sampled = self.train_test_split(test_size=size, random_state=random_state)
+        _, sampled = self.train_test_split(
+            test_size=size,
+            random_state=random_state,
+            stratification=stratification
+        )
         return sampled
 
     def filter_by_intent_name(

@@ -1,9 +1,12 @@
 import pytest
-
+from packaging import version
 from dotenv import load_dotenv
-
+from nlubridge.datasets import EntityKeys
 from nlubridge import NLUdataset
 from testing_data import TrainingDataset
+from test_datasets import texts as sample_texts
+from test_datasets import intents as sample_intents
+from test_datasets import entities as sample_entities
 
 
 @pytest.fixture
@@ -108,13 +111,32 @@ def test_watson(train_data):
 
 
 def test_rasa(train_data):
-    from nlubridge.vendors.rasa import Rasa
 
-    rasa = Rasa()
+    from rasa import __version__ as rasa_version
+    if version.parse(rasa_version) < version.parse('3.0.0'):
+        from nlubridge.vendors.rasa import Rasa
+        rasa = Rasa()
+    else:
+        from nlubridge.vendors.rasa3 import Rasa3
+        rasa = Rasa3()
+
+    # test intent classification
     rasa.train_intent(train_data)
     assert_preds_are_intents(rasa, train_data.unique_intents)
     assert_return_probs(rasa, train_data.unique_intents)
     assert_multiple_utterances_predicted(rasa, train_data)
+
+    # test intent + entity classification
+    train_ds = NLUdataset(sample_texts, sample_intents, sample_entities)
+    rasa.train(train_ds)
+    test_ds = NLUdataset(["I want a flight from Frankfurt to Berlin", "How is the weather in Bonn?"])
+    preds = rasa.test(test_ds)
+    assert isinstance(preds, NLUdataset)
+    assert len(preds) == 2
+    for pred_text, pred_intent, pred_entities in preds:
+        assert pred_intent in train_ds.unique_intents
+        for pred_e in pred_entities:
+            assert pred_e[EntityKeys.TYPE] in train_ds.unique_entities
 
 
 def test_telekom(train_data):
