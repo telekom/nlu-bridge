@@ -207,13 +207,16 @@ def load_data(filepath: str) -> NLUdataset:
         intents.append(message.get(INTENT))
         es = []
         for e in message.get(ENTITIES, []):
-            es.append(
-                {
-                    EntityKeys.TYPE: e.get(ENTITY_ATTRIBUTE_TYPE),
-                    EntityKeys.START: e.get(ENTITY_ATTRIBUTE_START),
-                    EntityKeys.END: e.get(ENTITY_ATTRIBUTE_END)
-                }
-            )
+            entity = {
+                EntityKeys.TYPE: e.get(ENTITY_ATTRIBUTE_TYPE),
+                EntityKeys.START: e.get(ENTITY_ATTRIBUTE_START),
+                EntityKeys.END: e.get(ENTITY_ATTRIBUTE_END)
+            }
+            # Add any custom keys defined in the source structure
+            for key in e.keys():
+                if key not in [ENTITY_ATTRIBUTE_TYPE, ENTITY_ATTRIBUTE_START, ENTITY_ATTRIBUTE_END]:
+                    entity[key] = e[key]
+            es.append(entity)
         entities.append(es)
 
     return NLUdataset(texts, intents, entities)
@@ -228,18 +231,23 @@ def write_data(dataset: NLUdataset, filepath: str):
     """
     messages = []
     for text, intent, entities in dataset:
+        formatted_entities = []
+        for e in entities:
+            formatted_entity = {
+                ENTITY_ATTRIBUTE_TYPE: e[EntityKeys.TYPE],  # key 'entity'
+                ENTITY_ATTRIBUTE_START: e[EntityKeys.START],  # key 'start'
+                ENTITY_ATTRIBUTE_END: e[EntityKeys.END],  # key 'end'
+                ENTITY_ATTRIBUTE_VALUE: text[e[EntityKeys.START]:e[EntityKeys.END]]  # key 'value'
+            }
+            # Add any custom keys defined in the source structure
+            for key in e.keys():
+                if key not in [EntityKeys.TYPE, EntityKeys.START, EntityKeys.END]:
+                    formatted_entity[key] = e[key]
+            formatted_entities.append(formatted_entity)
         example = {
             TEXT: text,
             INTENT: intent if intent is not None else "default_intent",
-            ENTITIES: [
-                {
-                    ENTITY_ATTRIBUTE_TYPE: e[EntityKeys.TYPE],  # key 'entity'
-                    ENTITY_ATTRIBUTE_START: e[EntityKeys.START],  # key 'start'
-                    ENTITY_ATTRIBUTE_END: e[EntityKeys.END],  # key 'end'
-                    ENTITY_ATTRIBUTE_VALUE: text[e[EntityKeys.START]:e[EntityKeys.END]]  # key 'value'
-                }
-                for e in entities
-            ],
+            ENTITIES: formatted_entities
         }
         message = Message(data=example)
         messages.append(message)

@@ -19,11 +19,11 @@ texts = [
 intents = ["BookFlight", "GetWeather", "GetWeather"]
 entities = [
     [
-        {"entity": "Location::From", "start": 22, "end": 26},
-        {"entity": "Location::To", "start": 31, "end": 37},
+        {"entity": "Location::From", "start": 22, "end": 27},
+        {"entity": "Location::To", "start": 31, "end": 38},
     ],
-    [{"entity": "Location", "start": 27, "end": 33}],
-    [{"entity": "Location", "start": 23, "end": 27}],
+    [{"entity": "Location", "start": 27, "end": 34}],
+    [{"entity": "Location", "start": 22, "end": 28}],
 ]
 
 
