@@ -2,6 +2,8 @@ name: pytest
 
 # Allows you to run this workflow manually from the Actions tab
 on:
+  push:
+    branch: [ feature/github_actions ]
   workflow_dispatch
 
 #  push:
