@@ -1,12 +1,16 @@
 name: PyPI Upload
 
+#on:
+#  release:
+#    types: [created]
+
 on:
-  release:
-    types: [created]
+  push:
+    branch: [feature/github_actions]
 
 jobs:
   build-and-publish:
-    name: Build and publish to PyPI
+    name: Build and publish to TestPyPI
     runs-on: ubuntu-latest
 
     steps:
@@ -24,7 +28,7 @@ jobs:
     - name: Build and publish
       env:
         TWINE_USERNAME: __token__
-        TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        TWINE_PASSWORD: ${{ secrets.TEST_PYPI_API_TOKEN }}
       run: |
         python setup.py sdist bdist_wheel
-        twine upload dist/*
+        twine upload -r testpypi dist/*
