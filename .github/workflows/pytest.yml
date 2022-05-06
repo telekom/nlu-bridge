@@ -4,7 +4,7 @@ name: pytest
 on:
   push:
     branch: [ feature/github_actions ]
-  workflow_dispatch
+  workflow_dispatch:
 
 #  push:
 #    branches: [ main ]
