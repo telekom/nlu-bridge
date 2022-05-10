@@ -1,0 +1,11 @@
+version: "3.0"
+nlu:
+- intent: restaurant_search
+  examples: |
+    - i'm looking for a place to eat
+    - testing umläuts
+    - show me [chinese](cuisine) restaurants
+    - show me a [mexican](cuisine) place in the [centre]{"entity": "location", "role": "restaurant_location"}
+- intent: affirm
+  examples: |
+    - yes
