@@ -1,5 +1,5 @@
 import os
-
+from packaging import version
 from test_datasets import FIXTURE_PATH
 
 
@@ -20,9 +20,13 @@ def test_from_watson():
 
 
 def test_from_rasa_json():
+    from rasa import __version__ as rasa_version
+    if version.parse(rasa_version) >= version.parse('3.0.0'):
+        return  # see 'test_from_rasa3_yml' for Rasa 3.x
+
     from nlubridge.vendors.rasa import load_data
 
-    ds = load_data(os.path.join(FIXTURE_PATH, "rasa_nlu.json"))
+    ds = load_data(os.path.join(FIXTURE_PATH, "rasa_nlu.json"), format="json")
     assert len(ds) == 5
     assert ds.texts[1] == "testing umläuts"
     assert ds.intents[0] == "restaurant_search"
@@ -39,6 +43,30 @@ def test_from_rasa_json():
     idx2 = ds.entities[4][0]["end"]
     value = ds.entities[4][0]["value"]
     assert ds.texts[4][idx1:idx2] == value
+
+
+def test_from_rasa3_yml():
+    from rasa import __version__ as rasa_version
+    if version.parse(rasa_version) < version.parse('3.0.0'):
+        return  # see 'test_from_rasa_json' for Rasa 2.x
+
+    from nlubridge.vendors.rasa3 import load_data
+
+    ds = load_data(os.path.join(FIXTURE_PATH, "rasa3_nlu.yml"))
+    assert len(ds) == 5
+    assert ds.texts[1] == "testing umläuts"
+    assert ds.intents[0] == "restaurant_search"
+    assert ds.intents[4] == "affirm"
+    assert ds.entities[0] == []
+    assert ds.entities[1] == []
+    assert len(ds.entities[3]) == 2
+    # make sure the custom "role" key is in dataset
+    assert ds.entities[3][1].get("role", False)
+    # check assumptions about indexes hold
+    idx1 = ds.entities[3][1]["start"]
+    idx2 = ds.entities[3][1]["end"]
+    value = ds.entities[3][1]["value"]
+    assert ds.texts[3][idx1:idx2] == value
 
 
 def test_from_luis():

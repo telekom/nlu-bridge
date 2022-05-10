@@ -12,10 +12,10 @@ class ToyDataset(NLUdataset):
         intents = ["BookFlight", "GetWeather"]
         entities = [
             [
-                {"entity": "LocationFrom", "start": 22, "end": 26},
-                {"entity": "LocationTo", "start": 31, "end": 37},
+                {"entity": "LocationFrom", "start": 22, "end": 27},
+                {"entity": "LocationTo", "start": 31, "end": 38},
             ],
-            [{"entity": "Location", "start": 27, "end": 33}],
+            [{"entity": "Location", "start": 27, "end": 34}],
         ]
         super().__init__(texts, intents, entities, **kw_args)
 
