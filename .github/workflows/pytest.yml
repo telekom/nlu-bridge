@@ -23,7 +23,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8]
+        python-version: [3.8]
+        rasa-version: [rasa]
 
     steps:
     - uses: actions/checkout@v2
@@ -36,7 +37,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install -U pip
-        pip install --progress-bar off -U ".[develop, watson, telekom, fasttext, luis, rasa, spacy]"
+        pip install --progress-bar off -U ".[develop, watson, telekom, fasttext, luis, ${{ matrix.rasa-version }}, spacy]"
 
     - name: Test with pytest
       run: pytest tests
