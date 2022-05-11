@@ -2,13 +2,10 @@ name: Static Code Checks
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, develop, feature ]
   pull_request:
-    branches: [ main ]
-  schedule:
-    # * is a special character in YAML so you have to quote this string
-    # at 4 am
-    - cron:  '0 4 * * *'
+    branches: [ main, develop, feature ]
+
 
 jobs:
   checks:
@@ -22,12 +19,12 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v2
       with:
-        python-version: 3.7
+        python-version: 3.8
 
     - name: Install
       run: |
         python -m pip install -U pip
-        pip install --progress-bar off -U .[checking,optional]
+        pip install --progress-bar off -U .[develop]
 
     - name: Check with pydocstyle
       run: pydocstyle --count ${{ env.src }} ${{ env.other-src }}
@@ -38,14 +35,14 @@ jobs:
     - name: Check with flake8
       run: flake8 ${{ env.src }} ${{ env.other-src }}
 
-    - name: Check with isort
-      run: isort ${{ env.src }} ${{ env.other-src }} --check --diff
+    #- name: Check with isort
+    #  run: isort ${{ env.src }} ${{ env.other-src }} --check --diff
 
-    - name: Check with mdformat
-      run: mdformat --check *.md
+    #- name: Check with mdformat
+    #  run: mdformat --check *.md
 
-    - name: Check with mypy
-      run: mypy --install-types --non-interactive ${{ env.src }} ${{ env.other-src }}
+    #- name: Check with mypy
+    #  run: mypy --install-types --non-interactive ${{ env.src }} ${{ env.other-src }}
 
-    - name: Check with pylint
-      run: pylint ${{ env.src }}
+    #- name: Check with pylint
+    #  run: pylint ${{ env.src }}
