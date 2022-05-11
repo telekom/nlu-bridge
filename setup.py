@@ -64,6 +64,7 @@ setup(
         "fasttext": ["fasttext"],
         "luis": ["requests", "ratelimit"],
         "rasa": ["rasa==2"],
+        "rasa3": ["rasa==3"],
         "spacy": ["spacy==3.1.3"],
         "develop": ["pytest-cov", "flake8", "black", "pydocstyle"],
     },

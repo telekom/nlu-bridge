@@ -24,7 +24,7 @@ jobs:
     strategy:
       matrix:
         python-version: [3.8]
-        rasa-version: [rasa]
+        rasa-version: [rasa, rasa3]
 
     steps:
     - uses: actions/checkout@v2
@@ -40,4 +40,4 @@ jobs:
         pip install --progress-bar off -U ".[develop, watson, telekom, fasttext, luis, ${{ matrix.rasa-version }}, spacy]"
 
     - name: Test with pytest
-      run: pytest tests
+      run: pytest tests/ --ignore tests/test_watson_vendor.py
