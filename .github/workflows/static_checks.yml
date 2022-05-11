@@ -13,7 +13,7 @@ on:
 jobs:
   checks:
     env:
-      src: "hpoflow"
+      src: "nlubridge"
       other-src: "tests docs setup.py"
 
     runs-on: ubuntu-latest
