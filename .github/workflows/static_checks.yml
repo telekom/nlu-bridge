@@ -2,9 +2,10 @@ name: Static Code Checks
 
 on:
   push:
-    branches: [ main, develop, feature ]
+    # run on any branch
+    branches: [ '*' ]
   pull_request:
-    branches: [ main, develop, feature ]
+    branches: [ '*' ]
 
 
 jobs:
