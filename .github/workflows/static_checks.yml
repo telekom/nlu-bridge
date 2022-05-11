@@ -3,9 +3,9 @@ name: Static Code Checks
 on:
   push:
     # run on any branch
-    branches: [ '*' ]
+    branches: [ '**' ]
   pull_request:
-    branches: [ '*' ]
+    branches: [ '**' ]
 
 
 jobs:
