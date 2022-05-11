@@ -37,7 +37,9 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install -U pip
-        pip install --progress-bar off -U ".[develop, watson, telekom, fasttext, luis, ${{ matrix.rasa-version }}, spacy]"
+        pip install --progress-bar off -U ".[develop, watson]"
 
+# , telekom, fasttext, luis, ${{ matrix.rasa-version }}, spacy
+    -
     - name: Test with pytest
       run: pytest tests/test_watson_vendor_mocked.py --ignore tests/test_watson_vendor.py
