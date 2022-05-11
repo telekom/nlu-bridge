@@ -66,7 +66,16 @@ setup(
         "rasa": ["rasa==2"],
         "rasa3": ["rasa==3"],
         "spacy": ["spacy==3.1.3"],
-        "develop": ["pytest-cov", "flake8", "black", "pydocstyle"],
+        "develop": [
+            "pytest-cov",
+            "pytest-mock",
+            "flake8",
+            "black",
+            "pydocstyle",
+            "setuptools",
+            "wheel",
+            "twine"
+        ]
     },
     include_package_data=True,
 )
