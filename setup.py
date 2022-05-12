@@ -19,6 +19,7 @@ keywords = [
     "performance",
 ]
 
+
 def get_version():
     """Read version from ``__init__.py``."""
     version_filepath = os.path.join(
@@ -74,8 +75,8 @@ setup(
             "pydocstyle",
             "setuptools",
             "wheel",
-            "twine"
-        ]
+            "twine",
+        ],
     },
     include_package_data=True,
 )

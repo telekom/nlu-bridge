@@ -3,7 +3,11 @@ import json
 
 from nlubridge.vendors.watson import Watson
 from nlubridge import NLUdataset
-from test_vendors import assert_preds_are_intents, assert_return_probs, assert_multiple_utterances_predicted, train_data
+from test_vendors import (
+    assert_preds_are_intents,
+    assert_return_probs,
+    assert_multiple_utterances_predicted,
+)
 
 
 FAKE_URL = "dummy.org"
@@ -63,6 +67,7 @@ class ResultMock:
     We sometimes need to be able to call get_result() on a return value from
     AssistantV1Mock.
     """
+
     def __init__(self, result, status_code=None):
         self.result = result
         self.status_code = status_code
@@ -89,6 +94,7 @@ class AssitantV1Mock:
     """
     Mocks AssistantV1 from the ibm_watson package
     """
+
     service_url = FAKE_URL
     version = "111"
     authenticator = Authenticator()
@@ -109,14 +115,8 @@ class AssitantV1Mock:
     def list_workspaces():
         result = {
             "workspaces": [
-                {
-                    "name": WS_NAME,
-                    "workspace_id": WS_ID
-                },
-                {
-                    "name": "workspace2",
-                    "workspace_id": "2"
-                }
+                {"name": WS_NAME, "workspace_id": WS_ID},
+                {"name": "workspace2", "workspace_id": "2"},
             ]
         }
         return ResultMock(result)
@@ -138,6 +138,7 @@ class SessionMock(requests.Session):
     """
     Mocks requests.Session.post()
     """
+
     def post(self, url, data):
         data_dict = json.loads(data)
         texts = [item["text"] for item in data_dict["input"]]
@@ -147,14 +148,13 @@ class SessionMock(requests.Session):
                     {
                         "input": {"text": text},
                         "entities": [],
-                        "intents":  [
-                            {'intent': 'help', 'confidence': 0.061},
-                            {'intent': 'affirm', 'confidence': 0.0448}
-                        ]
-                    } for text in texts
+                        "intents": [
+                            {"intent": "help", "confidence": 0.061},
+                            {"intent": "affirm", "confidence": 0.0448},
+                        ],
+                    }
+                    for text in texts
                 ]
             },
-            200
+            200,
         )
-
-

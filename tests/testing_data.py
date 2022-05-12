@@ -5,6 +5,7 @@ from nlubridge.datasets import NLUdataset
 
 class ToyDataset(NLUdataset):
     def __init__(self, **kw_args):
+        """Create a NLUdataset with two samples and intent and entity annotations."""
         texts = [
             "Book me a flight from Cairo to Redmond next Thursday",
             "What's the weather like in Seattle?",
@@ -22,6 +23,12 @@ class ToyDataset(NLUdataset):
 
 class SyntheticDataset(NLUdataset):
     def __init__(self, n_samples, intents, **kw_args):
+        """
+        Create an NLUdataset with n_samples samples.
+
+        Utterances are random character sequences and intents from the passed intents
+        are assigned to them evenly distributed.
+        """
         texts = [str(uuid.uuid1()) for _ in range(n_samples)]
         intents = intents * (round(n_samples / len(intents)) + 1)
         intents = intents[:n_samples]
@@ -30,6 +37,7 @@ class SyntheticDataset(NLUdataset):
 
 class TrainingDataset(NLUdataset):
     def __init__(self):
+        """Create a NLUdataset for testing with two intents and no entities."""
         help = [
             "I need help",
             "help me",

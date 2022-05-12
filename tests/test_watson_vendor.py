@@ -5,7 +5,6 @@ from test_vendors import (
     assert_preds_are_intents,
     assert_return_probs,
     assert_multiple_utterances_predicted,
-    train_data
 )
 
 

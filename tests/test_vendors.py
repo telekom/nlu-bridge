@@ -1,20 +1,10 @@
-import pytest
 from packaging import version
 
 from nlubridge.datasets import EntityKeys
 from nlubridge import NLUdataset
-from testing_data import TrainingDataset
 from test_datasets import texts as sample_texts
 from test_datasets import intents as sample_intents
 from test_datasets import entities as sample_entities
-
-
-@pytest.fixture
-def train_data():
-    return TrainingDataset()
-
-
-#    return TDGDataset().clip_by_intent_frequency(20)
 
 
 # Following functions are run by all vendor tests to test
@@ -68,11 +58,14 @@ def test_tfidf(train_data):
 def test_rasa(train_data):
 
     from rasa import __version__ as rasa_version
-    if version.parse(rasa_version) < version.parse('3.0.0'):
+
+    if version.parse(rasa_version) < version.parse("3.0.0"):
         from nlubridge.vendors.rasa import Rasa
+
         rasa = Rasa()
     else:
         from nlubridge.vendors.rasa3 import Rasa3
+
         rasa = Rasa3()
 
     # test intent classification
@@ -84,7 +77,9 @@ def test_rasa(train_data):
     # test intent + entity classification
     train_ds = NLUdataset(sample_texts, sample_intents, sample_entities)
     rasa.train(train_ds)
-    test_ds = NLUdataset(["I want a flight from Frankfurt to Berlin", "How is the weather in Bonn?"])
+    test_ds = NLUdataset(
+        ["I want a flight from Frankfurt to Berlin", "How is the weather in Bonn?"]
+    )
     preds = rasa.test(test_ds)
     assert isinstance(preds, NLUdataset)
     assert len(preds) == 2

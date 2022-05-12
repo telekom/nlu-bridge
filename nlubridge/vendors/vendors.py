@@ -30,7 +30,7 @@ class Vendor(BaseEstimator, ClassifierMixin):
 
     def train(self, dataset: NLUdataset):
         """
-        Train intent and/or entity classification
+        Train intent and/or entity classification.
 
         :param dataset: Training data
         """
@@ -38,7 +38,10 @@ class Vendor(BaseEstimator, ClassifierMixin):
 
     def test(self, dataset: NLUdataset) -> NLUdataset:
         """
-        Test a given dataset and obtain the intent and/or entity classification results in the NLUdataset format
+        Test a given dataset and obtain classification results as NLUdataset.
+
+        The returned NLUdataset will include intent and/or entity predictions, depending
+        on what the model can handle and has been trained on.
 
         :param dataset: Input dataset to be tested
         :return: NLUdataset object comprising the classification results
