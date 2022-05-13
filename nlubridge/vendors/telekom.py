@@ -42,13 +42,13 @@ class TelekomModel(Vendor):
             none_class=OUT_OF_SCOPE_TOKEN, verbose=False, anomaly_clf_nu=anomaly_clf_nu
         )
 
-    def train_intent(self, dataset):
+    def train_intent(self, dataset):  # noqa D102
         X = dataset.texts
         y = dataset.intents
         self.clf.fit(X, y)
         return self
 
-    def test_intent(self, dataset, return_probs=False):
+    def test_intent(self, dataset, return_probs=False):  # noqa D102
         X = dataset.texts
         intents, probs = self.clf.predict(X, return_probs=True)
         intents = list(intents)
@@ -62,26 +62,30 @@ class TelekomModel2(Vendor):
     alias = "telekom_model_2"
 
     def __init__(self):
-        """This is an alternative model custom-built for Telekom"""
+        """Alternative model custom-built for Telekom."""
         self.clf = Model2(none_class=OUT_OF_SCOPE_TOKEN, verbose=True)
 
-    def train_intent(self, dataset):
+    def train_intent(self, dataset):  # noqa D102
         X = dataset.texts
         y = dataset.intents
         self.clf.fit(X, y)
 
-    def test_intent(self, dataset):
+    def test_intent(self, dataset):  # noqa D102
         X = dataset.texts
         return self.clf.predict(X)
 
 
 class Model1:
     """
+    Model1 implementation in original code.
+
     TF-IDF ==> Anomaly
     TF-IDF ==> SGD
     """
 
-    def __init__(self, none_class="no_intent", verbose=False, anomaly_clf_nu=0.95):
+    def __init__(
+        self, none_class="no_intent", verbose=False, anomaly_clf_nu=0.95
+    ):  # noqa D102
 
         self.none_class_ = none_class
         self.verbose_ = verbose
@@ -115,7 +119,7 @@ class Model1:
             "sgd__alpha": [1e-05, 1e-06, 1e-07],
         }
 
-    def fit(self, X, y=None):
+    def fit(self, X, y=None):  # noqa D102
         logger.debug("Training started")
         X_with_intent = [x for x, y in zip(X, y) if not y == self.none_class_]
         if self.anomaly_clf_nu_ > 0:
@@ -126,7 +130,7 @@ class Model1:
         # self.save()
         logger.debug("Training finished")
 
-    def predict(self, X, y=None, return_probs=False):
+    def predict(self, X, y=None, return_probs=False):  # noqa D102
         if self.anomaly_clf_nu_ > 0:
             y_has_intent = self.trained_anomaly_clf.predict(X)
 
@@ -147,7 +151,7 @@ class Model1:
 
         return intents
 
-    def _hyper_fit(self, classifier, param_space, X, y):
+    def _hyper_fit(self, classifier, param_space, X, y):  # noqa D102
         search = GridSearchCV(
             classifier, param_space, n_jobs=-1, cv=5, verbose=self.verbose_, refit=True
         )
@@ -167,14 +171,14 @@ class Model1:
 
         return search
 
-    def load(self, filename="model1"):
+    def load(self, filename="model1"):  # noqa D102
         f = open(self.models_path + filename, "rb")
         tmp_dict = pickle.load(f)
         f.close()
 
         self.__dict__.update(tmp_dict)
 
-    def save(self, filename="model1"):
+    def save(self, filename="model1"):  # noqa D102
         f = open(self.models_path + filename, "wb")
         pickle.dump(self.__dict__, f, 2)
         f.close()
@@ -182,10 +186,12 @@ class Model1:
 
 class Model2:
     """
+    Model2 implementation in original code.
+
     TF-IDF ==> Fuzzy string matching
     """
 
-    def __init__(self, none_class="no_intent", verbose=False):
+    def __init__(self, none_class="no_intent", verbose=False):  # noqa D102
 
         self.none_class_ = none_class
         self.verbose_ = verbose
@@ -195,7 +201,7 @@ class Model2:
             min_df=2, max_df=0.9, ngram_range=(2, 5), use_idf=True, analyzer="word"
         )
 
-    def fit(self, X, y=None):
+    def fit(self, X, y=None):  # noqa D102
         logger.debug("Training started")
 
         self.classes_ = list(set(y) - set([self.none_class_]))
@@ -221,7 +227,7 @@ class Model2:
 
         logger.debug("Training finished")
 
-    def predict(self, X, y=None):
+    def predict(self, X, y=None):  # noqa D102
         logger.debug("Prediction started")
         y_pred = []
 
@@ -239,19 +245,19 @@ class Model2:
         logger.debug("Prediction finished")
         return y_pred
 
-    def load(self):
+    def load(self):  # noqa D102
         f = open(self.filename, "rb")
         tmp_dict = pickle.load(f)
         f.close()
 
         self.__dict__.update(tmp_dict)
 
-    def save(self):
+    def save(self):  # noqa D102
         f = open(self.filename, "wb")
         pickle.dump(self.__dict__, f, 2)
         f.close()
 
-    def _get_n_gram_matches(self, inputString, options, isReordered=False):
+    def _get_n_gram_matches(self, inputString, options, isReordered=False):  # noqa D102
         max_n_gram = 4
         ngrams = []
 
@@ -265,7 +271,7 @@ class Model2:
 
         return matches
 
-    def _create_n_gram(self, inputWords, n, reorder=False):
+    def _create_n_gram(self, inputWords, n, reorder=False):  # noqa D102
         ngrams = []
         for i in range(0, len(inputWords) + 1 - n):
             strings = inputWords[i : i + n]
@@ -277,7 +283,7 @@ class Model2:
                 ngrams.append(" ".join(strings))
         return ngrams
 
-    def _norm_best_match_substring(self, item, options, cutoff=0.75):
+    def _norm_best_match_substring(self, item, options, cutoff=0.75):  # noqa D102
         tuples = []
         for i in options:
             tuples.append(

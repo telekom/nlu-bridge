@@ -173,16 +173,15 @@ class NLUdataset:
         :type size: float or int
         :param random_state: seed for random processes
         :type random_state: int
-        :param stratification: If not None, data is split in a stratified fashion, using this as the class labels.
-                               Default is using the intent labels for stratification.
+        :param stratification: If not None, data is split in a stratified fashion, using
+            this as the class labels. Default is using the intent labels for
+            stratification.
         """
         if isinstance(size, numbers.Integral):
             size = size / self.n_samples
 
         _, sampled = self.train_test_split(
-            test_size=size,
-            random_state=random_state,
-            stratification=stratification
+            test_size=size, random_state=random_state, stratification=stratification
         )
         return sampled
 
@@ -336,7 +335,7 @@ class NLUdataset:
 
         def configure_stratification():
             """
-            Allows configuring stratification options.
+            Allow configuring stratification options.
 
             The default setting, "intents", is used when we want to
             use stratification by intent strings. If we want to use
@@ -373,7 +372,7 @@ class NLUdataset:
             stratify=configure_stratification(),
             test_size=test_size,
             random_state=random_state,
-            **args
+            **args,
         )
 
         train_ds = NLUdataset(texts_train, intents_train, entities_train)

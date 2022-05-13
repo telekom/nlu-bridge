@@ -5,7 +5,7 @@ test-src := tests
 other-src := setup.py
 
 check: ## Check code style
-	# pydocstyle --count $(src) $(test-src) $(other-src)
+	pydocstyle --count $(src) $(test-src) $(other-src)
 	black $(src) $(test-src) --check #--diff
 	flake8 $(src) $(test-src)
 	# isort $(src) $(test-src) $(other-src) --check --diff
@@ -19,10 +19,8 @@ format: ## Auto-format code
 	# mdformat *.md
 
 test: ## test
-	python -m pytest --cov=nluvendors tests/
+	python -m pytest --cov=nlubridge tests
 
-publish_test: ## publish to TestPyPI
-	flit publish --repository pypitest
-
-publish: ## publish to TestPyPI
-	flit publish
+test_pubish: ## puplish to testpypi
+    python setup.py sdist bdist_wheel
+    twine upload -r testpypi dist/*

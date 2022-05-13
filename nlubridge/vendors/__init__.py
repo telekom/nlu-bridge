@@ -16,4 +16,4 @@ with try_import() as optional_rasa_import:
     from .rasa import Rasa  # noqa: F401
 
 with try_import() as optional_rasa3_import:
-    from .rasa3 import Rasa3
+    from .rasa3 import Rasa3  # noqa: F401

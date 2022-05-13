@@ -21,7 +21,8 @@ def test_from_watson():
 
 def test_from_rasa_json():
     from rasa import __version__ as rasa_version
-    if version.parse(rasa_version) >= version.parse('3.0.0'):
+
+    if version.parse(rasa_version) >= version.parse("3.0.0"):
         return  # see 'test_from_rasa3_yml' for Rasa 3.x
 
     from nlubridge.vendors.rasa import load_data
@@ -47,7 +48,8 @@ def test_from_rasa_json():
 
 def test_from_rasa3_yml():
     from rasa import __version__ as rasa_version
-    if version.parse(rasa_version) < version.parse('3.0.0'):
+
+    if version.parse(rasa_version) < version.parse("3.0.0"):
         return  # see 'test_from_rasa_json' for Rasa 2.x
 
     from nlubridge.vendors.rasa3 import load_data
