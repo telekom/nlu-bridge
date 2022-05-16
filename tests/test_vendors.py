@@ -1,20 +1,10 @@
-import pytest
 from packaging import version
-from dotenv import load_dotenv
+
 from nlubridge.datasets import EntityKeys
 from nlubridge import NLUdataset
-from testing_data import TrainingDataset
 from test_datasets import texts as sample_texts
 from test_datasets import intents as sample_intents
 from test_datasets import entities as sample_entities
-
-
-@pytest.fixture
-def train_data():
-    return TrainingDataset()
-
-
-#    return TDGDataset().clip_by_intent_frequency(20)
 
 
 # Following functions are run by all vendor tests to test
@@ -65,59 +55,17 @@ def test_tfidf(train_data):
     assert_multiple_utterances_predicted(bow, train_data)
 
 
-def test_watson(train_data):
-    from nlubridge.vendors.watson import Watson
-
-    # load environment variables so Watson uses them
-    load_dotenv()
-
-    # test initialization
-    watson = Watson()
-
-    # test train_intent()
-    watson.train_intent(train_data)
-
-    # test test_intent() (bulk_classify)
-    assert_preds_are_intents(watson, train_data.unique_intents)
-    assert_return_probs(watson, train_data.unique_intents)
-    assert_multiple_utterances_predicted(watson, train_data)
-    # test handling of rate exceeded (only 250/min allowed)
-    cases90 = train_data + train_data + train_data
-    cases360 = cases90 + cases90 + cases90 + cases90
-    preds, probs = watson.test_intent(cases360, return_probs=True)
-    assert len(preds) == 360
-    assert len(probs) == 360
-    # TODO: fix vendor for test: assert_oos_prediction()
-
-    # test test_intent() (non-bulk)
-    test_ds = NLUdataset(["Ich habe kein DSL und telefon"])
-    watson.set_bulk(False)
-    assert watson.use_bulk is False
-    preds = watson.test_intent(test_ds)
-    assert isinstance(preds, list)
-    assert len(preds) == 1
-    assert preds[0] in train_data.unique_intents
-
-    # test n_best_intents argument to test_intent()
-    preds, probs = watson.test_intent(test_ds, return_probs=True, n_best_intents=5)
-    assert isinstance(preds, list)
-    assert isinstance(probs, list)
-    assert isinstance(preds[0], list)
-    assert isinstance(probs[0], list)
-    assert preds[0][0] in train_data.unique_intents
-    assert len(preds[0]) == 2
-    assert isinstance(probs[0][0], float) or (probs[0][0] == 1)
-    assert len(probs[0]) == 2
-
-
 def test_rasa(train_data):
 
     from rasa import __version__ as rasa_version
-    if version.parse(rasa_version) < version.parse('3.0.0'):
+
+    if version.parse(rasa_version) < version.parse("3.0.0"):
         from nlubridge.vendors.rasa import Rasa
+
         rasa = Rasa()
     else:
         from nlubridge.vendors.rasa3 import Rasa3
+
         rasa = Rasa3()
 
     # test intent classification
@@ -129,7 +77,9 @@ def test_rasa(train_data):
     # test intent + entity classification
     train_ds = NLUdataset(sample_texts, sample_intents, sample_entities)
     rasa.train(train_ds)
-    test_ds = NLUdataset(["I want a flight from Frankfurt to Berlin", "How is the weather in Bonn?"])
+    test_ds = NLUdataset(
+        ["I want a flight from Frankfurt to Berlin", "How is the weather in Bonn?"]
+    )
     preds = rasa.test(test_ds)
     assert isinstance(preds, NLUdataset)
     assert len(preds) == 2
