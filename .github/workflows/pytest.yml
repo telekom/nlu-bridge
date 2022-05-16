@@ -15,14 +15,25 @@ jobs:
     strategy:
       matrix:
         python-version: [3.8]
-        install_extras:
-          - "[rasa, spacy, develop, watson, telekom, fasttext, luis]"
-          - "[rasa3, develop]"
 
     steps:
     - uses: actions/checkout@v2
 
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python ${{ matrix.python-version }} for full install
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Full install wit Rasa 2
+      run: |
+        python -m pip install -U pip
+        pip install --progress-bar off -U ".[rasa, spacy, watson, telekom, fasttext, luis]"
+        pip install pytest pytest-mock
+
+    - name: Test full test suite
+      run: pytest tests/ --ignore tests/test_watson_vendor.py
+
+    - name: Set up Python ${{ matrix.python-version }} for testing Rasa 3
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
@@ -30,7 +41,8 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install -U pip
-        pip install --progress-bar off -U ".${{ matrix.install_extras }}"
+        pip install --progress-bar off -U ".[rasa3]"
+        pip install pytest pytest-mock
 
-    - name: Test with pytest
-      run: pytest tests/ --ignore tests/test_watson_vendor.py
+    - name: Test Rasa 3
+      run: pytest tests/test_vendors.py::test_rasa
