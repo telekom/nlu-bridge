@@ -5,4 +5,4 @@
 """Provides a unified API to several popular intent recognition applications."""  # noqa D400
 from .datasets import NLUdataset, OUT_OF_SCOPE_TOKEN, EntityKeys  # noqa: F401
 
-__version__ = "0.2.0"
+__version__ = "0.2.1dev0"
