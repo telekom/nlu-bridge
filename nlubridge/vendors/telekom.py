@@ -11,8 +11,12 @@ from sklearn.linear_model import SGDClassifier
 from sklearn.svm import OneClassSVM
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import GridSearchCV
-from fuzzywuzzy import fuzz
 import numpy as np
+
+from lazy_imports import try_import
+
+with try_import() as optional_fuzzywuzzy_import:
+    from fuzzywuzzy import fuzz
 
 from .vendors import Vendor
 from ..datasets import OUT_OF_SCOPE_TOKEN
@@ -38,6 +42,7 @@ class TelekomModel(Vendor):
             off)
         :type anomaly_clf_nu: float
         """
+        optional_fuzzywuzzy_import.check()
         self.clf = Model1(
             none_class=OUT_OF_SCOPE_TOKEN, verbose=False, anomaly_clf_nu=anomaly_clf_nu
         )

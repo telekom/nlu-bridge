@@ -5,24 +5,23 @@
 import logging
 import random
 
-import spacy
-from spacy.pipeline.textcat import DEFAULT_SINGLE_TEXTCAT_MODEL
-from spacy.training import Example
+from lazy_imports import try_import
+
+with try_import() as optional_spacy_import:
+    import spacy
+    from spacy.pipeline.textcat import DEFAULT_SINGLE_TEXTCAT_MODEL
+    from spacy.training import Example
 
 from .vendors import Vendor
 
 
 logger = logging.getLogger(__name__)
-config = {
-    "threshold": 0.5,
-    "model": DEFAULT_SINGLE_TEXTCAT_MODEL,
-}
 
 
 class SpacyClassifier(Vendor):
     alias = "spacy"
 
-    def __init__(self, n_iter=10, config=config, language="en"):
+    def __init__(self, n_iter=10, config=None, language="en"):
         """
         Interface for the Spacy intent classifier.
 
@@ -34,7 +33,13 @@ class SpacyClassifier(Vendor):
         :param language: Language string (default: "en")
         :type language: str
         """
+        optional_spacy_import.check()
         self.nlp = spacy.blank(language)
+        if not config:
+            config = {
+                "threshold": 0.5,
+                "model": DEFAULT_SINGLE_TEXTCAT_MODEL,
+            }
         self.textcat = self.nlp.add_pipe("textcat", config=config)
         self.n_iter = n_iter
 
