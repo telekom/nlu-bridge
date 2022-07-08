@@ -1,12 +1,13 @@
-from collections import Counter
-import os
 import copy
+import os
+from collections import Counter
 
 import pytest
-
+from sklearn.model_selection import KFold, train_test_split
 from testing_data import SyntheticDataset, ToyDataset
+
 from nlubridge import OUT_OF_SCOPE_TOKEN, NLUdataset
-from sklearn.model_selection import train_test_split, KFold
+
 
 FIXTURE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fixtures")
 

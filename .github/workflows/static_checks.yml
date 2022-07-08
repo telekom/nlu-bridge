@@ -36,8 +36,8 @@ jobs:
     - name: Check with flake8
       run: flake8 ${{ env.src }} ${{ env.other-src }}
 
-    #- name: Check with isort
-    #  run: isort ${{ env.src }} ${{ env.other-src }} --check --diff
+    - name: Check with isort
+      run: isort ${{ env.src }} ${{ env.other-src }} --check --diff
 
     #- name: Check with mdformat
     #  run: mdformat --check *.md

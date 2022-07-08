@@ -3,17 +3,17 @@
 # which is available at https://opensource.org/licenses/MIT
 
 import collections
+import csv
 import itertools
 import json
 import numbers
 import random
+import warnings
 from pathlib import Path
 from typing import List
-import warnings
-import csv
 
-from sklearn.model_selection import train_test_split, StratifiedKFold
 import numpy as np
+from sklearn.model_selection import StratifiedKFold, train_test_split
 
 
 DATA_PATH = Path(__file__).parents[2] / "data"

@@ -2,24 +2,26 @@
 # This software is distributed under the terms of the MIT license
 # which is available at https://opensource.org/licenses/MIT
 
-import os
+import concurrent.futures
 import datetime
 import json
 import logging
+import os
 import sys
 import time
-import concurrent.futures
 
-from ratelimit import rate_limited
 from lazy_imports import try_import
+from ratelimit import rate_limited
+
 
 with try_import() as optional_luis_import:
     import requests
     from requests.compat import urljoin
 
+from nlubridge.datasets import NLUdataset, from_json
+
 from ..datasets import OUT_OF_SCOPE_TOKEN
 from .vendors import Vendor
-from nlubridge.datasets import from_json, NLUdataset
 
 
 sys.path.append("../..")

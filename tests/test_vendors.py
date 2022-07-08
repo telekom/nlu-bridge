@@ -1,10 +1,10 @@
 from packaging import version
-
-from nlubridge.datasets import EntityKeys
-from nlubridge import NLUdataset
-from test_datasets import texts as sample_texts
-from test_datasets import intents as sample_intents
 from test_datasets import entities as sample_entities
+from test_datasets import intents as sample_intents
+from test_datasets import texts as sample_texts
+
+from nlubridge import NLUdataset
+from nlubridge.datasets import EntityKeys
 
 
 # Following functions are run by all vendor tests to test

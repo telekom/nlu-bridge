@@ -3,14 +3,15 @@
 # This software is distributed under the terms of the MIT license
 # which is available at https://opensource.org/licenses/MIT
 
+import json
+import logging
 import os
 import time
-from datetime import datetime
-import json
 from concurrent.futures import ThreadPoolExecutor
-import logging
+from datetime import datetime
 
 from lazy_imports import try_import
+
 
 with try_import() as optional_watson_import:
     import requests
@@ -18,9 +19,10 @@ with try_import() as optional_watson_import:
     from ibm_watson import AssistantV1
     from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 
+from nlubridge.datasets import NLUdataset, from_csv
+
 from ..datasets import OUT_OF_SCOPE_TOKEN
 from .vendors import Vendor
-from nlubridge.datasets import from_csv, NLUdataset
 
 
 logger = logging.getLogger(__name__)

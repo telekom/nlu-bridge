@@ -1,5 +1,4 @@
 import pytest
-
 from testing_data import TrainingDataset
 
 

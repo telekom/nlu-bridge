@@ -2,11 +2,13 @@
 # This software is distributed under the terms of the MIT license
 # which is available at https://opensource.org/licenses/MIT
 from __future__ import annotations
-from typing import List, Optional, Union, Tuple
+
 import os
 import pathlib
+from typing import List, Optional, Tuple, Union
 
 from lazy_imports import try_import
+
 
 with try_import() as optional_rasa_import:
     from rasa.nlu import config
@@ -32,8 +34,10 @@ with try_import() as optional_rasa_import:
         PREDICTED_CONFIDENCE_KEY,
     )
 
+from nlubridge.datasets import EntityKeys, NLUdataset
+
 from .vendors import Vendor
-from nlubridge.datasets import NLUdataset, EntityKeys
+
 
 DEFAULT_INTENT_RASA_CONFIG_PATH = os.path.join(
     pathlib.Path(__file__).parent.absolute(), "config", "rasa_nlu_config.yml"

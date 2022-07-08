@@ -1,13 +1,14 @@
-import requests
 import json
 
-from nlubridge.vendors.watson import Watson
-from nlubridge import NLUdataset
+import requests
 from test_vendors import (
+    assert_multiple_utterances_predicted,
     assert_preds_are_intents,
     assert_return_probs,
-    assert_multiple_utterances_predicted,
 )
+
+from nlubridge import NLUdataset
+from nlubridge.vendors.watson import Watson
 
 
 FAKE_URL = "dummy.org"

@@ -6,7 +6,7 @@
 
 import os
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 
 project_name = "nlubridge"
@@ -76,6 +76,8 @@ setup(
             "setuptools",
             "wheel",
             "twine",
+            "isort",
+            "mdformat",
         ],
     },
     include_package_data=True,
