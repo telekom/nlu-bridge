@@ -16,7 +16,7 @@ from ratelimit import rate_limited
 
 with try_import() as optional_luis_import:
     import requests
-    from requests.compat import urljoin
+    from urllib.parse import urljoin
 
 from nlubridge.datasets import NLUdataset, from_json
 
@@ -85,7 +85,7 @@ class LUIS(Vendor):
         self.session.headers.update({"Ocp-Apim-Subscription-Key": authoring_key})
         logger.debug(f"Created new app with id {self.app_id}")
 
-    @property
+    @property  # type: ignore
     @rate_limited(AUTHORING_RATE_LIMIT)
     def requests(self):
         """Util method to access self.session."""

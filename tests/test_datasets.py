@@ -68,9 +68,9 @@ def test_init_ds_without_intents_and_entities():
     ds = NLUdataset(texts)
     assert len(ds.texts) == 3
     assert len(ds.intents) == 3
-    assert ds.unique_intents is None  # NOTE: This should be [] for consistency
+    assert ds.unique_intents == []
     assert ds.intents == [None, None, None]
-    assert ds.n_intents is None  # NOTE: This should be [] for consistency
+    assert ds.n_intents == 0
     assert len(ds.entities) == 3
     assert ds.unique_entities == []
     assert ds.entities == [[], [], []]

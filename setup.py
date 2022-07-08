@@ -78,6 +78,8 @@ setup(
             "twine",
             "isort",
             "mdformat",
+            "mypy",
+            "pylint==2.14.5",
         ],
     },
     include_package_data=True,

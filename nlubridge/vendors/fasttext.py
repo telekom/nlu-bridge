@@ -12,8 +12,6 @@ from fasttext import train_supervised
 from .vendors import Vendor
 
 
-config = {}
-
 logger = logging.getLogger(__name__)
 DEFAULT_CONFIG = {
     "wordNgrams": 1,

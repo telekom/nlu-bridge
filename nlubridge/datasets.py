@@ -10,7 +10,7 @@ import numbers
 import random
 import warnings
 from pathlib import Path
-from typing import List
+from typing import Dict, List, Optional, Union
 
 import numpy as np
 from sklearn.model_selection import StratifiedKFold, train_test_split
@@ -32,8 +32,8 @@ class NLUdataset:
     def __init__(
         self,
         texts: List[str],
-        intents: List[str] = None,
-        entities: List[List[dict]] = None,
+        intents: Optional[List[Optional[str]]] = None,
+        entities: Optional[List[List[dict]]] = None,
         out_of_scope=False,
         max_intent_length=None,
         seed=42,
@@ -62,16 +62,21 @@ class NLUdataset:
 
         self.texts = texts
         self.n_samples = len(self.texts)
+        self.intents: List[Optional[str]]
+        self.unique_intents: List[Optional[str]]
 
         if not intents or intents is None:
-            self.unique_intents = None  # TODO: Can this be empty list?
+            self.unique_intents = []
             if out_of_scope:
                 self.unique_intents = [OUT_OF_SCOPE_TOKEN]
-            self.n_intents = None  # TODO: Can this be 0?
+            self.n_intents = len(self.unique_intents)
             self.intents = [None for _ in texts]
         else:
             if max_intent_length:
-                self.intents = [intent[:max_intent_length] for intent in intents]
+                self.intents = [
+                    intent[:max_intent_length] if intent is not None else None
+                    for intent in intents
+                ]
                 if len(set(intents)) > len(set(self.intents)):
                     warnings.warn(
                         "Intent names are not unique on first {} characters".format(
@@ -88,11 +93,10 @@ class NLUdataset:
             self.n_intents = len(self.unique_intents)
             self.intent_frequencies = collections.Counter(self.intents)
 
-        self.entities = entities
+        self.entities = entities if entities else [list() for _ in texts]
         if not entities:
             self.unique_entities = []
             self.n_entities = 0
-            self.entities = [list() for _ in texts]
 
         if entities is not None:
             it = itertools.chain.from_iterable(entities)
@@ -186,7 +190,7 @@ class NLUdataset:
         return sampled
 
     def filter_by_intent_name(
-        self, excluded: List[str] = None, allowed: List[str] = None
+        self, excluded: List[str] = None, allowed: List[Optional[str]] = None
     ):
         """
         Filter the dataset by intents.
@@ -202,7 +206,8 @@ class NLUdataset:
         if allowed is None:
             allowed = self.unique_intents
 
-        texts, intents = [], []
+        texts = []
+        intents: List[Optional[str]] = []
         for text, intent, _ in self.data:
             if intent in excluded:
                 continue
@@ -455,7 +460,7 @@ class NLUdataset:
 
 def from_csv(filepath, text_col, intent_col) -> NLUdataset:
     """Load dataset (only text and intents) from a csv file."""
-    columns = collections.defaultdict(list)
+    columns: Dict[Union[int, str], List] = collections.defaultdict(list)
 
     with open(filepath) as f:
         reader = csv.DictReader(f)

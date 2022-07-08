@@ -100,9 +100,11 @@ class Rasa(Vendor):
             the predicted intent classification probabilities are accessible via the
             additional attribute 'probs' (List[float]).
         """
-        intents = []
-        probs = []
-        entities_list = []
+        intents: List[str] = []
+        probs: List[float] = []
+        entities_list: List[List[dict]] = []
+        if self.interpreter is None:
+            raise Exception("Rasa2 classifier has to be trained first!")
         for text in dataset.texts:
             result = self.interpreter.parse(text)
             intent = result.get(INTENT, {}).get(INTENT_NAME_KEY)
@@ -137,8 +139,10 @@ class Rasa(Vendor):
             predicted intent classification and probabilites results (depeding on
             argument 'return_probs')
         """
-        intents = []
-        probs = []
+        intents: List[str] = []
+        probs: List[float] = []
+        if self.interpreter is None:
+            raise Exception("Rasa2 classifier has to be trained first!")
         for text in dataset.texts:
             result = self.interpreter.parse(text)
             intent = result.get(INTENT, {}).get(INTENT_NAME_KEY)

@@ -42,8 +42,8 @@ jobs:
     - name: Check with mdformat
       run: mdformat --check *.md
 
-    #- name: Check with mypy
-    #  run: mypy --install-types --non-interactive ${{ env.src }} ${{ env.other-src }}
+    - name: Check with mypy
+      run: mypy --ignore-missing-imports --install-types --non-interactive ${{ env.src }} ${{ env.other-src }}
 
-    #- name: Check with pylint
-    #  run: pylint ${{ env.src }}
+    - name: Check with pylint
+      run: pylint --fail-under 6 ${{ env.src }}
