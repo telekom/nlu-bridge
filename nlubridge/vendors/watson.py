@@ -10,13 +10,10 @@ import json
 from concurrent.futures import ThreadPoolExecutor
 import logging
 
-from lazy_imports import try_import
-
-with try_import() as optional_watson_import:
-    import requests
-    from tqdm import tqdm
-    from ibm_watson import AssistantV1
-    from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
+import requests
+from tqdm import tqdm
+from ibm_watson import AssistantV1
+from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 
 from ..datasets import OUT_OF_SCOPE_TOKEN
 from .vendors import Vendor
@@ -69,7 +66,6 @@ class Watson(Vendor):
         :param use_bulk: if True (default) uses bulk_classify method
         :type use_bulk: bool
         """
-        optional_watson_import.check()
         api_key = api_key or os.getenv("WATSON_API_KEY")
         if api_key is None:
             ValueError(

@@ -7,10 +7,7 @@ import tempfile
 import os
 import logging
 
-from lazy_imports import try_import
-
-with try_import() as optional_fasttext_import:
-    from fasttext import train_supervised
+from fasttext import train_supervised
 
 from .vendors import Vendor
 
@@ -68,7 +65,6 @@ class FastText(Vendor):
         :param config: dictionary with additional parameters
         :type config: dict
         """
-        optional_fasttext_import.check()
         self.epochs = epochs
         self.lr = lr
         self.model = None

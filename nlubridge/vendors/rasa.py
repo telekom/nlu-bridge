@@ -6,34 +6,32 @@ from typing import List, Optional, Union, Tuple
 import os
 import pathlib
 
-from lazy_imports import try_import
-
-with try_import() as optional_rasa_import:
-    from rasa.nlu import config
-    from rasa.nlu.model import Trainer
-    from rasa.shared.nlu.training_data.message import Message
-    from rasa.shared.nlu.training_data.formats.rasa import RasaReader
-    from rasa.shared.nlu.training_data.formats.rasa_yaml import (
-        RasaYAMLWriter,
-        RasaYAMLReader,
-    )
-    from rasa.shared.nlu.training_data.formats.rasa import RasaWriter
-    from rasa.shared.nlu.training_data.training_data import TrainingData
-    from rasa.shared.utils.io import write_yaml
-    from rasa.shared.nlu.constants import (
-        TEXT,
-        INTENT,
-        INTENT_NAME_KEY,
-        ENTITIES,
-        ENTITY_ATTRIBUTE_TYPE,
-        ENTITY_ATTRIBUTE_START,
-        ENTITY_ATTRIBUTE_END,
-        ENTITY_ATTRIBUTE_VALUE,
-        PREDICTED_CONFIDENCE_KEY,
-    )
+from rasa.nlu import config
+from rasa.nlu.model import Trainer
+from rasa.shared.nlu.training_data.message import Message
+from rasa.shared.nlu.training_data.formats.rasa import RasaReader
+from rasa.shared.nlu.training_data.formats.rasa_yaml import (
+    RasaYAMLWriter,
+    RasaYAMLReader,
+)
+from rasa.shared.nlu.training_data.formats.rasa import RasaWriter
+from rasa.shared.nlu.training_data.training_data import TrainingData
+from rasa.shared.utils.io import write_yaml
+from rasa.shared.nlu.constants import (
+    TEXT,
+    INTENT,
+    INTENT_NAME_KEY,
+    ENTITIES,
+    ENTITY_ATTRIBUTE_TYPE,
+    ENTITY_ATTRIBUTE_START,
+    ENTITY_ATTRIBUTE_END,
+    ENTITY_ATTRIBUTE_VALUE,
+    PREDICTED_CONFIDENCE_KEY,
+)
 
 from .vendors import Vendor
 from nlubridge.datasets import NLUdataset, EntityKeys
+
 
 DEFAULT_INTENT_RASA_CONFIG_PATH = os.path.join(
     pathlib.Path(__file__).parent.absolute(), "config", "rasa_nlu_config.yml"
@@ -55,7 +53,6 @@ class Rasa(Vendor):
 
         :param model_config: filepath to a Rasa config file
         """
-        optional_rasa_import.check()
         self.config = model_config
         self.interpreter = None
 

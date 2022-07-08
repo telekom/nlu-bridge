@@ -5,12 +5,9 @@
 import logging
 import random
 
-from lazy_imports import try_import
-
-with try_import() as optional_spacy_import:
-    import spacy
-    from spacy.pipeline.textcat import DEFAULT_SINGLE_TEXTCAT_MODEL
-    from spacy.training import Example
+import spacy
+from spacy.pipeline.textcat import DEFAULT_SINGLE_TEXTCAT_MODEL
+from spacy.training import Example
 
 from .vendors import Vendor
 
@@ -33,7 +30,6 @@ class SpacyClassifier(Vendor):
         :param language: Language string (default: "en")
         :type language: str
         """
-        optional_spacy_import.check()
         self.nlp = spacy.blank(language)
         if not config:
             config = {

@@ -42,7 +42,6 @@ class TelekomModel(Vendor):
             off)
         :type anomaly_clf_nu: float
         """
-        optional_fuzzywuzzy_import.check()
         self.clf = Model1(
             none_class=OUT_OF_SCOPE_TOKEN, verbose=False, anomaly_clf_nu=anomaly_clf_nu
         )
@@ -68,6 +67,7 @@ class TelekomModel2(Vendor):
 
     def __init__(self):
         """Alternative model custom-built for Telekom."""
+        optional_fuzzywuzzy_import.check()
         self.clf = Model2(none_class=OUT_OF_SCOPE_TOKEN, verbose=True)
 
     def train_intent(self, dataset):  # noqa D102

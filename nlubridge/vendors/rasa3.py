@@ -9,30 +9,27 @@ import tempfile
 import pathlib
 from typing import List, Optional, Union, Tuple
 
-from lazy_imports import try_import
-
-with try_import() as optional_rasa3_import:
-    from rasa.model_training import train_nlu
-    from rasa.core.agent import Agent
-    from rasa.shared.nlu.training_data.training_data import TrainingData
-    from rasa.shared.nlu.training_data.message import Message
-    from rasa.shared.nlu.training_data.formats.rasa_yaml import (
-        RasaYAMLWriter,
-        RasaYAMLReader,
-    )
-    from rasa.shared.nlu.training_data.formats.rasa import RasaWriter, RasaReader
-    from rasa.shared.utils.io import write_yaml
-    from rasa.shared.nlu.constants import (
-        TEXT,
-        INTENT,
-        INTENT_NAME_KEY,
-        ENTITIES,
-        ENTITY_ATTRIBUTE_TYPE,
-        ENTITY_ATTRIBUTE_START,
-        ENTITY_ATTRIBUTE_END,
-        ENTITY_ATTRIBUTE_VALUE,
-        PREDICTED_CONFIDENCE_KEY,
-    )
+from rasa.model_training import train_nlu
+from rasa.core.agent import Agent
+from rasa.shared.nlu.training_data.training_data import TrainingData
+from rasa.shared.nlu.training_data.message import Message
+from rasa.shared.nlu.training_data.formats.rasa_yaml import (
+    RasaYAMLWriter,
+    RasaYAMLReader,
+)
+from rasa.shared.nlu.training_data.formats.rasa import RasaWriter, RasaReader
+from rasa.shared.utils.io import write_yaml
+from rasa.shared.nlu.constants import (
+    TEXT,
+    INTENT,
+    INTENT_NAME_KEY,
+    ENTITIES,
+    ENTITY_ATTRIBUTE_TYPE,
+    ENTITY_ATTRIBUTE_START,
+    ENTITY_ATTRIBUTE_END,
+    ENTITY_ATTRIBUTE_VALUE,
+    PREDICTED_CONFIDENCE_KEY,
+)
 
 from .vendors import Vendor
 from nlubridge.datasets import NLUdataset, EntityKeys
@@ -58,7 +55,6 @@ class Rasa3(Vendor):
 
         :param model_config: filepath to a Rasa config file
         """
-        optional_rasa3_import.check()
         self.config = model_config
         self.agent = None
 

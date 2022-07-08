@@ -11,11 +11,8 @@ import time
 import concurrent.futures
 
 from ratelimit import rate_limited
-from lazy_imports import try_import
-
-with try_import() as optional_luis_import:
-    import requests
-    from requests.compat import urljoin
+import requests
+from requests.compat import urljoin
 
 from ..datasets import OUT_OF_SCOPE_TOKEN
 from .vendors import Vendor
@@ -50,7 +47,6 @@ class LUIS(Vendor):
         version="0.1",
     ):
         """Interface for Microsoft LUIS."""
-        optional_luis_import.check()
         endpoint = endpoint or os.getenv("LUIS_ENDPOINT")
         if endpoint is None:
             ValueError(
