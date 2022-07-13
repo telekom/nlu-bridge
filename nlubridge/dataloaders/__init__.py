@@ -13,9 +13,6 @@ from lazy_imports import LazyImporter
 from ..datasets import NLUdataset, OUT_OF_SCOPE_TOKEN, EntityKeys  # noqa: F401
 
 
-__version__ = "0.2.1dev0"
-
-
 if TYPE_CHECKING:
     from .dataloaders.luis import from_luis  # noqa: F401
     from .dataloaders.watson import from_watson  # noqa: F401
