@@ -6,11 +6,11 @@
 
 import sys
 from typing import TYPE_CHECKING
-from packaging import version
+# from packaging import version
 
 from lazy_imports import LazyImporter
 
-from .datasets import NLUdataset, OUT_OF_SCOPE_TOKEN, EntityKeys  # noqa: F401
+from ..datasets import NLUdataset, OUT_OF_SCOPE_TOKEN, EntityKeys  # noqa: F401
 
 
 __version__ = "0.2.1dev0"
@@ -26,20 +26,26 @@ if TYPE_CHECKING:
 
 else:
     _import_structure = {
-        "dataloaders.luis": ["from_luis"],
-        "dataloaders.watson": ["from_watson"],
-        "dataloaders.huggingface": ["from_huggingface"],
-        "dataloaders.utils": ["from_json", "from_csv"],
+        "luis": ["from_luis"],
+        "watson": ["from_watson"],
+        "huggingface": ["from_huggingface"],
+        "utils": ["from_json", "from_csv"],
     }
     try:
         from rasa import __version__ as rasa_version
     except ModuleNotFoundError:
-        pass
+        # adding the import to _import_structure gives us an error message related to
+        # dependencies being missing rather than not being able to import from here.
+        _import_structure.update({"rasa3": ["from_rasa"]})
     else:
-        if version.parse(rasa_version) < version.parse("3.0.0"):
-            _import_structure.update({".dataloaders.rasa": ["from_rasa"]})
+        # although we know now that Rasa is installed, we still use LazyImporter to
+        # import here in case we will have other rasa-specific dependencies in the
+        # future
+        #if version.parse(rasa_version) < version.parse("3.0.0"):
+        if int(rasa_version.split(".")[0]) < 3:
+            _import_structure.update({"rasa": ["from_rasa"]})
         else:
-            _import_structure.update({".dataloaders.rasa3": ["from_rasa"]})
+            _import_structure.update({"rasa3": ["from_rasa"]})
 
     sys.modules[__name__] = LazyImporter(
         __name__,

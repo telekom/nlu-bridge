@@ -17,7 +17,6 @@ from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 
 from ..datasets import OUT_OF_SCOPE_TOKEN
 from .vendors import Vendor
-from nlubridge.datasets import from_csv, NLUdataset
 
 
 logger = logging.getLogger(__name__)
@@ -387,8 +386,3 @@ class Watson(Vendor):
             intent = OUT_OF_SCOPE_TOKEN
             prob = 0
         return intent, prob
-
-
-def load_data(filepath) -> NLUdataset:
-    """Load data from Watson format as NLUdataset."""
-    return from_csv(filepath, text_col=0, intent_col=1)

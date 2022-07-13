@@ -7,7 +7,7 @@ import datasets
 from nlubridge.datasets import NLUdataset
 
 
-def load_data(
+def from_huggingface(
     hugging_ds,
     has_intents=True,
     has_entities=False,
