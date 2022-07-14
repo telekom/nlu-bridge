@@ -64,8 +64,8 @@ setup(
         "telekom": ["fuzzywuzzy", "python-Levenshtein"],
         "fasttext": ["fasttext"],
         "luis": ["requests", "ratelimit"],
-        "rasa": ["rasa==2"],
-        "rasa3": ["rasa==3"],
+        "rasa": ["rasa~=2.0"],
+        "rasa3": ["rasa~=3.0"],
         "spacy": ["spacy==3.1.3"],
         "huggingface": ["datasets"],
         "develop": [
