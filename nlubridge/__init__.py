@@ -15,7 +15,7 @@ from lazy_imports import LazyImporter
 __version__ = "0.2.1dev0"
 
 
-def get_correct_rasa_import():
+def _get_correct_rasa_import():
     try:
         from rasa import __version__ as rasa_version
     except ModuleNotFoundError:
@@ -50,7 +50,7 @@ else:
         "dataloaders.utils": ["from_json", "from_csv"],
         "datasets": ["NLUdataset", "OUT_OF_SCOPE_TOKEN", "EntityKeys"],
     }
-    # _import_structure.update(get_correct_rasa_import())
+    # _import_structure.update(_get_correct_rasa_import())
     _import_structure.update({"dataloaders.rasa3": ["from_rasa", "to_rasa"]})
 
     sys.modules[__name__] = LazyImporter(
