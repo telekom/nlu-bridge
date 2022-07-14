@@ -3,17 +3,16 @@
 # which is available at https://opensource.org/licenses/MIT
 
 from __future__ import annotations
-from typing import Union
 import pathlib
+from typing import Union
 
+from rasa.shared.nlu.training_data.training_data import TrainingData
 from rasa.shared.nlu.training_data.message import Message
-from rasa.shared.nlu.training_data.formats.rasa import RasaReader
 from rasa.shared.nlu.training_data.formats.rasa_yaml import (
     RasaYAMLWriter,
     RasaYAMLReader,
 )
-from rasa.shared.nlu.training_data.formats.rasa import RasaWriter
-from rasa.shared.nlu.training_data.training_data import TrainingData
+from rasa.shared.nlu.training_data.formats.rasa import RasaWriter, RasaReader
 from rasa.shared.utils.io import write_yaml
 from rasa.shared.nlu.constants import (
     TEXT,
