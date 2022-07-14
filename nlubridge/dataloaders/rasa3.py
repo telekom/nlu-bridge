@@ -69,7 +69,7 @@ def from_rasa(filepath: Union[str, pathlib.Path], format: str = "yml") -> NLUdat
     return NLUdataset(texts, intents, entities)
 
 
-def write_data(
+def to_rasa(
     dataset: NLUdataset, filepath: Union[str, pathlib.Path], format: str = "yml"
 ):
     """
@@ -79,6 +79,7 @@ def write_data(
     :param filepath: Path of the output yml file
     :param format: Output format, 'yml' (default) or 'json'
     """
+    # TODO: This method should share code with the Rasa._convert() method
     messages = []
     for text, intent, entities in dataset:
         formatted_entities = []

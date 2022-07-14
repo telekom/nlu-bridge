@@ -11,28 +11,19 @@ from typing import List, Optional, Union, Tuple
 
 from rasa.model_training import train_nlu
 from rasa.core.agent import Agent
-from rasa.shared.nlu.training_data.training_data import TrainingData
-from rasa.shared.nlu.training_data.message import Message
-from rasa.shared.nlu.training_data.formats.rasa_yaml import (
-    RasaYAMLWriter,
-    RasaYAMLReader,
-)
-from rasa.shared.nlu.training_data.formats.rasa import RasaWriter, RasaReader
-from rasa.shared.utils.io import write_yaml
 from rasa.shared.nlu.constants import (
-    TEXT,
     INTENT,
     INTENT_NAME_KEY,
     ENTITIES,
     ENTITY_ATTRIBUTE_TYPE,
     ENTITY_ATTRIBUTE_START,
     ENTITY_ATTRIBUTE_END,
-    ENTITY_ATTRIBUTE_VALUE,
     PREDICTED_CONFIDENCE_KEY,
 )
 
 from .vendors import Vendor
-from nlubridge.datasets import NLUdataset, EntityKeys
+from nlubridge import NLUdataset, EntityKeys, to_rasa
+
 
 logger = logging.getLogger(__name__)
 
@@ -70,7 +61,7 @@ class Rasa3(Vendor):
             nlu_yml_file = os.path.join(
                 pathlib.Path(tmpdirname), "nlu.yml"
             )  # output path for temporary nlu.yml
-            write_data(dataset, nlu_yml_file)
+            to_rasa(dataset, nlu_yml_file)
             logger.info(f"Start training (using {self.config!r})...")
             model_archive = train_nlu(self.config, nlu_yml_file, tmpdirname)
             logger.info("Training completed!")
