@@ -40,6 +40,26 @@ def test_from_rasa_json():
     assert ds.texts[4][idx1:idx2] == value
 
 
+def test_from_rasa3_yml():
+    from nlubridge import from_rasa
+
+    ds = from_rasa(os.path.join(FIXTURE_PATH, "rasa3_nlu.yml"))
+    assert len(ds) == 5
+    assert ds.texts[1] == "testing umläuts"
+    assert ds.intents[0] == "restaurant_search"
+    assert ds.intents[4] == "affirm"
+    assert ds.entities[0] == []
+    assert ds.entities[1] == []
+    assert len(ds.entities[3]) == 2
+    # make sure the custom "role" key is in dataset
+    assert ds.entities[3][1].get("role", False)
+    # check assumptions about indexes hold
+    idx1 = ds.entities[3][1]["start"]
+    idx2 = ds.entities[3][1]["end"]
+    value = ds.entities[3][1]["value"]
+    assert ds.texts[3][idx1:idx2] == value
+
+
 def test_from_luis():
     from nlubridge import from_luis
 
