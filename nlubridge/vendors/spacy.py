@@ -13,16 +13,12 @@ from .vendors import Vendor
 
 
 logger = logging.getLogger(__name__)
-config = {
-    "threshold": 0.5,
-    "model": DEFAULT_SINGLE_TEXTCAT_MODEL,
-}
 
 
 class SpacyClassifier(Vendor):
     alias = "spacy"
 
-    def __init__(self, n_iter=10, config=config, language="en"):
+    def __init__(self, n_iter=10, config=None, language="en"):
         """
         Interface for the Spacy intent classifier.
 
@@ -35,6 +31,11 @@ class SpacyClassifier(Vendor):
         :type language: str
         """
         self.nlp = spacy.blank(language)
+        if not config:
+            config = {
+                "threshold": 0.5,
+                "model": DEFAULT_SINGLE_TEXTCAT_MODEL,
+            }
         self.textcat = self.nlp.add_pipe("textcat", config=config)
         self.n_iter = n_iter
 

@@ -11,15 +11,11 @@ import time
 import concurrent.futures
 
 from ratelimit import rate_limited
-from lazy_imports import try_import
-
-with try_import() as optional_luis_import:
-    import requests
-    from requests.compat import urljoin
+import requests
+from requests.compat import urljoin
 
 from ..datasets import OUT_OF_SCOPE_TOKEN
 from .vendors import Vendor
-from nlubridge.datasets import from_json, NLUdataset
 
 
 sys.path.append("../..")
@@ -50,7 +46,6 @@ class LUIS(Vendor):
         version="0.1",
     ):
         """Interface for Microsoft LUIS."""
-        optional_luis_import.check()
         endpoint = endpoint or os.getenv("LUIS_ENDPOINT")
         if endpoint is None:
             ValueError(
@@ -356,25 +351,3 @@ class LUIS(Vendor):
             intents, probs = list(zip(*intents))
             return intents, probs
         return intents
-
-
-def load_data(filepath) -> NLUdataset:
-    """
-    Load data in LUIS format as NLUdataset.
-
-    :param filepath: file path to the LUIS-formatted data.
-    :type filepath: str
-    """
-    with open(filepath, "r") as f:
-        examples = json.load(f)
-    dataset = from_json(
-        json.dumps(examples, ensure_ascii=False),
-        text_key="text",
-        intent_key="intentName",
-        entities_key="entityLabels",
-        entity_type_key="entityName",
-        entity_start_key="startCharIndex",
-        entity_end_key="endCharIndex",
-        end_index_add_1=True,
-    )
-    return dataset

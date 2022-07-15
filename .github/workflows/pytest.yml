@@ -55,4 +55,6 @@ jobs:
         pip install pytest pytest-mock
 
     - name: Test Rasa 3
-      run: pytest tests/test_vendors.py::test_rasa
+      run: |
+        pytest tests/test_vendors.py::test_rasa
+        pytest tests/test_dataset_loaders.py

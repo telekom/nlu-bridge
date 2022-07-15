@@ -10,17 +10,13 @@ import json
 from concurrent.futures import ThreadPoolExecutor
 import logging
 
-from lazy_imports import try_import
-
-with try_import() as optional_watson_import:
-    import requests
-    from tqdm import tqdm
-    from ibm_watson import AssistantV1
-    from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
+import requests
+from tqdm import tqdm
+from ibm_watson import AssistantV1
+from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 
 from ..datasets import OUT_OF_SCOPE_TOKEN
 from .vendors import Vendor
-from nlubridge.datasets import from_csv, NLUdataset
 
 
 logger = logging.getLogger(__name__)
@@ -69,7 +65,6 @@ class Watson(Vendor):
         :param use_bulk: if True (default) uses bulk_classify method
         :type use_bulk: bool
         """
-        optional_watson_import.check()
         api_key = api_key or os.getenv("WATSON_API_KEY")
         if api_key is None:
             ValueError(
@@ -391,8 +386,3 @@ class Watson(Vendor):
             intent = OUT_OF_SCOPE_TOKEN
             prob = 0
         return intent, prob
-
-
-def load_data(filepath) -> NLUdataset:
-    """Load data from Watson format as NLUdataset."""
-    return from_csv(filepath, text_col=0, intent_col=1)

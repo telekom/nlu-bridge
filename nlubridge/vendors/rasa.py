@@ -6,34 +6,25 @@ from typing import List, Optional, Union, Tuple
 import os
 import pathlib
 
-from lazy_imports import try_import
-
-with try_import() as optional_rasa_import:
-    from rasa.nlu import config
-    from rasa.nlu.model import Trainer
-    from rasa.shared.nlu.training_data.message import Message
-    from rasa.shared.nlu.training_data.formats.rasa import RasaReader
-    from rasa.shared.nlu.training_data.formats.rasa_yaml import (
-        RasaYAMLWriter,
-        RasaYAMLReader,
-    )
-    from rasa.shared.nlu.training_data.formats.rasa import RasaWriter
-    from rasa.shared.nlu.training_data.training_data import TrainingData
-    from rasa.shared.utils.io import write_yaml
-    from rasa.shared.nlu.constants import (
-        TEXT,
-        INTENT,
-        INTENT_NAME_KEY,
-        ENTITIES,
-        ENTITY_ATTRIBUTE_TYPE,
-        ENTITY_ATTRIBUTE_START,
-        ENTITY_ATTRIBUTE_END,
-        ENTITY_ATTRIBUTE_VALUE,
-        PREDICTED_CONFIDENCE_KEY,
-    )
+from rasa.nlu import config
+from rasa.nlu.model import Trainer
+from rasa.shared.nlu.training_data.formats.rasa import RasaReader
+from rasa.shared.nlu.training_data.training_data import TrainingData
+from rasa.shared.nlu.constants import (
+    TEXT,
+    INTENT,
+    INTENT_NAME_KEY,
+    ENTITIES,
+    ENTITY_ATTRIBUTE_TYPE,
+    ENTITY_ATTRIBUTE_START,
+    ENTITY_ATTRIBUTE_END,
+    ENTITY_ATTRIBUTE_VALUE,
+    PREDICTED_CONFIDENCE_KEY,
+)
 
 from .vendors import Vendor
 from nlubridge.datasets import NLUdataset, EntityKeys
+
 
 DEFAULT_INTENT_RASA_CONFIG_PATH = os.path.join(
     pathlib.Path(__file__).parent.absolute(), "config", "rasa_nlu_config.yml"
@@ -55,7 +46,6 @@ class Rasa(Vendor):
 
         :param model_config: filepath to a Rasa config file
         """
-        optional_rasa_import.check()
         self.config = model_config
         self.interpreter = None
 
@@ -189,93 +179,3 @@ class Rasa(Vendor):
         }
 
         return RasaReader().read_from_json(training_data)
-
-
-def load_data(filepath: Union[str, pathlib.Path], format: str = "yml") -> NLUdataset:
-    """
-    Load data stored in Rasa's yml- resp. json-format as NLUdataset.
-
-    :param filepath: file path to read data from (Rasa specific yml- or json-format)
-    :param format: Input format, 'yml' (default) or 'json'
-    :return: The loaded dataset as NLUdataset object
-    """
-    if format == "yml":
-        trainingdata = RasaYAMLReader().read(filepath)
-    elif format == "json":
-        trainingdata = RasaReader().read(filename=filepath)
-    else:
-        raise ValueError(f"Unknown format {format!r}")
-
-    texts = []
-    intents = []
-    entities = []
-    for message in trainingdata.training_examples:
-        texts.append(message.get(TEXT))
-        intents.append(message.get(INTENT))
-        es = []
-        for e in message.get(ENTITIES, []):
-            entity = {
-                EntityKeys.TYPE: e.get(ENTITY_ATTRIBUTE_TYPE),
-                EntityKeys.START: e.get(ENTITY_ATTRIBUTE_START),
-                EntityKeys.END: e.get(ENTITY_ATTRIBUTE_END),
-            }
-            # Add any custom keys defined in the source structure
-            for key in e.keys():
-                if key not in [
-                    ENTITY_ATTRIBUTE_TYPE,
-                    ENTITY_ATTRIBUTE_START,
-                    ENTITY_ATTRIBUTE_END,
-                ]:
-                    entity[key] = e[key]
-            es.append(entity)
-        entities.append(es)
-
-    return NLUdataset(texts, intents, entities)
-
-
-def write_data(
-    dataset: NLUdataset, filepath: Union[str, pathlib.Path], format: str = "yml"
-):
-    """
-    Write dataset in Rasa's yml- or json-format.
-
-    :param dataset: Dataset to be converted
-    :param filepath: Path of the output yml file
-    :param format: Output format, 'yml' (default) or 'json'
-    """
-    messages = []
-    for text, intent, entities in dataset:
-        formatted_entities = []
-        for e in entities:
-            formatted_entity = {
-                ENTITY_ATTRIBUTE_TYPE: e[EntityKeys.TYPE],
-                ENTITY_ATTRIBUTE_START: e[EntityKeys.START],
-                ENTITY_ATTRIBUTE_END: e[EntityKeys.END],
-                # Please note: This sets just the default 'value' (if the input dataset
-                # provides an explicit 'value' parameter, it will be adapted accordingly
-                # in the section for custom keys below)
-                ENTITY_ATTRIBUTE_VALUE: text[e[EntityKeys.START] : e[EntityKeys.END]],
-            }
-            # Add any custom keys defined in the source structure
-            for key in e.keys():
-                if key not in [EntityKeys.TYPE, EntityKeys.START, EntityKeys.END]:
-                    formatted_entity[key] = e[key]
-            formatted_entities.append(formatted_entity)
-        example = {
-            TEXT: text,
-            INTENT: intent if intent is not None else "default_intent",
-            ENTITIES: formatted_entities,
-        }
-        message = Message(data=example)
-        messages.append(message)
-
-    training_data = TrainingData(training_examples=messages)
-    if format == "yml":
-        mry = RasaYAMLWriter()
-        md = mry.training_data_to_dict(training_data)
-        write_yaml(md, filepath)
-    elif format == "json":
-        mrj = RasaWriter()
-        mrj.dump(filepath, training_data)
-    else:
-        raise ValueError(f"Unsupported format {format!r}")

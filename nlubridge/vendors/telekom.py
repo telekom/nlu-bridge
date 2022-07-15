@@ -11,8 +11,12 @@ from sklearn.linear_model import SGDClassifier
 from sklearn.svm import OneClassSVM
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import GridSearchCV
-from fuzzywuzzy import fuzz
 import numpy as np
+
+from lazy_imports import try_import
+
+with try_import() as optional_fuzzywuzzy_import:
+    from fuzzywuzzy import fuzz
 
 from .vendors import Vendor
 from ..datasets import OUT_OF_SCOPE_TOKEN
@@ -63,6 +67,7 @@ class TelekomModel2(Vendor):
 
     def __init__(self):
         """Alternative model custom-built for Telekom."""
+        optional_fuzzywuzzy_import.check()
         self.clf = Model2(none_class=OUT_OF_SCOPE_TOKEN, verbose=True)
 
     def train_intent(self, dataset):  # noqa D102
