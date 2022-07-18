@@ -8,7 +8,7 @@ import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.metrics import accuracy_score, classification_report, f1_score
 
-from ..datasets import OUT_OF_SCOPE_TOKEN, NLUdataset
+from ..datasets import OUT_OF_SCOPE_TOKEN, NluDataset
 
 
 class Vendor(BaseEstimator, ClassifierMixin):
@@ -25,10 +25,10 @@ class Vendor(BaseEstimator, ClassifierMixin):
         texts = data.texts
         intents = data.intents
         random.shuffle(intents)
-        fake_data = NLUdataset(texts, intents, entities=[])
+        fake_data = NluDataset(texts, intents, entities=[])
         self.train_intent(fake_data)
 
-    def train(self, dataset: NLUdataset):
+    def train(self, dataset: NluDataset):
         """
         Train intent and/or entity classification.
 
@@ -36,7 +36,7 @@ class Vendor(BaseEstimator, ClassifierMixin):
         """
         raise NotImplementedError
 
-    def test(self, dataset: NLUdataset) -> NLUdataset:
+    def test(self, dataset: NluDataset) -> NluDataset:
         """
         Test a given dataset and obtain classification results as NLUdataset.
 
@@ -99,7 +99,7 @@ class Vendor(BaseEstimator, ClassifierMixin):
         """
         texts = X
         intents = y
-        ds = NLUdataset(texts, intents)
+        ds = NluDataset(texts, intents)
         self.train_intent(ds)
         return self
 
@@ -112,7 +112,7 @@ class Vendor(BaseEstimator, ClassifierMixin):
         """
         texts = X
         intents = y
-        ds = NLUdataset(texts, intents)
+        ds = NluDataset(texts, intents)
         y = self.test_intent(ds)
         return y
 
@@ -120,5 +120,5 @@ class Vendor(BaseEstimator, ClassifierMixin):
         """scikit-learn compatibility."""
         texts = X
         intents = y
-        ds = NLUdataset(texts, intents)
+        ds = NluDataset(texts, intents)
         return self.f1_score(ds, average=average)

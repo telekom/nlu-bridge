@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from .spacy import SpacyClassifier  # noqa: F401
     from .telekom import TelekomModel  # noqa: F401
     from .fasttext import FastText  # noqa: F401
-    from .rasa import Rasa  # noqa: F401
+    from .rasa2 import Rasa2  # noqa: F401
     from .rasa3 import Rasa3  # noqa: F401
 else:
     _import_structure = {
@@ -28,7 +28,7 @@ else:
         "spacy": ["SpacyClassifier"],
         "telekom": ["TelekomModel"],
         "fasttext": ["FastText"],
-        "rasa": ["Rasa"],
+        "rasa2": ["Rasa2"],
         "rasa3": ["Rasa3"],
     }
     sys.modules[__name__] = LazyImporter(

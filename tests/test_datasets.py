@@ -3,10 +3,11 @@ import os
 import copy
 
 import pytest
+from sklearn.model_selection import train_test_split, KFold
 
 from testing_data import SyntheticDataset, ToyDataset
-from nlubridge import OUT_OF_SCOPE_TOKEN, NLUdataset
-from sklearn.model_selection import train_test_split, KFold
+from nlubridge import OUT_OF_SCOPE_TOKEN, NluDataset, concat, from_json
+
 
 FIXTURE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fixtures")
 
@@ -28,7 +29,7 @@ entities = [
 
 
 def test_init_ds_with_texts_intents_entities():
-    ds = NLUdataset(texts, intents, entities)
+    ds = NluDataset(texts, intents, entities)
     assert ds.texts == texts
     assert ds.intents == intents
     assert ds.unique_intents == ["BookFlight", "GetWeather"]
@@ -39,14 +40,14 @@ def test_init_ds_with_texts_intents_entities():
 
 
 def test_crop_intent_names():
-    ds = NLUdataset(texts, intents, entities, max_intent_length=4)
+    ds = NluDataset(texts, intents, entities, max_intent_length=4)
     assert ds.texts == texts
     assert ds.intents == ["Book", "GetW", "GetW"]
     assert ds.unique_intents == ["Book", "GetW"]
     assert ds.n_intents == 2
     # check a warning is thrown when cropping makes intent names ambiguous
     with pytest.warns(UserWarning):
-        ds2 = NLUdataset(
+        ds2 = NluDataset(
             texts + ["bla"],
             intents + ["GetWhatever"],
             entities + [[]],
@@ -56,15 +57,15 @@ def test_crop_intent_names():
 
 
 def test_out_of_scope():
-    ds1 = NLUdataset(texts, intents, entities)
-    ds2 = NLUdataset(texts, intents, entities, out_of_scope=True)
+    ds1 = NluDataset(texts, intents, entities)
+    ds2 = NluDataset(texts, intents, entities, out_of_scope=True)
 
     assert ds2.n_intents == ds1.n_intents + 1
     assert OUT_OF_SCOPE_TOKEN in ds2.unique_intents
 
 
 def test_init_ds_without_intents_and_entities():
-    ds = NLUdataset(texts)
+    ds = NluDataset(texts)
     assert len(ds.texts) == 3
     assert len(ds.intents) == 3
     assert ds.unique_intents is None  # NOTE: This should be [] for consistency
@@ -90,7 +91,7 @@ def test_ds_unique():
 
 
 def test_ds_slicing():
-    ds = NLUdataset(texts, intents, entities)
+    ds = NluDataset(texts, intents, entities)
     assert len(ds[:2]) == 2
 
 
@@ -98,7 +99,7 @@ def test_ds_slicing_when_created_with_just_texts():
     # Ensure that when we pass a list of Nones for intents (during
     # construction of returned dataset in slicing) the returned
     # dataset is still valid
-    ds = NLUdataset(texts)
+    ds = NluDataset(texts)
     sliced = ds[:2]
     assert len(sliced.texts) == 2
     assert len(sliced.intents) == 2
@@ -109,15 +110,56 @@ def test_ds_slicing_when_created_with_just_texts():
 def test_ds_from_joined():
     ds1 = ToyDataset()
     ds2 = ToyDataset()
-    joined = NLUdataset.from_joined(ds1, ds2)
+    with pytest.warns(DeprecationWarning):
+        joined = NluDataset.from_joined(ds1, ds2)
     assert joined.n_samples == ds1.n_samples + ds2.n_samples
+
+
+def test_ds_join():
+    ds1 = ToyDataset()
+    ds2 = ToyDataset()
+    ds1_samples = ds1.n_samples
+    ds2_samples = ds2.n_samples
+    joined = ds1.join(ds2)
+    assert joined.n_samples == ds1_samples + ds2_samples
+    # assert that the original dataset was not changed
+    assert ds1_samples == ds1.n_samples
+    joined2 = ds2.join(ds1)
+    assert joined2.n_samples == ds1.n_samples + ds2.n_samples
+
+
+def test_nlubridge_concat():
+    ds1 = ToyDataset()
+    ds2 = ToyDataset()
+    ds3 = ToyDataset()
+    ds1_samples = ds1.n_samples
+    ds2_samples = ds2.n_samples
+    ds3_samples = ds3.n_samples
+    joined = concat([ds1, ds2, ds3])
+    assert joined.n_samples == ds1_samples + ds2_samples + ds3_samples
+    assert ds1_samples == ds1.n_samples
+    assert ds2_samples == ds2.n_samples
+    assert ds3_samples == ds3.n_samples
 
 
 def test_to_records():
     ds = ToyDataset()
     records = ds.to_records()
     assert len(records) == ds.n_samples
+
+
+def test_to_json():
+    ds = ToyDataset()
     assert isinstance(ds.to_json(), str)
+
+
+def test_to_json_from_json():
+    ds = ToyDataset()
+    json_string = ds.to_json()
+    ds2 = from_json(json_string)
+    assert ds.texts == ds2.texts
+    assert ds.intents == ds2.intents
+    assert ds.entities == ds2.entities
 
 
 def test_filter_by_intent_name():

@@ -4,7 +4,7 @@
 
 import datasets
 
-from nlubridge.datasets import NLUdataset
+from nlubridge.datasets import NluDataset
 
 
 def from_huggingface(
@@ -13,7 +13,7 @@ def from_huggingface(
     has_entities=False,
     toks_col="tokens",
     iob_col="ner_tags",
-) -> NLUdataset:
+) -> NluDataset:
     """
     Convert a Huggingface dataset to an NLUdataset.
 
@@ -106,7 +106,7 @@ def from_huggingface(
         except KeyError:
             raise ValueError("hugging_ds must have a 'text' feature")
 
-    ds = NLUdataset(texts, intents, entities)
+    ds = NluDataset(texts, intents, entities)
 
     return ds
 

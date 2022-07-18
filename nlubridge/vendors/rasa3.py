@@ -22,7 +22,7 @@ from rasa.shared.nlu.constants import (
 )
 
 from .vendors import Vendor
-from nlubridge import NLUdataset, EntityKeys, to_rasa
+from nlubridge import NluDataset, EntityKeys, to_rasa
 
 
 logger = logging.getLogger(__name__)
@@ -49,7 +49,7 @@ class Rasa3(Vendor):
         self.config = model_config
         self.agent = None
 
-    def train(self, dataset: NLUdataset) -> Rasa3:
+    def train(self, dataset: NluDataset) -> Rasa3:
         """
         Train intent and/or entity classification.
 
@@ -71,7 +71,7 @@ class Rasa3(Vendor):
             logger.info("Model loaded!")
         return self
 
-    def train_intent(self, dataset: NLUdataset) -> Rasa3:
+    def train_intent(self, dataset: NluDataset) -> Rasa3:
         """
         Train intent classification.
 
@@ -83,7 +83,7 @@ class Rasa3(Vendor):
         """
         return self.train(dataset)
 
-    def test(self, dataset: NLUdataset) -> NLUdataset:
+    def test(self, dataset: NluDataset) -> NluDataset:
         """
         Test a given dataset.
 
@@ -119,12 +119,12 @@ class Rasa3(Vendor):
             probs.append(prob)
             entities_list.append(entities)
 
-        res = NLUdataset(dataset.texts, intents, entities_list)
+        res = NluDataset(dataset.texts, intents, entities_list)
         res.probs = probs
         return res
 
     def test_intent(
-        self, dataset: NLUdataset, return_probs: bool = False
+        self, dataset: NluDataset, return_probs: bool = False
     ) -> Union[List[str], Tuple[List[str], List[float]]]:
         """
         Test a given dataset and obtain just the intent classification results.

@@ -6,10 +6,10 @@ import json
 import csv
 import collections
 
-from nlubridge.datasets import NLUdataset, EntityKeys
+from nlubridge.datasets import NluDataset, EntityKeys
 
 
-def from_csv(filepath, text_col, intent_col) -> NLUdataset:
+def from_csv(filepath, text_col, intent_col) -> NluDataset:
     """Load dataset (only text and intents) from a csv file."""
     columns = collections.defaultdict(list)
 
@@ -27,7 +27,7 @@ def from_csv(filepath, text_col, intent_col) -> NLUdataset:
         key = list(columns.keys())[intent_col]
         columns[intent_col] = [key, *columns[key]]
 
-    ds = NLUdataset(columns[text_col], columns[intent_col])
+    ds = NluDataset(columns[text_col], columns[intent_col])
     return ds
 
 
@@ -75,5 +75,5 @@ def from_json(
             end_index_add_1,
         )
         entities.append(example_entities)
-    dataset = NLUdataset(texts, intents, entities)
+    dataset = NluDataset(texts, intents, entities)
     return dataset

@@ -58,9 +58,9 @@ import os
 import pandas as pd
 
 from nlubridge.vendors import TfidfIntentClassifier
-from nlubridge import NLUdataset 
+from nlubridge import NluDataset
 
-dataset = NLUdataset(texts, intents)
+dataset = NluDataset(texts, intents)
 dataset = dataset.shuffle()
 
 classifier = TfidfIntentClassifier()

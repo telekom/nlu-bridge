@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 
-from nlubridge import NLUdataset
+from nlubridge import NluDataset
 from test_vendors import (
     assert_preds_are_intents,
     assert_return_probs,
@@ -33,7 +33,7 @@ def test_watson(train_data):
     # TODO: fix vendor for test: assert_oos_prediction()
 
     # test test_intent() (non-bulk)
-    test_ds = NLUdataset(["Ich habe kein DSL und telefon"])
+    test_ds = NluDataset(["Ich habe kein DSL und telefon"])
     watson.set_bulk(False)
     assert watson.use_bulk is False
     preds = watson.test_intent(test_ds)

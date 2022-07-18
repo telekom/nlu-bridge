@@ -1,7 +1,7 @@
 from packaging import version
 
 from nlubridge.datasets import EntityKeys
-from nlubridge import NLUdataset
+from nlubridge import NluDataset
 from test_datasets import texts as sample_texts
 from test_datasets import intents as sample_intents
 from test_datasets import entities as sample_entities
@@ -13,7 +13,7 @@ from test_datasets import entities as sample_entities
 
 
 def assert_preds_are_intents(vendor, unique_intents):
-    test_ds = NLUdataset(["Ich habe kein DSL und telefon"])
+    test_ds = NluDataset(["Ich habe kein DSL und telefon"])
     preds = vendor.test_intent(test_ds)
     assert isinstance(preds, list)
     assert len(preds) == 1
@@ -21,7 +21,7 @@ def assert_preds_are_intents(vendor, unique_intents):
 
 
 def assert_return_probs(vendor, unique_intents):
-    test_ds = NLUdataset(["Ich habe kein DSL und telefon"])
+    test_ds = NluDataset(["Ich habe kein DSL und telefon"])
     preds, probs = vendor.test_intent(test_ds, return_probs=True)
     assert preds[0] in unique_intents
     assert isinstance(probs[0], float) or (probs[0] == 1)
@@ -60,9 +60,9 @@ def test_rasa(train_data):
     from rasa import __version__ as rasa_version
 
     if version.parse(rasa_version) < version.parse("3.0.0"):
-        from nlubridge.vendors.rasa import Rasa
+        from nlubridge.vendors.rasa2 import Rasa2
 
-        rasa = Rasa()
+        rasa = Rasa2()
     else:
         from nlubridge.vendors.rasa3 import Rasa3
 
@@ -75,13 +75,13 @@ def test_rasa(train_data):
     assert_multiple_utterances_predicted(rasa, train_data)
 
     # test intent + entity classification
-    train_ds = NLUdataset(sample_texts, sample_intents, sample_entities)
+    train_ds = NluDataset(sample_texts, sample_intents, sample_entities)
     rasa.train(train_ds)
-    test_ds = NLUdataset(
+    test_ds = NluDataset(
         ["I want a flight from Frankfurt to Berlin", "How is the weather in Bonn?"]
     )
     preds = rasa.test(test_ds)
-    assert isinstance(preds, NLUdataset)
+    assert isinstance(preds, NluDataset)
     assert len(preds) == 2
     for pred_text, pred_intent, pred_entities in preds:
         assert pred_intent in train_ds.unique_intents

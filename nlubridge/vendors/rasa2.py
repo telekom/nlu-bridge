@@ -23,7 +23,7 @@ from rasa.shared.nlu.constants import (
 )
 
 from .vendors import Vendor
-from nlubridge.datasets import NLUdataset, EntityKeys
+from nlubridge.datasets import NluDataset, EntityKeys
 
 
 DEFAULT_INTENT_RASA_CONFIG_PATH = os.path.join(
@@ -32,7 +32,7 @@ DEFAULT_INTENT_RASA_CONFIG_PATH = os.path.join(
 ENTITY_KEY_VALUE = "value"  # Rasa provides an explicit value parameter for its entities
 
 
-class Rasa(Vendor):
+class Rasa2(Vendor):
     alias = "rasa"
 
     def __init__(self, model_config: Optional[str] = None):
@@ -49,7 +49,7 @@ class Rasa(Vendor):
         self.config = model_config
         self.interpreter = None
 
-    def train(self, dataset: NLUdataset) -> Rasa:
+    def train(self, dataset: NluDataset) -> Rasa2:
         """
         Train intent and/or entity classification.
 
@@ -62,7 +62,7 @@ class Rasa(Vendor):
         self.interpreter = trainer.train(training_data)
         return self
 
-    def train_intent(self, dataset: NLUdataset) -> Rasa:
+    def train_intent(self, dataset: NluDataset) -> Rasa2:
         """
         Train intent classification.
 
@@ -74,7 +74,7 @@ class Rasa(Vendor):
         """
         return self.train(dataset)
 
-    def test(self, dataset: NLUdataset) -> NLUdataset:
+    def test(self, dataset: NluDataset) -> NluDataset:
         """
         Test a given dataset.
 
@@ -106,12 +106,12 @@ class Rasa(Vendor):
             probs.append(prob)
             entities_list.append(entities)
 
-        res = NLUdataset(dataset.texts, intents, entities_list)
+        res = NluDataset(dataset.texts, intents, entities_list)
         res.probs = probs
         return res
 
     def test_intent(
-        self, dataset: NLUdataset, return_probs: bool = False
+        self, dataset: NluDataset, return_probs: bool = False
     ) -> Union[List[str], Tuple[List[str], List[float]]]:
         """
         Test a given dataset and obtain just the intent classification results.
@@ -136,7 +136,7 @@ class Rasa(Vendor):
         return intents
 
     @staticmethod
-    def _convert(dataset: NLUdataset) -> TrainingData:
+    def _convert(dataset: NluDataset) -> TrainingData:
         """
         Convert a NLUdataset to a Rasa TrainingData object.
 

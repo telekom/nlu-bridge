@@ -1,9 +1,9 @@
 import uuid
 
-from nlubridge.datasets import NLUdataset
+from nlubridge.datasets import NluDataset
 
 
-class ToyDataset(NLUdataset):
+class ToyDataset(NluDataset):
     def __init__(self, **kw_args):
         """Create a NLUdataset with two samples and intent and entity annotations."""
         texts = [
@@ -21,7 +21,7 @@ class ToyDataset(NLUdataset):
         super().__init__(texts, intents, entities, **kw_args)
 
 
-class SyntheticDataset(NLUdataset):
+class SyntheticDataset(NluDataset):
     def __init__(self, n_samples, intents, **kw_args):
         """
         Create an NLUdataset with n_samples samples.
@@ -35,7 +35,7 @@ class SyntheticDataset(NLUdataset):
         super().__init__(texts, intents, None, **kw_args)
 
 
-class TrainingDataset(NLUdataset):
+class TrainingDataset(NluDataset):
     def __init__(self):
         """Create a NLUdataset for testing with two intents and no entities."""
         help = [

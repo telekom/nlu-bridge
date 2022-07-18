@@ -24,10 +24,10 @@ from rasa.shared.nlu.constants import (
     ENTITY_ATTRIBUTE_VALUE,
 )
 
-from nlubridge.datasets import NLUdataset, EntityKeys
+from nlubridge.datasets import NluDataset, EntityKeys
 
 
-def from_rasa(filepath: Union[str, pathlib.Path], format: str = "yml") -> NLUdataset:
+def from_rasa(filepath: Union[str, pathlib.Path], format: str = "yml") -> NluDataset:
     """
     Load data stored in Rasa's yml- resp. json-format as NLUdataset.
 
@@ -66,11 +66,11 @@ def from_rasa(filepath: Union[str, pathlib.Path], format: str = "yml") -> NLUdat
             es.append(entity)
         entities.append(es)
 
-    return NLUdataset(texts, intents, entities)
+    return NluDataset(texts, intents, entities)
 
 
 def to_rasa(
-    dataset: NLUdataset, filepath: Union[str, pathlib.Path], format: str = "yml"
+    dataset: NluDataset, filepath: Union[str, pathlib.Path], format: str = "yml"
 ):
     """
     Write dataset in Rasa's yml- or json-format.

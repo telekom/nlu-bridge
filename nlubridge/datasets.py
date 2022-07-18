@@ -27,7 +27,7 @@ class EntityKeys:
     END = "end"
 
 
-class NLUdataset:
+class NluDataset:
     def __init__(
         self,
         texts: List[str],
@@ -118,13 +118,13 @@ class NLUdataset:
             texts = self.texts[key]
             intents = self.intents[key]
             entities = self.entities[key]
-            return NLUdataset(texts, intents, entities)
+            return NluDataset(texts, intents, entities)
 
         elif isinstance(key, collections.abc.Sequence) or isinstance(key, np.ndarray):
             texts = [self.texts[each] for each in key]
             intents = [self.intents[each] for each in key]
             entities = [self.entities[each] for each in key]
-            return NLUdataset(texts, intents, entities)
+            return NluDataset(texts, intents, entities)
 
         elif isinstance(key, numbers.Integral):
             return self.data[key]
@@ -133,7 +133,7 @@ class NLUdataset:
         return len(self.texts)
 
     def __add__(self, other):
-        return NLUdataset(
+        return NluDataset(
             texts=self.texts + other.texts,
             intents=self.intents + other.intents,
             entities=self.entities + other.entities,
@@ -142,6 +142,11 @@ class NLUdataset:
     @classmethod
     def from_joined(cls, *datasets):
         """Join NLUdatasets provided in a list."""
+        warnings.warn(
+            "This method will be removed in a future version. Please use "
+            "nlubridge.concat() or NluDataset.join().",
+            DeprecationWarning
+        )
         texts, intents, entities = [], [], []
 
         for dataset in datasets:
@@ -156,6 +161,9 @@ class NLUdataset:
     def name(self):
         """Return the class name."""
         return self.__class__.__name__
+
+    def join(self, other):
+        return self + other
 
     def shuffle(self):
         """Shuffles the dataset."""
@@ -212,7 +220,7 @@ class NLUdataset:
             texts.append(text)
             intents.append(intent)
 
-        return NLUdataset(texts, intents, None)
+        return NluDataset(texts, intents, None)
 
     def select_first_n_intents(self, n: int):
         """
@@ -282,7 +290,7 @@ class NLUdataset:
             texts.append(text)
             intents.append(intent)
 
-        return NLUdataset(texts, intents, None)
+        return NluDataset(texts, intents, None)
 
     def subsample_by_intent_frequency(self, target_rate, min_frequency, shuffle=False):
         """
@@ -313,7 +321,7 @@ class NLUdataset:
                 texts.append(text)
                 intents.append(intent)
                 entities.append(entity_list)
-        return NLUdataset(texts, intents, entities)
+        return NluDataset(texts, intents, entities)
 
     def train_test_split(
         self, test_size=0.25, random_state=0, stratification="intents", **args
@@ -374,14 +382,14 @@ class NLUdataset:
             **args,
         )
 
-        train_ds = NLUdataset(texts_train, intents_train, entities_train)
-        test_ds = NLUdataset(texts_test, intents_test, entities_test)
+        train_ds = NluDataset(texts_train, intents_train, entities_train)
+        test_ds = NluDataset(texts_test, intents_test, entities_test)
         return train_ds, test_ds
 
     def _filter_by_index_list(self, idx_list):
         filtered = [d for (idx, d) in enumerate(self.data) if idx in idx_list]
         texts, intents, entities = zip(*filtered)
-        return NLUdataset(texts, intents, entities)
+        return NluDataset(texts, intents, entities)
 
     def cross_validation_splits(self, cv_iterator=None):
         """Cross validation generator function."""
@@ -450,3 +458,15 @@ class NLUdataset:
 
         with open(path, "w") as f:
             json.dump(records, f, indent=4, ensure_ascii=False)
+
+
+def concat(dataset_list):
+    """
+    Concatenate NluDatasets.
+
+    :param dataset_list: list of NluDataset objects
+    """
+    joined = NluDataset([])
+    for ds in dataset_list:
+        joined += ds
+    return joined

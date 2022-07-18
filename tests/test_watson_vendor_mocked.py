@@ -2,7 +2,7 @@ import requests
 import json
 
 from nlubridge.vendors.watson import Watson
-from nlubridge import NLUdataset
+from nlubridge import NluDataset
 from test_vendors import (
     assert_preds_are_intents,
     assert_return_probs,
@@ -44,7 +44,7 @@ def test_watson_mocked(train_data, mocker):
     assert len(preds) == 360
     assert len(probs) == 360
 
-    test_ds = NLUdataset(["Ich habe kein DSL und telefon"])
+    test_ds = NluDataset(["Ich habe kein DSL und telefon"])
 
     # test n_best_intents argument to test_intent()
     preds, probs = watson.test_intent(test_ds, return_probs=True, n_best_intents=5)

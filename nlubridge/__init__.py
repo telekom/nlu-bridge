@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from .dataloaders.rasa import from_rasa, to_rasa  # noqa: F401, F811
     from .dataloaders.huggingface import from_huggingface  # noqa: F401
     from .dataloaders.utils import from_json, from_csv  # noqa: F401
-    from .datasets import NLUdataset, OUT_OF_SCOPE_TOKEN, EntityKeys  # noqa: F401
+    from .datasets import NluDataset, OUT_OF_SCOPE_TOKEN, EntityKeys, concat  # noqa: F401
 
 else:
     _import_structure = {
@@ -28,7 +28,7 @@ else:
         "dataloaders.huggingface": ["from_huggingface"],
         "dataloaders.rasa": ["from_rasa", "to_rasa"],
         "dataloaders.utils": ["from_json", "from_csv"],
-        "datasets": ["NLUdataset", "OUT_OF_SCOPE_TOKEN", "EntityKeys"],
+        "datasets": ["NluDataset", "OUT_OF_SCOPE_TOKEN", "EntityKeys", "concat"],
     }
 
     sys.modules[__name__] = LazyImporter(
