@@ -19,7 +19,12 @@ if TYPE_CHECKING:
     from .dataloaders.rasa import from_rasa, to_rasa  # noqa: F401, F811
     from .dataloaders.huggingface import from_huggingface  # noqa: F401
     from .dataloaders.utils import from_json, from_csv  # noqa: F401
-    from .datasets import NluDataset, OUT_OF_SCOPE_TOKEN, EntityKeys, concat  # noqa: F401
+    from .datasets import (  # noqa: F401
+        NluDataset,
+        OUT_OF_SCOPE_TOKEN,
+        EntityKeys,
+        concat,
+    )
 
 else:
     _import_structure = {

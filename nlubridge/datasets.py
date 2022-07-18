@@ -145,7 +145,7 @@ class NluDataset:
         warnings.warn(
             "This method will be removed in a future version. Please use "
             "nlubridge.concat() or NluDataset.join().",
-            DeprecationWarning
+            DeprecationWarning,
         )
         texts, intents, entities = [], [], []
 
@@ -163,6 +163,7 @@ class NluDataset:
         return self.__class__.__name__
 
     def join(self, other):
+        """Join this NluDataset with another one."""
         return self + other
 
     def shuffle(self):
