@@ -3,9 +3,9 @@
 </h1>
 
 <p align="center">
-    <a href="/../../commits/" title="Last Commit"><img src="https://img.shields.io/github/last-commit/telekom/nlu-bridge?style=flat"></a>
-    <a href="/../../issues" title="Open Issues"><img src="https://img.shields.io/github/issues/telekom/nlu-bridge?style=flat"></a>
-    <a href="./LICENSE" title="License"><img src="https://img.shields.io/badge/License-MIT-green.svg?style=flat"></a>
+    <a href="https://github.com/telekom/nlu-bridge/commits" title="Last Commit"><img src="https://img.shields.io/github/last-commit/telekom/nlu-bridge?style=flat"></a>
+    <a href="https://github.com/telekom/nlu-bridge/issues" title="Open Issues"><img src="https://img.shields.io/github/issues/telekom/nlu-bridge?style=flat"></a>
+    <a href="https://github.com/telekom/nlu-bridge/blob/main/LICENSE" title="License"><img src="https://img.shields.io/badge/License-MIT-green.svg?style=flat"></a>
 </p>
 
 <p align="center">
