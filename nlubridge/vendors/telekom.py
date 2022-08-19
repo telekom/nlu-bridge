@@ -2,7 +2,6 @@
 # This software is distributed under the terms of the MIT license
 # which is available at https://opensource.org/licenses/MIT
 
-import itertools
 import pickle
 import logging
 
@@ -11,12 +10,6 @@ from sklearn.linear_model import SGDClassifier
 from sklearn.svm import OneClassSVM
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import GridSearchCV
-import numpy as np
-
-from lazy_imports import try_import
-
-with try_import() as optional_fuzzywuzzy_import:
-    from fuzzywuzzy import fuzz
 
 from .vendors import Vendor
 from ..datasets import OUT_OF_SCOPE_TOKEN
@@ -25,12 +18,12 @@ from ..datasets import OUT_OF_SCOPE_TOKEN
 logger = logging.getLogger(__name__)
 
 
-class TelekomModel(Vendor):
-    alias = "telekom_model"
+class CharNgramIntentClassifier(Vendor):
+    alias = "char_ngram"
 
     def __init__(self, anomaly_clf_nu=0):
         """
-        Interface to a Telekom custom intent classifier.
+        Interface to a custom intent classifier based on character n-grams.
 
         Intent classification is based on character n-grams TFIDF
         model with hyper parameter tuning. In addition, a second
@@ -60,24 +53,6 @@ class TelekomModel(Vendor):
         if return_probs:
             return intents, probs
         return intents
-
-
-class TelekomModel2(Vendor):
-    alias = "telekom_model_2"
-
-    def __init__(self):
-        """Alternative model custom-built for Telekom."""
-        optional_fuzzywuzzy_import.check()
-        self.clf = Model2(none_class=OUT_OF_SCOPE_TOKEN, verbose=True)
-
-    def train_intent(self, dataset):  # noqa D102
-        X = dataset.texts
-        y = dataset.intents
-        self.clf.fit(X, y)
-
-    def test_intent(self, dataset):  # noqa D102
-        X = dataset.texts
-        return self.clf.predict(X)
 
 
 class Model1:
@@ -187,120 +162,3 @@ class Model1:
         f = open(self.models_path + filename, "wb")
         pickle.dump(self.__dict__, f, 2)
         f.close()
-
-
-class Model2:
-    """
-    Model2 implementation in original code.
-
-    TF-IDF ==> Fuzzy string matching
-    """
-
-    def __init__(self, none_class="no_intent", verbose=False):  # noqa D102
-
-        self.none_class_ = none_class
-        self.verbose_ = verbose
-        self.filename = "models/pickles/model1.pkl"
-
-        self.tfidf_vectorizer = TfidfVectorizer(
-            min_df=2, max_df=0.9, ngram_range=(2, 5), use_idf=True, analyzer="word"
-        )
-
-    def fit(self, X, y=None):  # noqa D102
-        logger.debug("Training started")
-
-        self.classes_ = list(set(y) - set([self.none_class_]))
-
-        self.key_words = {}
-
-        for c in self.classes_:
-            if not c == self.none_class_:
-                X_c = [x for x, y_c in zip(X, y) if c == y_c]
-
-                self.tfidf_vectorizer.fit(X_c)
-                response = self.tfidf_vectorizer.transform(X_c)
-
-                feature_array = np.array(self.tfidf_vectorizer.get_feature_names())
-                tfidf_sorting = np.argsort(response.toarray()).flatten()[::-1]
-
-                n = 10
-                top_n = feature_array[tfidf_sorting][:n]
-
-                self.key_words[c] = top_n
-
-        # self.save()
-
-        logger.debug("Training finished")
-
-    def predict(self, X, y=None):  # noqa D102
-        logger.debug("Prediction started")
-        y_pred = []
-
-        for i, x in enumerate(X):
-            matches = {}
-            for c in self.classes_:
-                predict = self._get_n_gram_matches(x, self.key_words[c])
-                if len(predict) > 0:
-                    matches[c] = predict[0]["distance"]
-            if len(matches) > 0:
-                y_pred.append(max(matches, key=matches.get))
-            else:
-                y_pred.append(self.none_class_)
-
-        logger.debug("Prediction finished")
-        return y_pred
-
-    def load(self):  # noqa D102
-        f = open(self.filename, "rb")
-        tmp_dict = pickle.load(f)
-        f.close()
-
-        self.__dict__.update(tmp_dict)
-
-    def save(self):  # noqa D102
-        f = open(self.filename, "wb")
-        pickle.dump(self.__dict__, f, 2)
-        f.close()
-
-    def _get_n_gram_matches(self, inputString, options, isReordered=False):  # noqa D102
-        max_n_gram = 4
-        ngrams = []
-
-        splitInputString = inputString.split()
-        for i in range(3, max_n_gram + 1):
-            ngrams.extend(self._create_n_gram(splitInputString, i, isReordered))
-
-        matches = []
-        for i in ngrams:
-            matches.extend(self._norm_best_match_substring(i, options))
-
-        return matches
-
-    def _create_n_gram(self, inputWords, n, reorder=False):  # noqa D102
-        ngrams = []
-        for i in range(0, len(inputWords) + 1 - n):
-            strings = inputWords[i : i + n]
-            if reorder:
-                permutations = list(itertools.permutations(strings))
-                for p in permutations:
-                    ngrams.append(" ".join(p))
-            else:
-                ngrams.append(" ".join(strings))
-        return ngrams
-
-    def _norm_best_match_substring(self, item, options, cutoff=0.75):  # noqa D102
-        tuples = []
-        for i in options:
-            tuples.append(
-                {
-                    "string": item,
-                    "value": i,
-                    "distance": (
-                        (fuzz.token_sort_ratio(i.lower(), item.lower())) / 100.0
-                    ),
-                }
-            )
-        sortedOptions = sorted(tuples, key=lambda x: x["distance"], reverse=True)
-
-        filteredOptions = [x for x in sortedOptions if x["distance"] > cutoff]
-        return filteredOptions

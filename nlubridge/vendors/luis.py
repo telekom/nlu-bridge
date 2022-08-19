@@ -25,10 +25,10 @@ global start_time
 
 
 def _unwrap_self(arg, **kwarg):
-    return LUIS.test_single_intent(*arg, **kwarg)
+    return Luis.test_single_intent(*arg, **kwarg)
 
 
-class LUIS(Vendor):
+class Luis(Vendor):
     alias = "luis"
 
     AUTHORING_RATE_LIMIT = 4.99  # queries per second

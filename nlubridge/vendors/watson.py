@@ -22,8 +22,8 @@ from .vendors import Vendor
 logger = logging.getLogger(__name__)
 
 
-class Watson(Vendor):
-    alias = "watson"
+class WatsonAssistant(Vendor):
+    alias = "watson_assistant"
 
     def __init__(
         self,
@@ -181,7 +181,7 @@ class Watson(Vendor):
         Validate an utterance text.
 
         Validate the test data text so it conforms to the
-        Watson API format, see
+        Watson Assistant API format, see
         https://www.ibm.com/watson/developercloud/conversation/api/v1/?python#send_message
 
         :param text: User input
@@ -204,7 +204,7 @@ class Watson(Vendor):
 
     def _convert(self, dataset):
         """
-        Convert data from the standardized format to Watson format.
+        Convert data from the standardized format to Watson Assistant format.
 
         This function accepts a dataset as input and returns a list of
         samples in the vendor specific expected format.

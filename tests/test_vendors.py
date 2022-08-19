@@ -90,9 +90,9 @@ def test_rasa(train_data):
 
 
 def test_telekom(train_data):
-    from nlubridge.vendors.telekom import TelekomModel
+    from nlubridge.vendors.telekom import CharNgramIntentClassifier
 
-    model = TelekomModel()
+    model = CharNgramIntentClassifier()
     model.train_intent(train_data)
     assert_preds_are_intents(model, train_data.unique_intents)
     assert_return_probs(model, train_data.unique_intents)
@@ -101,11 +101,11 @@ def test_telekom(train_data):
 
 
 def test_spacy(train_data):
-    from nlubridge.vendors.spacy import SpacyClassifier
+    from nlubridge.vendors.spacy import Spacy
 
     # We train with small number of train iterations to speed up tests
     # (performance not important here)
-    model = SpacyClassifier(n_iter=10)
+    model = Spacy(n_iter=10)
     model.train_intent(train_data)
     predicted = model.test_intent(train_data)
     assert len(predicted) == len(train_data)

@@ -61,7 +61,6 @@ setup(
     install_requires=["sklearn", "python-dotenv", "lazy-imports", "ratelimit"],
     extras_require={
         "watson": ["ibm_watson", "tqdm", "requests"],
-        "telekom": ["fuzzywuzzy", "python-Levenshtein"],
         "fasttext": ["fasttext"],
         "luis": ["requests", "ratelimit"],
         "rasa": ["rasa~=2.0"],

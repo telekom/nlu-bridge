@@ -9,13 +9,13 @@ from test_vendors import (
 
 
 def test_watson(train_data):
-    from nlubridge.vendors.watson import Watson
+    from nlubridge.vendors.watson import WatsonAssistant
 
     # load environment variables so Watson uses them
     load_dotenv()
 
     # test initialization
-    watson = Watson()
+    watson = WatsonAssistant()
 
     # test train_intent()
     watson.train_intent(train_data)

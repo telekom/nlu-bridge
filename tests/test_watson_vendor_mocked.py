@@ -1,7 +1,7 @@
 import requests
 import json
 
-from nlubridge.vendors.watson import Watson
+from nlubridge.vendors.watson import WatsonAssistant
 from nlubridge import NluDataset
 from test_vendors import (
     assert_preds_are_intents,
@@ -26,7 +26,7 @@ def test_watson_mocked(train_data, mocker):
     mocker.patch("requests.Session", SessionMock)
 
     # test initialization
-    watson = Watson(FAKE_URL, FAKE_KEY, WS_NAME)
+    watson = WatsonAssistant(FAKE_URL, FAKE_KEY, WS_NAME)
 
     # test train_intent()
     watson.train_intent(train_data)

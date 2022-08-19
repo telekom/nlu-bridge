@@ -33,7 +33,7 @@ ENTITY_KEY_VALUE = "value"  # Rasa provides an explicit value parameter for its 
 
 
 class Rasa2(Vendor):
-    alias = "rasa"
+    alias = "rasa2"
 
     def __init__(self, model_config: Optional[str] = None):
         """
