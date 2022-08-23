@@ -26,7 +26,9 @@ applications.
 The core package including NLUdataset and Baseline vendors can be installed
 using pip
 
-`pip install nlubridge`
+```
+pip install nlubridge
+```
 
 To include optional dependencies for the vendors, e.g. Watson Assistant, type
 

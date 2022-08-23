@@ -154,7 +154,7 @@ class Rasa3(Vendor):
             argument 'return_probs')
         """
         if self.agent is None:
-            raise Exception("Rasa3 classifier has to be trained first!")
+            raise RuntimeError("Rasa3 classifier has to be trained first!")
         intents = []
         probs = []
         for text in dataset.texts:

@@ -190,7 +190,9 @@ class NLUdataset:
         return sampled
 
     def filter_by_intent_name(
-        self, excluded: List[str] = None, allowed: List[Optional[str]] = None
+        self,
+        excluded: Optional[List[str]] = None,
+        allowed: Optional[List[Optional[str]]] = None,
     ):
         """
         Filter the dataset by intents.
