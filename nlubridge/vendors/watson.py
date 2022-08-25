@@ -3,19 +3,19 @@
 # This software is distributed under the terms of the MIT license
 # which is available at https://opensource.org/licenses/MIT
 
+import json
+import logging
 import os
 import time
-from datetime import datetime
-import json
 from concurrent.futures import ThreadPoolExecutor
-import logging
+from datetime import datetime
 
 import requests
 from tqdm import tqdm
 from ibm_watson import AssistantV1
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 
-from ..datasets import OUT_OF_SCOPE_TOKEN
+from nlubridge.datasets import OUT_OF_SCOPE_TOKEN
 from .vendors import Vendor
 
 

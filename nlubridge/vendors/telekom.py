@@ -2,17 +2,18 @@
 # This software is distributed under the terms of the MIT license
 # which is available at https://opensource.org/licenses/MIT
 
-import pickle
 import logging
+import pickle
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import SGDClassifier
-from sklearn.svm import OneClassSVM
-from sklearn.pipeline import Pipeline
 from sklearn.model_selection import GridSearchCV
 
-from .vendors import Vendor
+from sklearn.pipeline import Pipeline
+from sklearn.svm import OneClassSVM
+
 from ..datasets import OUT_OF_SCOPE_TOKEN
+from .vendors import Vendor
 
 
 logger = logging.getLogger(__name__)

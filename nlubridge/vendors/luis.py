@@ -2,13 +2,13 @@
 # This software is distributed under the terms of the MIT license
 # which is available at https://opensource.org/licenses/MIT
 
-import os
+import concurrent.futures
 import datetime
 import json
 import logging
+import os
 import sys
 import time
-import concurrent.futures
 
 from ratelimit import rate_limited
 import requests
@@ -78,7 +78,7 @@ class Luis(Vendor):
         self.session.headers.update({"Ocp-Apim-Subscription-Key": authoring_key})
         logger.debug(f"Created new app with id {self.app_id}")
 
-    @property
+    @property  # type: ignore
     @rate_limited(AUTHORING_RATE_LIMIT)
     def requests(self):
         """Util method to access self.session."""

@@ -10,6 +10,7 @@ from lazy_imports import LazyImporter
 
 from .vendors import Vendor  # noqa: 401
 
+
 if TYPE_CHECKING:
 
     from .tfidf_intent_classifier import TfidfIntentClassifier  # noqa: 401
