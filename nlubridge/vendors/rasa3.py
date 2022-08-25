@@ -2,14 +2,16 @@
 # This software is distributed under the terms of the MIT license
 # which is available at https://opensource.org/licenses/MIT
 from __future__ import annotations
-import os
-import logging
+
 import asyncio
-import tempfile
+import logging
+import os
 import pathlib
-from typing import List, Optional, Union, Tuple
+import tempfile
+from typing import List, Optional, Tuple, Union
 
 from lazy_imports import try_import
+
 
 with try_import() as optional_rasa3_import:
     from rasa.model_training import train_nlu
@@ -34,8 +36,10 @@ with try_import() as optional_rasa3_import:
         PREDICTED_CONFIDENCE_KEY,
     )
 
+from nlubridge.datasets import EntityKeys, NLUdataset
+
 from .vendors import Vendor
-from nlubridge.datasets import NLUdataset, EntityKeys
+
 
 logger = logging.getLogger(__name__)
 
@@ -109,7 +113,7 @@ class Rasa3(Vendor):
             additional attribute 'probs' (List[float]).
         """
         if self.agent is None:
-            logger.error("Rasa3 classifier has to be trained first!")
+            raise Exception("Rasa3 classifier has to be trained first!")
         intents = []
         probs = []
         entities_list = []
@@ -150,7 +154,7 @@ class Rasa3(Vendor):
             argument 'return_probs')
         """
         if self.agent is None:
-            logger.error("Rasa3 classifier has to be trained first!")
+            raise RuntimeError("Rasa3 classifier has to be trained first!")
         intents = []
         probs = []
         for text in dataset.texts:

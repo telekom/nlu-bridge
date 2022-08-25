@@ -1,12 +1,13 @@
-from collections import Counter
-import os
 import copy
+import os
+from collections import Counter
 
 import pytest
-
+from sklearn.model_selection import KFold, train_test_split
 from testing_data import SyntheticDataset, ToyDataset
+
 from nlubridge import OUT_OF_SCOPE_TOKEN, NLUdataset
-from sklearn.model_selection import train_test_split, KFold
+
 
 FIXTURE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fixtures")
 
@@ -67,9 +68,9 @@ def test_init_ds_without_intents_and_entities():
     ds = NLUdataset(texts)
     assert len(ds.texts) == 3
     assert len(ds.intents) == 3
-    assert ds.unique_intents is None  # NOTE: This should be [] for consistency
+    assert ds.unique_intents == []
     assert ds.intents == [None, None, None]
-    assert ds.n_intents is None  # NOTE: This should be [] for consistency
+    assert ds.n_intents == 0
     assert len(ds.entities) == 3
     assert ds.unique_entities == []
     assert ds.entities == [[], [], []]

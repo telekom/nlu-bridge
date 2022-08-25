@@ -3,19 +3,19 @@
 # which is available at https://opensource.org/licenses/MIT
 
 import itertools
-import pickle
 import logging
+import pickle
 
+import numpy as np
+from fuzzywuzzy import fuzz
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import SGDClassifier
-from sklearn.svm import OneClassSVM
-from sklearn.pipeline import Pipeline
 from sklearn.model_selection import GridSearchCV
-from fuzzywuzzy import fuzz
-import numpy as np
+from sklearn.pipeline import Pipeline
+from sklearn.svm import OneClassSVM
 
-from .vendors import Vendor
 from ..datasets import OUT_OF_SCOPE_TOKEN
+from .vendors import Vendor
 
 
 logger = logging.getLogger(__name__)

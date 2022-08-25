@@ -16,18 +16,19 @@
   <a href="#licensing">Licensing</a>
 </p>
 
-The goal of this project is to provide a unified API to several popular intent recognition 
+The goal of this project is to provide a unified API to several popular intent recognition
 applications.
 
 ## About this component
 
-
 ### Installation
 
-The core package including NLUdataset and Baseline vendors can be installed 
+The core package including NLUdataset and Baseline vendors can be installed
 using pip
 
-```pip install nlubridge```
+```
+pip install nlubridge
+```
 
 To include optional dependencies for the vendors, e.g. Watson Assistant, type
 
@@ -35,9 +36,9 @@ To include optional dependencies for the vendors, e.g. Watson Assistant, type
 pip install nlubridge[watson]
 ```
 
-Some vendors require access credentials like API tokens, URLs etc. These can be passed 
-on construction of the objects. Alternatively, such arguments can be passed as 
-environment variables, where the vendor will look for variables named variable 
+Some vendors require access credentials like API tokens, URLs etc. These can be passed
+on construction of the objects. Alternatively, such arguments can be passed as
+environment variables, where the vendor will look for variables named variable
 VENDORNAME_PARAM_NAME.
 
 Some vendors require additional dependencies. E.g., Spacy requires a model that
@@ -46,7 +47,6 @@ can be downloaded (for the  model de_core_news_sm) with
 ```
 python -m spacy download de_core_news_sm
 ```
-
 
 ### Usage
 
@@ -70,7 +70,9 @@ classifier = classifier.train_intent(train)
 predicted = classifier.test_intent(test)
 res = pd.DataFrame(list(zip(test.intents, predicted)), columns=['true', 'predicted'])
 ```
+
 If you need to configure **stratification**, use the `stratification` parameter (defaults to `"intents"` and uses the intents in the dataset as stratification basis; whatever _else_ you pass along has to conform to `sklearn.model_selection.train_test_split(stratify=)`:
+
 ```python
 train, test = dataset.train_test_split(test_size=0.25, random_state=0, stratification=None)    # deactivate stratification (sklearn default for train_test_split)
 ```
@@ -78,31 +80,29 @@ train, test = dataset.train_test_split(test_size=0.25, random_state=0, stratific
 ### Logging
 
 Most of the code uses python logging to report its progress. To get logs printed out
-to console or Jupyter notebook, a logger needs to be configured, before the nlutests 
+to console or Jupyter notebook, a logger needs to be configured, before the nlutests
 code. Usually, log messages are on INFO level. This can be configured like this:
 
-````python
+```python
 import logging
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 logger.addHandler(logging.StreamHandler())
-````
-
+```
 
 ### Concepts / Architecture
 
-* **Vendors**  
-The [`vendors`](/nlubridge/vendors/) module implements standardized interfaces to the 
-  specific vendors. A specific `Vendor` instance is in charge of dealing with converting 
-  the data to the required format, uploading data to the cloud if applicable, training 
+- **Vendors**\
+  The [`vendors`](/nlubridge/vendors/) module implements standardized interfaces to the
+  specific vendors. A specific `Vendor` instance is in charge of dealing with converting
+  the data to the required format, uploading data to the cloud if applicable, training
   models and making predictions.
-  
-* **Datasets**  
-The [`datasets`](/nlubridge/datasets/) module provides a standard interface to 
+
+- **Datasets**\
+  The [`datasets`](/nlubridge/datasets/) module provides a standard interface to
   NLU data. Data stored in different vendor's custom format can be loaded as a dataset
   and provided to any different vendor.
-
 
 ### List of supported vendors
 
@@ -118,13 +118,11 @@ The [`datasets`](/nlubridge/datasets/) module provides a standard interface to
 | [TelekomModel](/nlubridge/vendors/telekom.py)  | ✓ | ✓ | ✗ | tf-idf on char n-grams + LR |
 | [Rasa NLU](https://github.com/RasaHQ/rasa) | ✓ | ✓ | ✓ |  starspace like |
 
-
 ### Features
 
-* Abstract class for Vendors with convenience methods (ex: scoring and scikit-learn compatibility)
-* Abstract class for datasets with convenience methods (ex: train_test_split, indexing, iteration)
-* Rate limiting to comply with cloud providers requirements
-
+- Abstract class for Vendors with convenience methods (ex: scoring and scikit-learn compatibility)
+- Abstract class for datasets with convenience methods (ex: train_test_split, indexing, iteration)
+- Rate limiting to comply with cloud providers requirements
 
 ## Development
 
@@ -140,14 +138,16 @@ This project has adopted the [Contributor Covenant](https://www.contributor-cove
 
 ## Working Language
 
-We decided to apply _English_ as the primary project language.  
+We decided to apply _English_ as the primary project language.
 
 Consequently, all content will be made available primarily in English. We also ask all interested people to use English as language to create issues, in their code (comments, documentation etc.) and when you send requests to us. The application itself and all end-user facing content will be made available in other languages as needed.
 
 ## Documentation
 
 The full documentation for the telekom nlu-bridge can be found in _TBD_
+
 ## Support and Feedback
+
 The following channels are available for discussions, feedback, and support requests:
 
 | Type                     | Channel                                                |

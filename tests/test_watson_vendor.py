@@ -1,11 +1,11 @@
 from dotenv import load_dotenv
-
-from nlubridge import NLUdataset
 from test_vendors import (
+    assert_multiple_utterances_predicted,
     assert_preds_are_intents,
     assert_return_probs,
-    assert_multiple_utterances_predicted,
 )
+
+from nlubridge import NLUdataset
 
 
 def test_watson(train_data):

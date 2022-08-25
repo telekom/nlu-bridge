@@ -2,11 +2,13 @@
 # This software is distributed under the terms of the MIT license
 # which is available at https://opensource.org/licenses/MIT
 from __future__ import annotations
-from typing import List, Optional, Union, Tuple
+
 import os
 import pathlib
+from typing import List, Optional, Tuple, Union
 
 from lazy_imports import try_import
+
 
 with try_import() as optional_rasa_import:
     from rasa.nlu import config
@@ -32,8 +34,10 @@ with try_import() as optional_rasa_import:
         PREDICTED_CONFIDENCE_KEY,
     )
 
+from nlubridge.datasets import EntityKeys, NLUdataset
+
 from .vendors import Vendor
-from nlubridge.datasets import NLUdataset, EntityKeys
+
 
 DEFAULT_INTENT_RASA_CONFIG_PATH = os.path.join(
     pathlib.Path(__file__).parent.absolute(), "config", "rasa_nlu_config.yml"
@@ -96,9 +100,11 @@ class Rasa(Vendor):
             the predicted intent classification probabilities are accessible via the
             additional attribute 'probs' (List[float]).
         """
-        intents = []
-        probs = []
-        entities_list = []
+        intents: List[str] = []
+        probs: List[float] = []
+        entities_list: List[List[dict]] = []
+        if self.interpreter is None:
+            raise Exception("Rasa2 classifier has to be trained first!")
         for text in dataset.texts:
             result = self.interpreter.parse(text)
             intent = result.get(INTENT, {}).get(INTENT_NAME_KEY)
@@ -133,8 +139,10 @@ class Rasa(Vendor):
             predicted intent classification and probabilites results (depeding on
             argument 'return_probs')
         """
-        intents = []
-        probs = []
+        intents: List[str] = []
+        probs: List[float] = []
+        if self.interpreter is None:
+            raise Exception("Rasa2 classifier has to be trained first!")
         for text in dataset.texts:
             result = self.interpreter.parse(text)
             intent = result.get(INTENT, {}).get(INTENT_NAME_KEY)
