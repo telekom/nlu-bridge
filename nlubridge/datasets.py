@@ -32,7 +32,7 @@ class NLUdataset:
     def __init__(
         self,
         texts: List[str],
-        intents: Optional[List[Optional[str]]] = None,
+        intents: Optional[List[str]] = None,
         entities: Optional[List[List[dict]]] = None,
         out_of_scope=False,
         max_intent_length=None,
@@ -63,7 +63,8 @@ class NLUdataset:
         self.texts = texts
         self.n_samples = len(self.texts)
         self.intents: List[Optional[str]]
-        self.unique_intents: List[Optional[str]]
+        #self.unique_intents: List[Optional[str]]
+        self.entities: List[List[Dict]]
 
         if not intents or intents is None:
             self.unique_intents = []
@@ -73,19 +74,18 @@ class NLUdataset:
             self.intents = [None for _ in texts]
         else:
             if max_intent_length:
-                self.intents = [
-                    intent[:max_intent_length] if intent is not None else None
-                    for intent in intents
-                ]
-                if len(set(intents)) > len(set(self.intents)):
+                cropped_intents = [intent[:max_intent_length] for intent in intents]
+                if len(set(intents)) > len(set(cropped_intents)):
                     warnings.warn(
                         "Intent names are not unique on first {} characters".format(
                             max_intent_length
                         )
                     )
-            else:
-                self.intents = intents
-            self.unique_intents = list(dict.fromkeys(self.intents))
+                intents = cropped_intents
+            # Make copy so typing is consistent (makes sure we don't accidentally add
+            # None elements to the original list from within this class)
+            self.intents = list(intents)
+            self.unique_intents = list(dict.fromkeys(intents))
 
             if out_of_scope:
                 self.unique_intents += [OUT_OF_SCOPE_TOKEN]
@@ -93,10 +93,12 @@ class NLUdataset:
             self.n_intents = len(self.unique_intents)
             self.intent_frequencies = collections.Counter(self.intents)
 
-        self.entities = entities if entities else [list() for _ in texts]
         if not entities:
+            self.entities = [list() for _ in texts]
             self.unique_entities = []
             self.n_entities = 0
+        else:
+            self.entities = entities
 
         if entities is not None:
             it = itertools.chain.from_iterable(entities)
@@ -192,7 +194,7 @@ class NLUdataset:
     def filter_by_intent_name(
         self,
         excluded: Optional[List[str]] = None,
-        allowed: Optional[List[Optional[str]]] = None,
+        allowed: Optional[List[str]] = None,
     ):
         """
         Filter the dataset by intents.
@@ -208,9 +210,8 @@ class NLUdataset:
         if allowed is None:
             allowed = self.unique_intents
 
-        texts = []
-        intents: List[Optional[str]] = []
-        for text, intent, _ in self.data:
+        texts, intents, entities = [], [], []
+        for text, intent, entity_list in self.data:
             if intent in excluded:
                 continue
 
@@ -219,6 +220,7 @@ class NLUdataset:
 
             texts.append(text)
             intents.append(intent)
+            entities.append(entity_list)
 
         return NLUdataset(texts, intents, None)
 
