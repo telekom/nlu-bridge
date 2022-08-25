@@ -1,10 +1,10 @@
 from dotenv import load_dotenv
-
 from test_vendors import (
     assert_multiple_utterances_predicted,
     assert_preds_are_intents,
     assert_return_probs,
 )
+
 from nlubridge import NluDataset
 
 

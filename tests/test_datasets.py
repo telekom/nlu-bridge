@@ -6,7 +6,7 @@ import pytest
 from sklearn.model_selection import KFold, train_test_split
 from testing_data import SyntheticDataset, ToyDataset
 
-from nlubridge import concat, from_json, OUT_OF_SCOPE_TOKEN, NluDataset
+from nlubridge import OUT_OF_SCOPE_TOKEN, NluDataset, concat, from_json
 
 
 FIXTURE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fixtures")

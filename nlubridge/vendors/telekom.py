@@ -8,7 +8,6 @@ import pickle
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import SGDClassifier
 from sklearn.model_selection import GridSearchCV
-
 from sklearn.pipeline import Pipeline
 from sklearn.svm import OneClassSVM
 

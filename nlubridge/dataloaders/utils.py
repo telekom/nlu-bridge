@@ -2,11 +2,11 @@
 # This software is distributed under the terms of the MIT license
 # which is available at https://opensource.org/licenses/MIT
 
-import json
-import csv
 import collections
+import csv
+import json
 
-from nlubridge.datasets import NluDataset, EntityKeys
+from nlubridge.datasets import EntityKeys, NluDataset
 
 
 def from_csv(filepath, text_col, intent_col) -> NluDataset:

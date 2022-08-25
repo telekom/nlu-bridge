@@ -11,11 +11,12 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 
 import requests
-from tqdm import tqdm
-from ibm_watson import AssistantV1
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
+from ibm_watson import AssistantV1
+from tqdm import tqdm
 
 from nlubridge.datasets import OUT_OF_SCOPE_TOKEN
+
 from .vendors import Vendor
 
 

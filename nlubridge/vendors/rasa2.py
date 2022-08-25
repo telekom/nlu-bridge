@@ -10,22 +10,23 @@ from typing import List, Optional, Tuple, Union
 
 from rasa.nlu import config
 from rasa.nlu.model import Trainer
-from rasa.shared.nlu.training_data.formats.rasa import RasaReader
-from rasa.shared.nlu.training_data.training_data import TrainingData
 from rasa.shared.nlu.constants import (
-    TEXT,
+    ENTITIES,
+    ENTITY_ATTRIBUTE_END,
+    ENTITY_ATTRIBUTE_START,
+    ENTITY_ATTRIBUTE_TYPE,
+    ENTITY_ATTRIBUTE_VALUE,
     INTENT,
     INTENT_NAME_KEY,
-    ENTITIES,
-    ENTITY_ATTRIBUTE_TYPE,
-    ENTITY_ATTRIBUTE_START,
-    ENTITY_ATTRIBUTE_END,
-    ENTITY_ATTRIBUTE_VALUE,
     PREDICTED_CONFIDENCE_KEY,
+    TEXT,
 )
+from rasa.shared.nlu.training_data.formats.rasa import RasaReader
+from rasa.shared.nlu.training_data.training_data import TrainingData
+
+from nlubridge.datasets import EntityKeys, NluDataset
 
 from .vendors import Vendor
-from nlubridge.datasets import EntityKeys, NluDataset
 
 
 DEFAULT_INTENT_RASA_CONFIG_PATH = os.path.join(

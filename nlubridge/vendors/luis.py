@@ -10,8 +10,8 @@ import os
 import sys
 import time
 
-from ratelimit import rate_limited
 import requests
+from ratelimit import rate_limited
 from requests.compat import urljoin
 
 from ..datasets import OUT_OF_SCOPE_TOKEN

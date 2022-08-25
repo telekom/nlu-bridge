@@ -10,20 +10,21 @@ import pathlib
 import tempfile
 from typing import List, Optional, Tuple, Union
 
-from rasa.model_training import train_nlu
 from rasa.core.agent import Agent
+from rasa.model_training import train_nlu
 from rasa.shared.nlu.constants import (
+    ENTITIES,
+    ENTITY_ATTRIBUTE_END,
+    ENTITY_ATTRIBUTE_START,
+    ENTITY_ATTRIBUTE_TYPE,
     INTENT,
     INTENT_NAME_KEY,
-    ENTITIES,
-    ENTITY_ATTRIBUTE_TYPE,
-    ENTITY_ATTRIBUTE_START,
-    ENTITY_ATTRIBUTE_END,
     PREDICTED_CONFIDENCE_KEY,
 )
 
-from .vendors import Vendor
 from nlubridge import EntityKeys, NluDataset, to_rasa
+
+from .vendors import Vendor
 
 
 logger = logging.getLogger(__name__)
