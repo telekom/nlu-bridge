@@ -63,7 +63,6 @@ class NLUdataset:
         self.texts = texts
         self.n_samples = len(self.texts)
         self.intents: List[Optional[str]]
-        #self.unique_intents: List[Optional[str]]
         self.entities: List[List[Dict]]
 
         if not intents or intents is None:
