@@ -113,7 +113,7 @@ class Rasa3(Vendor):
             additional attribute 'probs' (List[float]).
         """
         if self.agent is None:
-            raise Exception("Rasa3 classifier has to be trained first!")
+            raise RuntimeError("Rasa3 classifier has to be trained first!")
         intents = []
         probs = []
         entities_list = []
