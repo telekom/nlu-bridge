@@ -25,7 +25,7 @@ if TYPE_CHECKING:
         NluDataset,
         concat,
     )
-    from vendors.vendor import Vendor  # noqa: 401
+    from .vendors.vendor import Vendor  # noqa: 401
 
 else:
     _import_structure = {

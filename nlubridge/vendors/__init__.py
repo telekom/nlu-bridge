@@ -13,12 +13,12 @@ from .vendor import Vendor  # noqa: 401
 
 if TYPE_CHECKING:
 
+    from .char_ngram_intent_classifier import CharNgramIntentClassifier  # noqa: F401
     from .fasttext import FastText  # noqa: F401
     from .luis import Luis  # noqa: F401
     from .rasa2 import Rasa2  # noqa: F401
     from .rasa3 import Rasa3  # noqa: F401
     from .spacy import Spacy  # noqa: F401
-    from .char_ngram_intent_classifier import CharNgramIntentClassifier  # noqa: F401
     from .tfidf_intent_classifier import TfidfIntentClassifier  # noqa: 401
     from .vendor import Vendor  # noqa: 401
     from .watson_assistant import WatsonAssistant  # noqa: F401
