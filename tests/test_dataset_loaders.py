@@ -9,9 +9,9 @@ def test_from_huggingface():
 
 
 def test_from_watson():
-    from nlubridge import from_watson
+    from nlubridge import from_watson_assistant
 
-    ds = from_watson(os.path.join(FIXTURE_PATH, "watson_intents_export.csv"))
+    ds = from_watson_assistant(os.path.join(FIXTURE_PATH, "watson_intents_export.csv"))
     assert len(ds) == 4
     assert ds.texts[0][0] != '"'
     assert ds.texts[2] == "testing umläuts"

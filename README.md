@@ -115,7 +115,7 @@ logger.addHandler(logging.StreamHandler())
 | [spacy](https://spacy.io/usage/training#section-textcat) | ✓ | ✓ | ✓ | BoW linear + CNN |
 | [IBM Watson Assistant](https://www.ibm.com/watson/services/conversation/) | ✓  | ✓ | ✗ | Propietary (probably LR) |
 | [Microsoft LUIS](https://www.luis.ai/home) | needs testing | ✓ | ✓ | Propietary (probably LR) |
-| [CharNgramIntentClassifier](/nlubridge/vendors/telekom.py)  | ✓ | ✓ | ✗ | tf-idf on char n-grams + LR |
+| [CharNgramIntentClassifier](/nlubridge/vendors/char_ngram_intent_classifier.py)  | ✓ | ✓ | ✗ | tf-idf on char n-grams + LR |
 | [Rasa NLU](https://github.com/RasaHQ/rasa) | ✓ | ✓ | ✓ |  starspace like |
 
 ### Features

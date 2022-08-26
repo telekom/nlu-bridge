@@ -9,7 +9,7 @@ import spacy
 from spacy.pipeline.textcat import DEFAULT_SINGLE_TEXTCAT_MODEL
 from spacy.training import Example
 
-from .vendors import Vendor
+from .vendor import Vendor
 
 
 logger = logging.getLogger(__name__)

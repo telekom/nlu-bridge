@@ -9,7 +9,7 @@ import tempfile
 
 from fasttext import train_supervised
 
-from .vendors import Vendor
+from .vendor import Vendor
 
 
 logger = logging.getLogger(__name__)

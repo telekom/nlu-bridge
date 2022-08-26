@@ -4,7 +4,7 @@
 
 import datasets
 
-from nlubridge.datasets import NluDataset
+from nlubridge.nlu_dataset import NluDataset
 
 
 def from_huggingface(

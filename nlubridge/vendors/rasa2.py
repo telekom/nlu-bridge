@@ -24,9 +24,9 @@ from rasa.shared.nlu.constants import (
 from rasa.shared.nlu.training_data.formats.rasa import RasaReader
 from rasa.shared.nlu.training_data.training_data import TrainingData
 
-from nlubridge.datasets import EntityKeys, NluDataset
+from nlubridge.nlu_dataset import EntityKeys, NluDataset
 
-from .vendors import Vendor
+from .vendor import Vendor
 
 
 DEFAULT_INTENT_RASA_CONFIG_PATH = os.path.join(

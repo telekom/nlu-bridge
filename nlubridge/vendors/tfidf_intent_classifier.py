@@ -8,7 +8,7 @@ from sklearn.feature_extraction.text import CountVectorizer, TfidfTransformer
 from sklearn.linear_model import SGDClassifier
 from sklearn.pipeline import Pipeline
 
-from .vendors import Vendor
+from .vendor import Vendor
 
 
 logger = logging.getLogger(__name__)

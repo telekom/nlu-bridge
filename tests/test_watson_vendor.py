@@ -9,7 +9,7 @@ from nlubridge import NluDataset
 
 
 def test_watson(train_data):
-    from nlubridge.vendors.watson import WatsonAssistant
+    from nlubridge.vendors.watson_assistant import WatsonAssistant
 
     # load environment variables so Watson uses them
     load_dotenv()

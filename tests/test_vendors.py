@@ -4,7 +4,7 @@ from test_datasets import intents as sample_intents
 from test_datasets import texts as sample_texts
 
 from nlubridge import NluDataset
-from nlubridge.datasets import EntityKeys
+from nlubridge.nlu_dataset import EntityKeys
 
 
 # Following functions are run by all vendor tests to test
@@ -90,7 +90,7 @@ def test_rasa(train_data):
 
 
 def test_telekom(train_data):
-    from nlubridge.vendors.telekom import CharNgramIntentClassifier
+    from nlubridge.vendors.char_ngram_intent_classifier import CharNgramIntentClassifier
 
     model = CharNgramIntentClassifier()
     model.train_intent(train_data)

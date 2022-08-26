@@ -8,7 +8,7 @@ from test_vendors import (
 )
 
 from nlubridge import NluDataset
-from nlubridge.vendors.watson import WatsonAssistant
+from nlubridge.vendors.watson_assistant import WatsonAssistant
 
 
 FAKE_URL = "dummy.org"
@@ -21,7 +21,7 @@ def test_watson_mocked(train_data, mocker):
     # TODO: Also mock tests for use_bulk=False (see test_watson_vendor.py)
 
     # Mock the ibm_watson AssistantV1 API for requests implemented by this
-    mocker.patch("nlubridge.vendors.watson.AssistantV1", AssitantV1Mock)
+    mocker.patch("nlubridge.vendors.watson_assistant.AssistantV1", AssitantV1Mock)
 
     # Mock requests.Session.post() requests
     mocker.patch("requests.Session", SessionMock)

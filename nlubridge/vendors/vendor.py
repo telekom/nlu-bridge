@@ -8,7 +8,7 @@ import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.metrics import accuracy_score, classification_report, f1_score
 
-from ..datasets import OUT_OF_SCOPE_TOKEN, NluDataset
+from ..nlu_dataset import OUT_OF_SCOPE_TOKEN, NluDataset
 
 
 class Vendor(BaseEstimator, ClassifierMixin):

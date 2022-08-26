@@ -18,13 +18,14 @@ if TYPE_CHECKING:
     from .dataloaders.luis import from_luis  # noqa: F401
     from .dataloaders.rasa import from_rasa, to_rasa  # noqa: F401, F811
     from .dataloaders.utils import from_csv, from_json  # noqa: F401
-    from .dataloaders.watson import from_watson  # noqa: F401
-    from .datasets import (  # noqa: F401
+    from .dataloaders.watson_assistant import from_watson_assistant  # noqa: F401
+    from .nlu_dataset import (  # noqa: F401
         OUT_OF_SCOPE_TOKEN,
         EntityKeys,
         NluDataset,
         concat,
     )
+    from vendors.vendor import Vendor  # noqa: 401
 
 else:
     _import_structure = {
@@ -32,8 +33,9 @@ else:
         "dataloaders.luis": ["from_luis"],
         "dataloaders.rasa": ["from_rasa", "to_rasa"],
         "dataloaders.utils": ["from_json", "from_csv"],
-        "dataloaders.watson": ["from_watson"],
-        "datasets": ["OUT_OF_SCOPE_TOKEN", "EntityKeys", "NluDataset", "concat"],
+        "dataloaders.watson_assistant": ["from_watson_assistant"],
+        "nlu_dataset": ["OUT_OF_SCOPE_TOKEN", "EntityKeys", "NluDataset", "concat"],
+        "vendors.vendor": ["Vendor"],
     }
 
     sys.modules[__name__] = LazyImporter(

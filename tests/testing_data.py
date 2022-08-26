@@ -1,6 +1,6 @@
 import uuid
 
-from nlubridge.datasets import NluDataset
+from nlubridge.nlu_dataset import NluDataset
 
 
 class ToyDataset(NluDataset):

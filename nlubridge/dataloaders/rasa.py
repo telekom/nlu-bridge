@@ -25,7 +25,7 @@ from rasa.shared.nlu.training_data.message import Message
 from rasa.shared.nlu.training_data.training_data import TrainingData
 from rasa.shared.utils.io import write_yaml
 
-from nlubridge.datasets import EntityKeys, NluDataset
+from nlubridge.nlu_dataset import EntityKeys, NluDataset
 
 
 def from_rasa(filepath: Union[str, pathlib.Path], format: str = "yml") -> NluDataset:

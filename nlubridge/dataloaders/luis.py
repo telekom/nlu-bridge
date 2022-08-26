@@ -4,7 +4,7 @@
 
 import json
 
-from nlubridge.datasets import NluDataset
+from nlubridge.nlu_dataset import NluDataset
 
 from .utils import from_json
 

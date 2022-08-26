@@ -15,9 +15,9 @@ from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 from ibm_watson import AssistantV1
 from tqdm import tqdm
 
-from nlubridge.datasets import OUT_OF_SCOPE_TOKEN
+from nlubridge.nlu_dataset import OUT_OF_SCOPE_TOKEN
 
-from .vendors import Vendor
+from .vendor import Vendor
 
 
 logger = logging.getLogger(__name__)

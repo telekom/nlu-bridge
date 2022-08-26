@@ -24,7 +24,7 @@ from rasa.shared.nlu.constants import (
 
 from nlubridge import EntityKeys, NluDataset, to_rasa
 
-from .vendors import Vendor
+from .vendor import Vendor
 
 
 logger = logging.getLogger(__name__)

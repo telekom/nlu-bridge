@@ -11,8 +11,8 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import Pipeline
 from sklearn.svm import OneClassSVM
 
-from ..datasets import OUT_OF_SCOPE_TOKEN
-from .vendors import Vendor
+from ..nlu_dataset import OUT_OF_SCOPE_TOKEN
+from .vendor import Vendor
 
 
 logger = logging.getLogger(__name__)

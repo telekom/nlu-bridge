@@ -6,7 +6,7 @@ import collections
 import csv
 import json
 
-from nlubridge.datasets import EntityKeys, NluDataset
+from nlubridge.nlu_dataset import EntityKeys, NluDataset
 
 
 def from_csv(filepath, text_col, intent_col) -> NluDataset:

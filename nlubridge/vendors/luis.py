@@ -14,8 +14,8 @@ import requests
 from ratelimit import rate_limited
 from requests.compat import urljoin
 
-from ..datasets import OUT_OF_SCOPE_TOKEN
-from .vendors import Vendor
+from ..nlu_dataset import OUT_OF_SCOPE_TOKEN
+from .vendor import Vendor
 
 
 sys.path.append("../..")
