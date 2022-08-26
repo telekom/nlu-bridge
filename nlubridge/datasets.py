@@ -3,14 +3,13 @@
 # which is available at https://opensource.org/licenses/MIT
 
 import collections
-import csv
 import itertools
 import json
 import numbers
 import random
 import warnings
 from pathlib import Path
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional
 
 import numpy as np
 from sklearn.model_selection import StratifiedKFold, train_test_split
