@@ -47,17 +47,19 @@ can be downloaded (for the  model de_core_news_sm) with
 ```
 python -m spacy download de_core_news_sm
 ```
+
 ### Migration from v0
 
-With realease 1.0.0 we introduce a couple of changes to the names of files and vendor 
+With realease 1.0.0 we introduce a couple of changes to the names of files and vendor
 classes(see also https://github.com/telekom/nlu-bridge/issues/18).
 
 Most notably:
+
 - datasets.NLUdataset -> nlu_dataset.NluDataset
 - vendors.vendors.Vendor -> - vendors.vendor.Vendor
 - new supackage `dataloaders` that holds all functions for loading data into an NluDataset
-- new function `nlu_dataset.concat` to concatenate NluDatasets passed in a list 
-- can load dataloaders, NluDataset, Vendor, OUT_OF_SCOPE_TOKEN, EntityKeys, concat, 
+- new function `nlu_dataset.concat` to concatenate NluDatasets passed in a list
+- can load dataloaders, NluDataset, Vendor, OUT_OF_SCOPE_TOKEN, EntityKeys, concat,
   directly from nlubridge like `from nlubridge import Vendor`
 - Load vendors like `from nlubridge.vendors import Rasa3`
 - former `TelekomModel` now called `CharNgramIntentClassifier`
@@ -95,7 +97,7 @@ train, test = dataset.train_test_split(test_size=0.25, random_state=0, stratific
 
 To compare your own vendor or algorithm to existing vendors in this package, you can
 write a Vendor Subclass for your vendor, and possibly a dataloader function. Feel free
-to share your implementation using this repo. Similarly, fixes and extensions for the 
+to share your implementation using this repo. Similarly, fixes and extensions for the
 existing vendors are always welcome.
 
 ### Logging
@@ -126,9 +128,9 @@ logger.addHandler(logging.StreamHandler())
   and provided to any different vendor.
 
 - **Data Loaders**\
-  The [`dataloaders`](/nlubridge/dataloaders/) subpackage provides functions to load 
+  The [`dataloaders`](/nlubridge/dataloaders/) subpackage provides functions to load
   data that are in a vendor-specific format as NluDataset.
-  
+
 ### List of supported vendors
 
 **NOTE:** Currently entity recognition is not implemented for any of the vendors except Rasa!
