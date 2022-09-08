@@ -117,13 +117,13 @@ logger.addHandler(logging.StreamHandler())
 ### Concepts / Architecture
 
 - **Vendors**\
-  The [`vendors`](/nlubridge/vendors/) module implements standardized interfaces to the
-  specific vendors. A specific `Vendor` instance is in charge of dealing with converting
-  the data to the required format, uploading data to the cloud if applicable, training
-  models and making predictions.
+  The [`vendors`](/nlubridge/vendors/) subpackage implements standardized interfaces to
+  the specific vendors. A specific `Vendor` instance is in charge of dealing with
+  converting the data to the required format, uploading data to the cloud if applicable,
+  training models and making predictions.
 
 - **Datasets**\
-  The [`nlu_dataset`](/nlubridge/datasets/) module provides a standard interface to
+  The [`nlu_dataset`](/nlubridge/nlu_dataset/) module provides a standard interface to
   NLU data. Data stored in different vendor's custom format can be loaded as a dataset
   and provided to any different vendor.
 
@@ -133,7 +133,6 @@ logger.addHandler(logging.StreamHandler())
 
 ### List of supported vendors
 
-**NOTE:** Currently entity recognition is not implemented for any of the vendors except Rasa!
 
 | Vendor Class | Status | Intents | Entities | Algorithm |
 | ------ | ------ | ------- | -------- | --------- |
@@ -141,7 +140,7 @@ logger.addHandler(logging.StreamHandler())
 | [FastText](https://fasttext.cc) |  ✓  | ✓ | ✗ |  fasttext |
 | [Spacy](https://spacy.io/usage/training#section-textcat) | ✓ | ✓ | ✗ | BoW linear + CNN |
 | [WatsonAssistant](https://www.ibm.com/watson/services/conversation/) | ✓  | ✓ | ✗ | Propietary (probably LR) |
-| [Luis](https://www.luis.ai/home) | needs testing | ✓ | ✓ | Propietary (probably LR) |
+| [Luis](https://www.luis.ai/home) | needs testing | ✓ | ✗ | Propietary (probably LR) |
 | [CharNgramIntentClassifier](/nlubridge/vendors/char_ngram_intent_classifier.py)  | ✓ | ✓ | ✗ | tf-idf on char n-grams + SGD |
 | [Rasa2](https://github.com/RasaHQ/rasa) | ✓ | ✓ | ✓ |  configurable |
 | [Rasa3](https://github.com/RasaHQ/rasa) | ✓ | ✓ | ✓ |  configurable |

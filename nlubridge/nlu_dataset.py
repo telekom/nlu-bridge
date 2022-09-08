@@ -2,6 +2,7 @@
 # This software is distributed under the terms of the MIT license
 # which is available at https://opensource.org/licenses/MIT
 
+from __future__ import annotations
 import collections
 import itertools
 import json
@@ -9,10 +10,14 @@ import numbers
 import random
 import warnings
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Sequence, Union
 
 import numpy as np
-from sklearn.model_selection import StratifiedKFold, train_test_split
+from sklearn.model_selection import (
+    StratifiedKFold,
+    train_test_split,
+    BaseCrossValidator,
+)
 
 
 DATA_PATH = Path(__file__).parents[2] / "data"
@@ -167,7 +172,7 @@ class NluDataset:
         """Return the class name."""
         return self.__class__.__name__
 
-    def join(self, other):
+    def join(self, other: NluDataset) -> NluDataset:
         """Join this NluDataset with another one."""
         return self + other
 
@@ -245,7 +250,7 @@ class NluDataset:
         ds = self.filter_by_intent_name(allowed=allowed)
         return ds
 
-    def clip_by_intent_frequency(self, max_frequency, min_frequency=None):
+    def clip_by_intent_frequency(self, max_frequency, min_frequency = None):
         """
         Sample the dataset leaving only `max_freq` samples per intent.
 
@@ -301,7 +306,9 @@ class NluDataset:
 
         return NluDataset(texts, intents, None)
 
-    def subsample_by_intent_frequency(self, target_rate, min_frequency, shuffle=False):
+    def subsample_by_intent_frequency(
+        self, target_rate, min_frequency, shuffle=False
+    ):
         """
         Return a smaller dataset with similar intent distribution.
 
@@ -395,12 +402,12 @@ class NluDataset:
         test_ds = NluDataset(texts_test, intents_test, entities_test)
         return train_ds, test_ds
 
-    def _filter_by_index_list(self, idx_list):
+    def _filter_by_index_list(self, idx_list: Sequence[int]):
         filtered = [d for (idx, d) in enumerate(self.data) if idx in idx_list]
         texts, intents, entities = zip(*filtered)
         return NluDataset(texts, intents, entities)
 
-    def cross_validation_splits(self, cv_iterator=None):
+    def cross_validation_splits(self, cv_iterator: BaseCrossValidator = None):
         """Cross validation generator function."""
         if cv_iterator is None:
             cv_iterator = StratifiedKFold(n_splits=5, shuffle=True)
@@ -445,7 +452,7 @@ class NluDataset:
 
         return dict(d)
 
-    def to_json(self, path=None, records=None):
+    def to_json(self, path: Union[Path, str] = None, records=None):
         """
         Convert dataset to JSON.
 
@@ -469,7 +476,7 @@ class NluDataset:
             json.dump(records, f, indent=4, ensure_ascii=False)
 
 
-def concat(dataset_list):
+def concat(dataset_list: List[NluDataset]) -> NluDataset:
     """
     Concatenate NluDatasets.
 
