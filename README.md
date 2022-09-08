@@ -133,7 +133,6 @@ logger.addHandler(logging.StreamHandler())
 
 ### List of supported vendors
 
-
 | Vendor Class | Status | Intents | Entities | Algorithm |
 | ------ | ------ | ------- | -------- | --------- |
 | [TfidfIntentClassifier](/nlubridge/vendors/tfidf_intent_classifier.py) |  ✓  | ✓ | ✗ |  TFIDF on words + SVM |
