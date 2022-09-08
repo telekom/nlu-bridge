@@ -250,7 +250,7 @@ class NluDataset:
         ds = self.filter_by_intent_name(allowed=allowed)
         return ds
 
-    def clip_by_intent_frequency(self, max_frequency, min_frequency = None):
+    def clip_by_intent_frequency(self, max_frequency, min_frequency=None):
         """
         Sample the dataset leaving only `max_freq` samples per intent.
 
@@ -306,9 +306,7 @@ class NluDataset:
 
         return NluDataset(texts, intents, None)
 
-    def subsample_by_intent_frequency(
-        self, target_rate, min_frequency, shuffle=False
-    ):
+    def subsample_by_intent_frequency(self, target_rate, min_frequency, shuffle=False):
         """
         Return a smaller dataset with similar intent distribution.
 
