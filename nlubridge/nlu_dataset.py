@@ -3,6 +3,7 @@
 # which is available at https://opensource.org/licenses/MIT
 
 from __future__ import annotations
+
 import collections
 import itertools
 import json
@@ -14,9 +15,9 @@ from typing import Dict, List, Optional, Sequence, Union
 
 import numpy as np
 from sklearn.model_selection import (
+    BaseCrossValidator,
     StratifiedKFold,
     train_test_split,
-    BaseCrossValidator,
 )
 
 
