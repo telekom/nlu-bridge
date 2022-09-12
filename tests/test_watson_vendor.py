@@ -1,21 +1,21 @@
 from dotenv import load_dotenv
-
-from nlubridge import NLUdataset
 from test_vendors import (
+    assert_multiple_utterances_predicted,
     assert_preds_are_intents,
     assert_return_probs,
-    assert_multiple_utterances_predicted,
 )
+
+from nlubridge import NluDataset
 
 
 def test_watson(train_data):
-    from nlubridge.vendors.watson import Watson
+    from nlubridge.vendors.watson_assistant import WatsonAssistant
 
     # load environment variables so Watson uses them
     load_dotenv()
 
     # test initialization
-    watson = Watson()
+    watson = WatsonAssistant()
 
     # test train_intent()
     watson.train_intent(train_data)
@@ -33,7 +33,7 @@ def test_watson(train_data):
     # TODO: fix vendor for test: assert_oos_prediction()
 
     # test test_intent() (non-bulk)
-    test_ds = NLUdataset(["Ich habe kein DSL und telefon"])
+    test_ds = NluDataset(["Ich habe kein DSL und telefon"])
     watson.set_bulk(False)
     assert watson.use_bulk is False
     preds = watson.test_intent(test_ds)

@@ -2,27 +2,29 @@
 # This software is distributed under the terms of the MIT license
 # which is available at https://opensource.org/licenses/MIT
 from __future__ import annotations
-import os
-import logging
-import asyncio
-import tempfile
-import pathlib
-from typing import List, Optional, Union, Tuple
 
-from rasa.model_training import train_nlu
+import asyncio
+import logging
+import os
+import pathlib
+import tempfile
+from typing import List, Optional, Tuple, Union
+
 from rasa.core.agent import Agent
+from rasa.model_training import train_nlu
 from rasa.shared.nlu.constants import (
+    ENTITIES,
+    ENTITY_ATTRIBUTE_END,
+    ENTITY_ATTRIBUTE_START,
+    ENTITY_ATTRIBUTE_TYPE,
     INTENT,
     INTENT_NAME_KEY,
-    ENTITIES,
-    ENTITY_ATTRIBUTE_TYPE,
-    ENTITY_ATTRIBUTE_START,
-    ENTITY_ATTRIBUTE_END,
     PREDICTED_CONFIDENCE_KEY,
 )
 
-from .vendors import Vendor
-from nlubridge import NLUdataset, EntityKeys, to_rasa
+from nlubridge import EntityKeys, NluDataset, to_rasa
+
+from .vendor import Vendor
 
 
 logger = logging.getLogger(__name__)
@@ -49,7 +51,7 @@ class Rasa3(Vendor):
         self.config = model_config
         self.agent = None
 
-    def train(self, dataset: NLUdataset) -> Rasa3:
+    def train(self, dataset: NluDataset) -> Rasa3:
         """
         Train intent and/or entity classification.
 
@@ -71,7 +73,7 @@ class Rasa3(Vendor):
             logger.info("Model loaded!")
         return self
 
-    def train_intent(self, dataset: NLUdataset) -> Rasa3:
+    def train_intent(self, dataset: NluDataset) -> Rasa3:
         """
         Train intent classification.
 
@@ -83,7 +85,7 @@ class Rasa3(Vendor):
         """
         return self.train(dataset)
 
-    def test(self, dataset: NLUdataset) -> NLUdataset:
+    def test(self, dataset: NluDataset) -> NluDataset:
         """
         Test a given dataset.
 
@@ -96,7 +98,7 @@ class Rasa3(Vendor):
             additional attribute 'probs' (List[float]).
         """
         if self.agent is None:
-            logger.error("Rasa3 classifier has to be trained first!")
+            raise RuntimeError("Rasa3 classifier has to be trained first!")
         intents = []
         probs = []
         entities_list = []
@@ -119,12 +121,12 @@ class Rasa3(Vendor):
             probs.append(prob)
             entities_list.append(entities)
 
-        res = NLUdataset(dataset.texts, intents, entities_list)
+        res = NluDataset(dataset.texts, intents, entities_list)
         res.probs = probs
         return res
 
     def test_intent(
-        self, dataset: NLUdataset, return_probs: bool = False
+        self, dataset: NluDataset, return_probs: bool = False
     ) -> Union[List[str], Tuple[List[str], List[float]]]:
         """
         Test a given dataset and obtain just the intent classification results.
@@ -137,7 +139,7 @@ class Rasa3(Vendor):
             argument 'return_probs')
         """
         if self.agent is None:
-            logger.error("Rasa3 classifier has to be trained first!")
+            raise RuntimeError("Rasa3 classifier has to be trained first!")
         intents = []
         probs = []
         for text in dataset.texts:

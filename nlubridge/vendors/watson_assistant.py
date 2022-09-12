@@ -3,27 +3,28 @@
 # This software is distributed under the terms of the MIT license
 # which is available at https://opensource.org/licenses/MIT
 
+import json
+import logging
 import os
 import time
-from datetime import datetime
-import json
 from concurrent.futures import ThreadPoolExecutor
-import logging
+from datetime import datetime
 
 import requests
-from tqdm import tqdm
-from ibm_watson import AssistantV1
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
+from ibm_watson import AssistantV1
+from tqdm import tqdm
 
-from ..datasets import OUT_OF_SCOPE_TOKEN
-from .vendors import Vendor
+from nlubridge.nlu_dataset import OUT_OF_SCOPE_TOKEN
+
+from .vendor import Vendor
 
 
 logger = logging.getLogger(__name__)
 
 
-class Watson(Vendor):
-    alias = "watson"
+class WatsonAssistant(Vendor):
+    alias = "watson_assistant"
 
     def __init__(
         self,
@@ -181,7 +182,7 @@ class Watson(Vendor):
         Validate an utterance text.
 
         Validate the test data text so it conforms to the
-        Watson API format, see
+        Watson Assistant API format, see
         https://www.ibm.com/watson/developercloud/conversation/api/v1/?python#send_message
 
         :param text: User input
@@ -204,7 +205,7 @@ class Watson(Vendor):
 
     def _convert(self, dataset):
         """
-        Convert data from the standardized format to Watson format.
+        Convert data from the standardized format to Watson Assistant format.
 
         This function accepts a dataset as input and returns a list of
         samples in the vendor specific expected format.

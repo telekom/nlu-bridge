@@ -2,20 +2,20 @@
 # This software is distributed under the terms of the MIT license
 # which is available at https://opensource.org/licenses/MIT
 
-import os
+import concurrent.futures
 import datetime
 import json
 import logging
+import os
 import sys
 import time
-import concurrent.futures
 
-from ratelimit import rate_limited
 import requests
+from ratelimit import rate_limited
 from requests.compat import urljoin
 
-from ..datasets import OUT_OF_SCOPE_TOKEN
-from .vendors import Vendor
+from ..nlu_dataset import OUT_OF_SCOPE_TOKEN
+from .vendor import Vendor
 
 
 sys.path.append("../..")
@@ -25,10 +25,10 @@ global start_time
 
 
 def _unwrap_self(arg, **kwarg):
-    return LUIS.test_single_intent(*arg, **kwarg)
+    return Luis.test_single_intent(*arg, **kwarg)
 
 
-class LUIS(Vendor):
+class Luis(Vendor):
     alias = "luis"
 
     AUTHORING_RATE_LIMIT = 4.99  # queries per second
@@ -78,7 +78,7 @@ class LUIS(Vendor):
         self.session.headers.update({"Ocp-Apim-Subscription-Key": authoring_key})
         logger.debug(f"Created new app with id {self.app_id}")
 
-    @property
+    @property  # type: ignore
     @rate_limited(AUTHORING_RATE_LIMIT)
     def requests(self):
         """Util method to access self.session."""

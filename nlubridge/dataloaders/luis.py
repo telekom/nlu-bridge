@@ -4,11 +4,12 @@
 
 import json
 
-from nlubridge.datasets import NLUdataset
+from nlubridge.nlu_dataset import NluDataset
+
 from .utils import from_json
 
 
-def from_luis(filepath) -> NLUdataset:
+def from_luis(filepath) -> NluDataset:
     """
     Load data in LUIS format as NLUdataset.
 

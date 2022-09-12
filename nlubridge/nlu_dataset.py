@@ -2,17 +2,23 @@
 # This software is distributed under the terms of the MIT license
 # which is available at https://opensource.org/licenses/MIT
 
+from __future__ import annotations
+
 import collections
 import itertools
 import json
 import numbers
 import random
-from pathlib import Path
-from typing import List
 import warnings
+from pathlib import Path
+from typing import Dict, List, Optional, Sequence, Union
 
-from sklearn.model_selection import train_test_split, StratifiedKFold
 import numpy as np
+from sklearn.model_selection import (
+    BaseCrossValidator,
+    StratifiedKFold,
+    train_test_split,
+)
 
 
 DATA_PATH = Path(__file__).parents[2] / "data"
@@ -27,12 +33,12 @@ class EntityKeys:
     END = "end"
 
 
-class NLUdataset:
+class NluDataset:
     def __init__(
         self,
         texts: List[str],
-        intents: List[str] = None,
-        entities: List[List[dict]] = None,
+        intents: Optional[List[str]] = None,
+        entities: Optional[List[List[dict]]] = None,
         out_of_scope=False,
         max_intent_length=None,
         seed=42,
@@ -61,25 +67,29 @@ class NLUdataset:
 
         self.texts = texts
         self.n_samples = len(self.texts)
+        self.intents: List[Optional[str]]
+        self.entities: List[List[Dict]]
 
         if not intents or intents is None:
-            self.unique_intents = None  # TODO: Can this be empty list?
+            self.unique_intents = []
             if out_of_scope:
                 self.unique_intents = [OUT_OF_SCOPE_TOKEN]
-            self.n_intents = None  # TODO: Can this be 0?
+            self.n_intents = len(self.unique_intents)
             self.intents = [None for _ in texts]
         else:
             if max_intent_length:
-                self.intents = [intent[:max_intent_length] for intent in intents]
-                if len(set(intents)) > len(set(self.intents)):
+                cropped_intents = [intent[:max_intent_length] for intent in intents]
+                if len(set(intents)) > len(set(cropped_intents)):
                     warnings.warn(
                         "Intent names are not unique on first {} characters".format(
                             max_intent_length
                         )
                     )
-            else:
-                self.intents = intents
-            self.unique_intents = list(dict.fromkeys(self.intents))
+                intents = cropped_intents
+            # Make copy so typing is consistent (makes sure we don't accidentally add
+            # None elements to the original list from within this class)
+            self.intents = list(intents)
+            self.unique_intents = list(dict.fromkeys(intents))
 
             if out_of_scope:
                 self.unique_intents += [OUT_OF_SCOPE_TOKEN]
@@ -87,11 +97,12 @@ class NLUdataset:
             self.n_intents = len(self.unique_intents)
             self.intent_frequencies = collections.Counter(self.intents)
 
-        self.entities = entities
         if not entities:
+            self.entities = [list() for _ in texts]
             self.unique_entities = []
             self.n_entities = 0
-            self.entities = [list() for _ in texts]
+        else:
+            self.entities = entities
 
         if entities is not None:
             it = itertools.chain.from_iterable(entities)
@@ -118,13 +129,13 @@ class NLUdataset:
             texts = self.texts[key]
             intents = self.intents[key]
             entities = self.entities[key]
-            return NLUdataset(texts, intents, entities)
+            return NluDataset(texts, intents, entities)
 
         elif isinstance(key, collections.abc.Sequence) or isinstance(key, np.ndarray):
             texts = [self.texts[each] for each in key]
             intents = [self.intents[each] for each in key]
             entities = [self.entities[each] for each in key]
-            return NLUdataset(texts, intents, entities)
+            return NluDataset(texts, intents, entities)
 
         elif isinstance(key, numbers.Integral):
             return self.data[key]
@@ -133,7 +144,7 @@ class NLUdataset:
         return len(self.texts)
 
     def __add__(self, other):
-        return NLUdataset(
+        return NluDataset(
             texts=self.texts + other.texts,
             intents=self.intents + other.intents,
             entities=self.entities + other.entities,
@@ -142,6 +153,11 @@ class NLUdataset:
     @classmethod
     def from_joined(cls, *datasets):
         """Join NLUdatasets provided in a list."""
+        warnings.warn(
+            "This method will be removed in a future version. Please use "
+            "nlubridge.concat() or NluDataset.join().",
+            DeprecationWarning,
+        )
         texts, intents, entities = [], [], []
 
         for dataset in datasets:
@@ -156,6 +172,10 @@ class NLUdataset:
     def name(self):
         """Return the class name."""
         return self.__class__.__name__
+
+    def join(self, other: NluDataset) -> NluDataset:
+        """Join this NluDataset with another one."""
+        return self + other
 
     def shuffle(self):
         """Shuffles the dataset."""
@@ -185,7 +205,9 @@ class NLUdataset:
         return sampled
 
     def filter_by_intent_name(
-        self, excluded: List[str] = None, allowed: List[str] = None
+        self,
+        excluded: Optional[List[str]] = None,
+        allowed: Optional[List[str]] = None,
     ):
         """
         Filter the dataset by intents.
@@ -201,8 +223,8 @@ class NLUdataset:
         if allowed is None:
             allowed = self.unique_intents
 
-        texts, intents = [], []
-        for text, intent, _ in self.data:
+        texts, intents, entities = [], [], []
+        for text, intent, entity_list in self.data:
             if intent in excluded:
                 continue
 
@@ -211,8 +233,9 @@ class NLUdataset:
 
             texts.append(text)
             intents.append(intent)
+            entities.append(entity_list)
 
-        return NLUdataset(texts, intents, None)
+        return NluDataset(texts, intents, None)
 
     def select_first_n_intents(self, n: int):
         """
@@ -282,7 +305,7 @@ class NLUdataset:
             texts.append(text)
             intents.append(intent)
 
-        return NLUdataset(texts, intents, None)
+        return NluDataset(texts, intents, None)
 
     def subsample_by_intent_frequency(self, target_rate, min_frequency, shuffle=False):
         """
@@ -313,7 +336,7 @@ class NLUdataset:
                 texts.append(text)
                 intents.append(intent)
                 entities.append(entity_list)
-        return NLUdataset(texts, intents, entities)
+        return NluDataset(texts, intents, entities)
 
     def train_test_split(
         self, test_size=0.25, random_state=0, stratification="intents", **args
@@ -374,16 +397,16 @@ class NLUdataset:
             **args,
         )
 
-        train_ds = NLUdataset(texts_train, intents_train, entities_train)
-        test_ds = NLUdataset(texts_test, intents_test, entities_test)
+        train_ds = NluDataset(texts_train, intents_train, entities_train)
+        test_ds = NluDataset(texts_test, intents_test, entities_test)
         return train_ds, test_ds
 
-    def _filter_by_index_list(self, idx_list):
+    def _filter_by_index_list(self, idx_list: Sequence[int]):
         filtered = [d for (idx, d) in enumerate(self.data) if idx in idx_list]
         texts, intents, entities = zip(*filtered)
-        return NLUdataset(texts, intents, entities)
+        return NluDataset(texts, intents, entities)
 
-    def cross_validation_splits(self, cv_iterator=None):
+    def cross_validation_splits(self, cv_iterator: BaseCrossValidator = None):
         """Cross validation generator function."""
         if cv_iterator is None:
             cv_iterator = StratifiedKFold(n_splits=5, shuffle=True)
@@ -428,7 +451,7 @@ class NLUdataset:
 
         return dict(d)
 
-    def to_json(self, path=None, records=None):
+    def to_json(self, path: Union[Path, str] = None, records=None):
         """
         Convert dataset to JSON.
 
@@ -450,3 +473,15 @@ class NLUdataset:
 
         with open(path, "w") as f:
             json.dump(records, f, indent=4, ensure_ascii=False)
+
+
+def concat(dataset_list: List[NluDataset]) -> NluDataset:
+    """
+    Concatenate NluDatasets.
+
+    :param dataset_list: list of NluDataset objects
+    """
+    joined = NluDataset([])
+    for ds in dataset_list:
+        joined += ds
+    return joined

@@ -6,7 +6,7 @@
 
 import os
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 
 project_name = "nlubridge"
@@ -61,10 +61,9 @@ setup(
     install_requires=["sklearn", "python-dotenv", "lazy-imports", "ratelimit"],
     extras_require={
         "watson": ["ibm_watson", "tqdm", "requests"],
-        "telekom": ["fuzzywuzzy", "python-Levenshtein"],
         "fasttext": ["fasttext"],
         "luis": ["requests", "ratelimit"],
-        "rasa": ["rasa~=2.0"],
+        "rasa2": ["rasa~=2.0"],
         "rasa3": ["rasa~=3.0"],
         "spacy": ["spacy==3.1.3"],
         "huggingface": ["datasets"],
@@ -77,6 +76,10 @@ setup(
             "setuptools",
             "wheel",
             "twine",
+            "isort",
+            "mdformat",
+            "mypy",
+            "pylint==2.14.5",
         ],
     },
     include_package_data=True,

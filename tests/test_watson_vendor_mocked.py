@@ -1,13 +1,14 @@
-import requests
 import json
 
-from nlubridge.vendors.watson import Watson
-from nlubridge import NLUdataset
+import requests
 from test_vendors import (
+    assert_multiple_utterances_predicted,
     assert_preds_are_intents,
     assert_return_probs,
-    assert_multiple_utterances_predicted,
 )
+
+from nlubridge import NluDataset
+from nlubridge.vendors.watson_assistant import WatsonAssistant
 
 
 FAKE_URL = "dummy.org"
@@ -20,13 +21,13 @@ def test_watson_mocked(train_data, mocker):
     # TODO: Also mock tests for use_bulk=False (see test_watson_vendor.py)
 
     # Mock the ibm_watson AssistantV1 API for requests implemented by this
-    mocker.patch("nlubridge.vendors.watson.AssistantV1", AssitantV1Mock)
+    mocker.patch("nlubridge.vendors.watson_assistant.AssistantV1", AssitantV1Mock)
 
     # Mock requests.Session.post() requests
     mocker.patch("requests.Session", SessionMock)
 
     # test initialization
-    watson = Watson(FAKE_URL, FAKE_KEY, WS_NAME)
+    watson = WatsonAssistant(FAKE_URL, FAKE_KEY, WS_NAME)
 
     # test train_intent()
     watson.train_intent(train_data)
@@ -44,7 +45,7 @@ def test_watson_mocked(train_data, mocker):
     assert len(preds) == 360
     assert len(probs) == 360
 
-    test_ds = NLUdataset(["Ich habe kein DSL und telefon"])
+    test_ds = NluDataset(["Ich habe kein DSL und telefon"])
 
     # test n_best_intents argument to test_intent()
     preds, probs = watson.test_intent(test_ds, return_probs=True, n_best_intents=5)

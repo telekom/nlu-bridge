@@ -9,13 +9,13 @@ import spacy
 from spacy.pipeline.textcat import DEFAULT_SINGLE_TEXTCAT_MODEL
 from spacy.training import Example
 
-from .vendors import Vendor
+from .vendor import Vendor
 
 
 logger = logging.getLogger(__name__)
 
 
-class SpacyClassifier(Vendor):
+class Spacy(Vendor):
     alias = "spacy"
 
     def __init__(self, n_iter=10, config=None, language="en"):

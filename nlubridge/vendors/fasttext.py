@@ -2,16 +2,15 @@
 # This software is distributed under the terms of the MIT license
 # which is available at https://opensource.org/licenses/MIT
 
+import logging
+import os
 import re
 import tempfile
-import os
-import logging
 
 from fasttext import train_supervised
 
-from .vendors import Vendor
+from .vendor import Vendor
 
-config = {}
 
 logger = logging.getLogger(__name__)
 DEFAULT_CONFIG = {

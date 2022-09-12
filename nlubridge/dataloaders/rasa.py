@@ -3,31 +3,32 @@
 # which is available at https://opensource.org/licenses/MIT
 
 from __future__ import annotations
+
 import pathlib
 from typing import Union
 
-from rasa.shared.nlu.training_data.training_data import TrainingData
-from rasa.shared.nlu.training_data.message import Message
-from rasa.shared.nlu.training_data.formats.rasa_yaml import (
-    RasaYAMLWriter,
-    RasaYAMLReader,
-)
-from rasa.shared.nlu.training_data.formats.rasa import RasaWriter, RasaReader
-from rasa.shared.utils.io import write_yaml
 from rasa.shared.nlu.constants import (
-    TEXT,
-    INTENT,
     ENTITIES,
-    ENTITY_ATTRIBUTE_TYPE,
-    ENTITY_ATTRIBUTE_START,
     ENTITY_ATTRIBUTE_END,
+    ENTITY_ATTRIBUTE_START,
+    ENTITY_ATTRIBUTE_TYPE,
     ENTITY_ATTRIBUTE_VALUE,
+    INTENT,
+    TEXT,
 )
+from rasa.shared.nlu.training_data.formats.rasa import RasaReader, RasaWriter
+from rasa.shared.nlu.training_data.formats.rasa_yaml import (
+    RasaYAMLReader,
+    RasaYAMLWriter,
+)
+from rasa.shared.nlu.training_data.message import Message
+from rasa.shared.nlu.training_data.training_data import TrainingData
+from rasa.shared.utils.io import write_yaml
 
-from nlubridge.datasets import NLUdataset, EntityKeys
+from nlubridge.nlu_dataset import EntityKeys, NluDataset
 
 
-def from_rasa(filepath: Union[str, pathlib.Path], format: str = "yml") -> NLUdataset:
+def from_rasa(filepath: Union[str, pathlib.Path], format: str = "yml") -> NluDataset:
     """
     Load data stored in Rasa's yml- resp. json-format as NLUdataset.
 
@@ -66,11 +67,11 @@ def from_rasa(filepath: Union[str, pathlib.Path], format: str = "yml") -> NLUdat
             es.append(entity)
         entities.append(es)
 
-    return NLUdataset(texts, intents, entities)
+    return NluDataset(texts, intents, entities)
 
 
 def to_rasa(
-    dataset: NLUdataset, filepath: Union[str, pathlib.Path], format: str = "yml"
+    dataset: NluDataset, filepath: Union[str, pathlib.Path], format: str = "yml"
 ):
     """
     Write dataset in Rasa's yml- or json-format.

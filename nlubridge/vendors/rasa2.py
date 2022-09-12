@@ -1,29 +1,32 @@
 # Copyright (c) 2021 Klaus-Peter Engelbrecht, Deutsche Telekom AG
 # This software is distributed under the terms of the MIT license
 # which is available at https://opensource.org/licenses/MIT
+
 from __future__ import annotations
-from typing import List, Optional, Union, Tuple
+
 import os
 import pathlib
+from typing import List, Optional, Tuple, Union
 
 from rasa.nlu import config
 from rasa.nlu.model import Trainer
-from rasa.shared.nlu.training_data.formats.rasa import RasaReader
-from rasa.shared.nlu.training_data.training_data import TrainingData
 from rasa.shared.nlu.constants import (
-    TEXT,
+    ENTITIES,
+    ENTITY_ATTRIBUTE_END,
+    ENTITY_ATTRIBUTE_START,
+    ENTITY_ATTRIBUTE_TYPE,
+    ENTITY_ATTRIBUTE_VALUE,
     INTENT,
     INTENT_NAME_KEY,
-    ENTITIES,
-    ENTITY_ATTRIBUTE_TYPE,
-    ENTITY_ATTRIBUTE_START,
-    ENTITY_ATTRIBUTE_END,
-    ENTITY_ATTRIBUTE_VALUE,
     PREDICTED_CONFIDENCE_KEY,
+    TEXT,
 )
+from rasa.shared.nlu.training_data.formats.rasa import RasaReader
+from rasa.shared.nlu.training_data.training_data import TrainingData
 
-from .vendors import Vendor
-from nlubridge.datasets import NLUdataset, EntityKeys
+from nlubridge.nlu_dataset import EntityKeys, NluDataset
+
+from .vendor import Vendor
 
 
 DEFAULT_INTENT_RASA_CONFIG_PATH = os.path.join(
@@ -32,8 +35,8 @@ DEFAULT_INTENT_RASA_CONFIG_PATH = os.path.join(
 ENTITY_KEY_VALUE = "value"  # Rasa provides an explicit value parameter for its entities
 
 
-class Rasa(Vendor):
-    alias = "rasa"
+class Rasa2(Vendor):
+    alias = "rasa2"
 
     def __init__(self, model_config: Optional[str] = None):
         """
@@ -49,7 +52,7 @@ class Rasa(Vendor):
         self.config = model_config
         self.interpreter = None
 
-    def train(self, dataset: NLUdataset) -> Rasa:
+    def train(self, dataset: NluDataset) -> Rasa2:
         """
         Train intent and/or entity classification.
 
@@ -62,7 +65,7 @@ class Rasa(Vendor):
         self.interpreter = trainer.train(training_data)
         return self
 
-    def train_intent(self, dataset: NLUdataset) -> Rasa:
+    def train_intent(self, dataset: NluDataset) -> Rasa2:
         """
         Train intent classification.
 
@@ -74,7 +77,7 @@ class Rasa(Vendor):
         """
         return self.train(dataset)
 
-    def test(self, dataset: NLUdataset) -> NLUdataset:
+    def test(self, dataset: NluDataset) -> NluDataset:
         """
         Test a given dataset.
 
@@ -86,9 +89,11 @@ class Rasa(Vendor):
             the predicted intent classification probabilities are accessible via the
             additional attribute 'probs' (List[float]).
         """
-        intents = []
-        probs = []
-        entities_list = []
+        intents: List[str] = []
+        probs: List[float] = []
+        entities_list: List[List[dict]] = []
+        if self.interpreter is None:
+            raise Exception("Rasa2 classifier has to be trained first!")
         for text in dataset.texts:
             result = self.interpreter.parse(text)
             intent = result.get(INTENT, {}).get(INTENT_NAME_KEY)
@@ -106,12 +111,12 @@ class Rasa(Vendor):
             probs.append(prob)
             entities_list.append(entities)
 
-        res = NLUdataset(dataset.texts, intents, entities_list)
+        res = NluDataset(dataset.texts, intents, entities_list)
         res.probs = probs
         return res
 
     def test_intent(
-        self, dataset: NLUdataset, return_probs: bool = False
+        self, dataset: NluDataset, return_probs: bool = False
     ) -> Union[List[str], Tuple[List[str], List[float]]]:
         """
         Test a given dataset and obtain just the intent classification results.
@@ -123,8 +128,10 @@ class Rasa(Vendor):
             predicted intent classification and probabilites results (depeding on
             argument 'return_probs')
         """
-        intents = []
-        probs = []
+        intents: List[str] = []
+        probs: List[float] = []
+        if self.interpreter is None:
+            raise Exception("Rasa2 classifier has to be trained first!")
         for text in dataset.texts:
             result = self.interpreter.parse(text)
             intent = result.get(INTENT, {}).get(INTENT_NAME_KEY)
@@ -136,7 +143,7 @@ class Rasa(Vendor):
         return intents
 
     @staticmethod
-    def _convert(dataset: NLUdataset) -> TrainingData:
+    def _convert(dataset: NluDataset) -> TrainingData:
         """
         Convert a NLUdataset to a Rasa TrainingData object.
 
