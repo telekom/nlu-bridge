@@ -34,6 +34,8 @@ class EntityKeys:
 
 
 class NBestKeys:
+    """Keys for n-best list items (dicts) in NLUdataset."""
+
     INTENT = "intent"
     CONFIDENCE = "confidence"
 
@@ -55,18 +57,14 @@ class NluDataset:
         Class for managing NLU data with intent and entity annotations.
 
         :param texts: A list of utterances
-        :type texts: List[str]
         :param intents: A list of intents for each text. If intents is not
             empty then there needs to be an intent for each text.
-        :type intents: List[str]
         :param entities: If intents is not empty then there needs to be an
             intent for each text.
-        :type entities: List[dict]
-        :param n_best_intents: List of dicts with intents and prediction
-        :param max_intent_length: If given the intents will be strimmed to
-            the first `max_intent_length` in chars. This is required
+        :param n_best_intents: List of dicts with predicted intent and confidence
+        :param max_intent_length: If given the intents will be trimmed to
+            the first `max_intent_length` chars. This is required
             because some vendors like LUIS don't accept very long intent names.
-        :type max_intent_length: int or None
         """
         ds_intents = (
             self._prepare_intents(max_intent_length, intents)
@@ -229,9 +227,7 @@ class NluDataset:
 
         :param size: can be an integer representing the final number of
             samples or a float representing the ratio
-        :type size: float or int
         :param random_state: seed for random processes
-        :type random_state: int
         :param stratification: If not None, data is split in a stratified fashion, using
             this as the class labels. Default is using the intent labels for
             stratification.
@@ -253,9 +249,7 @@ class NluDataset:
         Filter the dataset by intents.
 
         :param excluded: List of intents for which not to return data
-        :type excluded: List[str]
         :param allowed: List of intents for which to return data
-        :type allowed: List[str]
         """
         if excluded is None:
             excluded = []
@@ -279,7 +273,6 @@ class NluDataset:
         `self.unique_intents`
 
         :param n: Number of intents to return
-        :type n: int
         """
         allowed = self.unique_intents[:n]
         ds = self.filter_by_intent_name(allowed=allowed)
@@ -315,13 +308,12 @@ class NluDataset:
                 'internet_langsam': 700,
                 'komplettausfall_eindeutig': 700})
 
+
         :param max_frequency: maximum number of samples per intent to
             include in the returned dataset
-        :type max_frequency: int
         :param min_frequency: maximum number of samples per intent to
             include in the returned dataset. If an intent has less
             samples, it will be dropped.
-        :type min_frequency: int
 
         """
         freqs: collections.Counter = collections.Counter()
@@ -344,7 +336,7 @@ class NluDataset:
         self,
         target_rate: float,
         min_frequency: int,
-        shuffle: bool = False,  # This is not required. Can use shuffle() to shuffle
+        shuffle: bool = False,  # TODO: This is not required. Can use shuffle()
     ) -> NluDataset:
         """
         Return a smaller dataset with similar intent distribution.
@@ -355,6 +347,9 @@ class NluDataset:
         Intents with less than min_frequency samples will not be
         reduced. For all others, the target count is computed as
         `min_freq + (num_samples - min_freq) * target_rate`
+
+        :param target_rate: fraction of data to keep beyond min_frequency
+        :param min_frequency: number of utterance that are always kept
         """
         if shuffle:
             raise NotImplementedError(
@@ -383,14 +378,10 @@ class NluDataset:
         Split dataset into train and test partitions.
 
         :param test_size: fraction of samples to use for testing
-        :type test_size: float
         :param random_state: random seed
-        :type random_state: int
-        :param stratification: TODO
-        :type stratification: TODO
+        :param stratification: like sklearn train_test_split argument `stratify`.
+            Defaults to using self.intents.
         :param args: additional args for sklearn's train_test_split
-            provided as dictionary
-        :type args: dict
         """
 
         def configure_stratification():
@@ -432,7 +423,11 @@ class NluDataset:
     def cross_validation_splits(
         self, cv_iterator: BaseCrossValidator = None
     ) -> Iterator[Tuple[NluDataset, NluDataset]]:
-        """Cross validation generator function."""
+        """
+        Cross validation generator function.
+
+        :param cv_iterator: sklearn cross validator object to control cv folds
+        """
         if cv_iterator is None:
             cv_iterator = StratifiedKFold(n_splits=5, shuffle=True)
         for train_idx, test_idx in cv_iterator.split(self.texts, self.intents):
@@ -469,7 +464,6 @@ class NluDataset:
         dicts.
 
         :param path: optional path under which to save the JSON file
-        :type path: Union[Path, str]
         """
         records = [
             {"text": text, "intent": intent, "entities": entities, "n_best_list": nbest}
