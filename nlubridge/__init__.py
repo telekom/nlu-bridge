@@ -22,6 +22,7 @@ if TYPE_CHECKING:
     from .nlu_dataset import (  # noqa: F401
         OUT_OF_SCOPE_TOKEN,
         EntityKeys,
+        NBestKeys,
         NluDataset,
         concat,
     )
@@ -34,7 +35,13 @@ else:
         "dataloaders.rasa": ["from_rasa", "to_rasa"],
         "dataloaders.utils": ["from_json", "from_csv"],
         "dataloaders.watson_assistant": ["from_watson_assistant"],
-        "nlu_dataset": ["OUT_OF_SCOPE_TOKEN", "EntityKeys", "NluDataset", "concat"],
+        "nlu_dataset": [
+            "OUT_OF_SCOPE_TOKEN",
+            "EntityKeys",
+            "NBestKeys",
+            "NluDataset",
+            "concat",
+        ],
         "vendors.vendor": ["Vendor"],
     }
 

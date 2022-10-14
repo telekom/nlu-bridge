@@ -21,18 +21,37 @@ def from_csv(filepath, text_col, intent_col) -> NluDataset:
 
     if isinstance(text_col, int):
         key = list(columns.keys())[text_col]
-        columns[text_col] = [key, *columns[key]]
+        texts = [key, *columns[key]]
 
     if isinstance(intent_col, int):
         key = list(columns.keys())[intent_col]
-        columns[intent_col] = [key, *columns[key]]
+        intents = [key, *columns[key]]
 
-    ds = NluDataset(columns[text_col], columns[intent_col])
+    ds = NluDataset(texts, intents)
     return ds
 
 
+def _convert_entities_for_nludataset(
+    entities, type_key, start_key, end_key, end_index_add_1
+):
+    ex_entities = []
+    for entity in entities:
+        formatted_entity = {
+            EntityKeys.TYPE: entity[type_key],
+            EntityKeys.START: entity[start_key],
+            EntityKeys.END: entity[end_key] + end_index_add_1,
+        }
+        # Add any custom keys defined in the source json
+        for key in entity.keys():
+            if key not in [type_key, start_key, end_key]:
+                formatted_entity[key] = entity[key]
+        ex_entities.append(formatted_entity)
+    return ex_entities
+
+
 def from_json(
-    json_string,
+    path=None,
+    examples=None,
     text_key="text",
     intent_key="intent",
     entities_key="entities",
@@ -46,28 +65,18 @@ def from_json(
 
     The json string should have the structure in the TestDataset class.
     """
+    if (not path and not examples) or (path and examples):
+        raise ValueError("Exactly one of path or examples arguments needs to be given")
 
-    def format_entities(entities, type_key, start_key, end_key, end_index_add_1):
-        ex_entities = []
-        for entity in entities:
-            formatted_entity = {
-                EntityKeys.TYPE: entity[type_key],
-                EntityKeys.START: entity[start_key],
-                EntityKeys.END: entity[end_key] + end_index_add_1,
-            }
-            # Add any custom keys defined in the source json
-            for key in entity.keys():
-                if key not in [type_key, start_key, end_key]:
-                    formatted_entity[key] = entity[key]
-            ex_entities.append(formatted_entity)
-        return ex_entities
+    if path:
+        with open(path, "r") as f:
+            examples = json.load(f)
 
-    examples = json.loads(json_string)
     texts, intents, entities = [], [], []
     for example in examples:
         texts.append(example[text_key])
         intents.append(example[intent_key])
-        example_entities = format_entities(
+        example_entities = _convert_entities_for_nludataset(
             example[entities_key],
             entity_type_key,
             entity_start_key,
