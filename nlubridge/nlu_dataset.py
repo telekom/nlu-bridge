@@ -336,7 +336,6 @@ class NluDataset:
         self,
         target_rate: float,
         min_frequency: int,
-        shuffle: bool = False,  # TODO: This is not required. Can use shuffle()
     ) -> NluDataset:
         """
         Return a smaller dataset with similar intent distribution.
@@ -351,12 +350,6 @@ class NluDataset:
         :param target_rate: fraction of data to keep beyond min_frequency
         :param min_frequency: number of utterance that are always kept
         """
-        if shuffle:
-            raise NotImplementedError(
-                "shuffle=True has not yet been implemented. You can "
-                "use NLUdataset.shuffle() to shuffle the dataset "
-                "before subsampling."
-            )
         freqs: collections.Counter = collections.Counter()
         data = []
         for intent, record in zip(self.intents, self._data):
