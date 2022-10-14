@@ -362,51 +362,27 @@ class NluDataset:
                 data.append(record)
         return NluDataset._from_data(data)
 
-    # TODO: Can we get rid of arguments test_size and random_state because they are
-    #     "inherited" from sklearn method of same name and can be used with **args?
     def train_test_split(
-        self, test_size=None, random_state=None, stratification="intents", **args
+        self, stratify="intents", **args
     ) -> Tuple[NluDataset, NluDataset]:
         """
         Split dataset into train and test partitions.
 
-        :param test_size: fraction of samples to use for testing
-        :param random_state: random seed
-        :param stratification: like sklearn train_test_split argument `stratify`.
+        Uses sklearn.model_selection.train_test_split under the hood. Arguments are
+        directly passed to the sklearn function, with the exception of `stratify`: this
+        is set by default to "intents" which will set stratify to self.intents (i.e.,
+        stratify by intents). Otherwise, stratify works like with sklearn.
+
+        :param stratify: like sklearn train_test_split argument `stratify`.
             Defaults to using self.intents.
-        :param args: additional args for sklearn's train_test_split
+        :param args: additional arguments for sklearn's train_test_split, see
+            https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html
         """
-
-        def configure_stratification():
-            """
-            Allow configuring stratification options.
-
-            The default setting, "intents", is used when we want to
-            use stratification by intent strings. If we want to use
-            anything else, we can specify it in the (parent) method's
-            stratification parameter, e.g. None, which would turn
-            stratification off (using the underlying
-            sklearn.model_selection.train_test_split() method).
-
-            The default setting, which is passed as a string, will be
-            converted into the appropriate self.intents, which isn't
-            accessible from the parent method's parameters.
-
-            Returns the stratify setting (either self.intents or
-            whatever is passed) to the sklearn train_test_split
-            method.
-            """
-            if stratification == "intents":
-                stratify = self.intents
-            else:
-                stratify = stratification
-            return stratify
-
+        if stratify == "intents":
+            stratify = self.intents
         (data_train, data_test) = train_test_split(
             self._data,
-            stratify=configure_stratification(),
-            test_size=test_size,
-            random_state=random_state,
+            stratify=stratify,
             **args,
         )
         train_ds = NluDataset._from_data(data_train)
