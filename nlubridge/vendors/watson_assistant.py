@@ -217,7 +217,7 @@ class WatsonAssistant(Vendor):
         """
         intents_examples = {}
         exist_texts = []
-        for text, intent, entities in dataset:
+        for text, intent in zip(dataset.texts, dataset.intents):
             text = self.validate_text(text)
             if text.lower() in exist_texts:
                 # it's a duplicate text

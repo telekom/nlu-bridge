@@ -271,8 +271,6 @@ def test_subsample_by_intent_frequency():
     pairs = set(zip(ds.texts, ds.intents))
     pairs_sub = set(zip(ds_sub.texts, ds_sub.intents))
     assert len(pairs_sub - pairs) == 0
-    with pytest.raises(NotImplementedError):
-        ds.subsample_by_intent_frequency(0.5, 1500, shuffle=True)
 
 
 def test_subsample_by_intent_frequency_rate_is_zero():

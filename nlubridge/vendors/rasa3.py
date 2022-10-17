@@ -19,10 +19,11 @@ from rasa.shared.nlu.constants import (
     ENTITY_ATTRIBUTE_TYPE,
     INTENT,
     INTENT_NAME_KEY,
+    INTENT_RANKING_KEY,
     PREDICTED_CONFIDENCE_KEY,
 )
 
-from nlubridge import EntityKeys, NluDataset, to_rasa
+from nlubridge import EntityKeys, NBestKeys, NluDataset, to_rasa
 
 from .vendor import Vendor
 
@@ -100,14 +101,13 @@ class Rasa3(Vendor):
         if self.agent is None:
             raise RuntimeError("Rasa3 classifier has to be trained first!")
         intents = []
-        probs = []
+        n_best_lists = []
         entities_list = []
         for text in dataset.texts:
             result = asyncio.run(
                 self.agent.parse_message(text)
             )  # agent's parse method is a coroutine
             intent = result.get(INTENT, {}).get(INTENT_NAME_KEY)
-            prob = result.get(INTENT, {}).get(PREDICTED_CONFIDENCE_KEY)
             entities = [
                 {
                     EntityKeys.TYPE: e.get(ENTITY_ATTRIBUTE_TYPE),
@@ -116,13 +116,19 @@ class Rasa3(Vendor):
                 }
                 for e in result.get(ENTITIES, [])
             ]
+            nbest = [
+                {
+                    NBestKeys.INTENT: ranked.get(INTENT_NAME_KEY),
+                    NBestKeys.CONFIDENCE: ranked.get(PREDICTED_CONFIDENCE_KEY),
+                }
+                for ranked in result.get(INTENT_RANKING_KEY, [])
+            ]
 
             intents.append(intent)
-            probs.append(prob)
+            n_best_lists.append(nbest)
             entities_list.append(entities)
 
-        res = NluDataset(dataset.texts, intents, entities_list)
-        res.probs = probs
+        res = NluDataset(dataset.texts, intents, entities_list, n_best_lists)
         return res
 
     def test_intent(

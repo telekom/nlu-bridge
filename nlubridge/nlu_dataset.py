@@ -220,7 +220,7 @@ class NluDataset:
         self,
         size: Union[float, int],
         random_state: Optional[int] = None,
-        stratification: Any = "intents",
+        stratify: Any = "intents",
     ) -> NluDataset:
         """
         Sample the dataset preserving intent proportions.
@@ -228,7 +228,7 @@ class NluDataset:
         :param size: can be an integer representing the final number of
             samples or a float representing the ratio
         :param random_state: seed for random processes
-        :param stratification: If not None, data is split in a stratified fashion, using
+        :param stratify: If not None, data is split in a stratified fashion, using
             this as the class labels. Default is using the intent labels for
             stratification.
         """
@@ -236,7 +236,7 @@ class NluDataset:
             size = size / self.n_samples
 
         _, sampled = self.train_test_split(
-            test_size=size, random_state=random_state, stratification=stratification
+            test_size=size, random_state=random_state, stratify=stratify
         )
         return sampled
 

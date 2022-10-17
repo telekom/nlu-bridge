@@ -82,7 +82,7 @@ def to_rasa(
     """
     # TODO: This method should share code with the Rasa._convert() method
     messages = []
-    for text, intent, entities in dataset:
+    for text, intent, entities in zip(dataset.texts, dataset.intents, dataset.entities):
         formatted_entities = []
         for e in entities:
             formatted_entity = {
