@@ -12,7 +12,6 @@ import time
 
 import requests
 from ratelimit import rate_limited
-from requests.compat import urljoin
 
 from ..nlu_dataset import OUT_OF_SCOPE_TOKEN
 from .vendor import Vendor
@@ -85,7 +84,7 @@ class Luis(Vendor):
         return self.session
 
     def _get_base_url(self, cmd, add_version=True):
-        base_url = urljoin(self.endpoint, self.app_id)
+        base_url = requests.compat.urljoin(self.endpoint, self.app_id)
         base_url += "/"
         if add_version:
             base_url += f"versions/{self.version}/"
@@ -144,7 +143,7 @@ class Luis(Vendor):
         if app_id is None:
             app_id = self.app_id
 
-        url = urljoin(self.endpoint, app_id)
+        url = requests.compat.urljoin(self.endpoint, app_id)
         response = self.requests.delete(url)
         return response.json()
 

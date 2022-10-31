@@ -1,7 +1,6 @@
 # Copyright (c) 2021 Klaus-Peter Engelbrecht, Deutsche Telekom AG
 # This software is distributed under the terms of the MIT license
 # which is available at https://opensource.org/licenses/MIT
-
 import datasets
 
 from nlubridge.nlu_dataset import NluDataset
@@ -68,7 +67,7 @@ def from_huggingface(
             )
         intents = [label_mapper.int2str(x) for x in hugging_ds["label"]]
     else:
-        intents = None
+        intents = None  # type: ignore[assignment]
 
     if has_entities:
         # get entities and texts generated from token lists for each example

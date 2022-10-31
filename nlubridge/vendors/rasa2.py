@@ -18,15 +18,15 @@ from rasa.shared.nlu.constants import (
     ENTITY_ATTRIBUTE_VALUE,
     INTENT,
     INTENT_NAME_KEY,
+    INTENT_RANKING_KEY,
     PREDICTED_CONFIDENCE_KEY,
     TEXT,
 )
 from rasa.shared.nlu.training_data.formats.rasa import RasaReader
 from rasa.shared.nlu.training_data.training_data import TrainingData
 
-from nlubridge.nlu_dataset import EntityKeys, NluDataset
-
-from .vendor import Vendor
+from nlubridge.nlu_dataset import EntityKeys, NBestKeys, NluDataset
+from nlubridge.vendors import Vendor
 
 
 DEFAULT_INTENT_RASA_CONFIG_PATH = os.path.join(
@@ -90,14 +90,13 @@ class Rasa2(Vendor):
             additional attribute 'probs' (List[float]).
         """
         intents: List[str] = []
-        probs: List[float] = []
+        n_best_lists: List[List[dict]] = []
         entities_list: List[List[dict]] = []
         if self.interpreter is None:
             raise Exception("Rasa2 classifier has to be trained first!")
         for text in dataset.texts:
             result = self.interpreter.parse(text)
             intent = result.get(INTENT, {}).get(INTENT_NAME_KEY)
-            prob = result.get(INTENT, {}).get(PREDICTED_CONFIDENCE_KEY)
             entities = [
                 {
                     EntityKeys.TYPE: e.get(ENTITY_ATTRIBUTE_TYPE),
@@ -106,13 +105,19 @@ class Rasa2(Vendor):
                 }
                 for e in result.get(ENTITIES, [])
             ]
+            nbest = [
+                {
+                    NBestKeys.INTENT: ranked.get(INTENT_NAME_KEY),
+                    NBestKeys.CONFIDENCE: ranked.get(PREDICTED_CONFIDENCE_KEY),
+                }
+                for ranked in result.get(INTENT_RANKING_KEY, [])
+            ]
 
             intents.append(intent)
-            probs.append(prob)
+            n_best_lists.append(nbest)
             entities_list.append(entities)
 
-        res = NluDataset(dataset.texts, intents, entities_list)
-        res.probs = probs
+        res = NluDataset(dataset.texts, intents, entities_list, n_best_lists)
         return res
 
     def test_intent(
@@ -152,7 +157,9 @@ class Rasa2(Vendor):
         """
         examples = []
 
-        for text, intent, entities in dataset:
+        for text, intent, entities in zip(
+            dataset.texts, dataset.intents, dataset.entities
+        ):
             example = {
                 TEXT: text,
                 INTENT: intent if intent is not None else "default_intent",
@@ -174,7 +181,7 @@ class Rasa2(Vendor):
                 for key in entity.keys():
                     if key not in [EntityKeys.TYPE, EntityKeys.START, EntityKeys.END]:
                         formatted_entity[key] = entity[key]
-                example[ENTITIES].append(formatted_entity)
+                example[ENTITIES].append(formatted_entity)  # type: ignore[attr-defined]
             examples.append(example)
 
         training_data = {

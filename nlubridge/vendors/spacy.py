@@ -41,7 +41,7 @@ class Spacy(Vendor):
 
     def _convert(self, dataset):
         examples = []
-        for text, intent, _ in dataset:
+        for text, intent in zip(dataset.texts, dataset.intents):
             doc = self.nlp.make_doc(text)
             cats = {
                 intent: True if intent == each else False

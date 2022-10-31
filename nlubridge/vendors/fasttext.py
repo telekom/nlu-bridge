@@ -100,7 +100,7 @@ class FastText(Vendor):
 
     def _convert(self, dataset):
         lines = []
-        for text, intent, _ in dataset:
+        for text, intent in zip(dataset.texts, dataset.intents):
             text = self._clean_text(text)
             line = f"__label__{intent} {text}"
             lines.append(line)

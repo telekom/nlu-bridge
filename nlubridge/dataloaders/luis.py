@@ -2,8 +2,6 @@
 # This software is distributed under the terms of the MIT license
 # which is available at https://opensource.org/licenses/MIT
 
-import json
-
 from nlubridge.nlu_dataset import NluDataset
 
 from .utils import from_json
@@ -16,10 +14,8 @@ def from_luis(filepath) -> NluDataset:
     :param filepath: file path to the LUIS-formatted data.
     :type filepath: str
     """
-    with open(filepath, "r") as f:
-        examples = json.load(f)
     dataset = from_json(
-        json.dumps(examples, ensure_ascii=False),
+        path=filepath,
         text_key="text",
         intent_key="intentName",
         entities_key="entityLabels",
