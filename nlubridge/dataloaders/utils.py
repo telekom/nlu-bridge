@@ -5,6 +5,8 @@
 import collections
 import csv
 import json
+from typing import Dict, List, Optional, Union
+from pathlib import Path
 
 from nlubridge.nlu_dataset import EntityKeys, NluDataset
 
@@ -32,7 +34,7 @@ def from_csv(filepath, text_col, intent_col) -> NluDataset:
 
 
 def _convert_entities_for_nludataset(
-    entities, type_key, start_key, end_key, end_index_add_1
+    entities, type_key, start_key, end_key, end_index_add_1: bool
 ):
     ex_entities = []
     for entity in entities:
@@ -50,15 +52,15 @@ def _convert_entities_for_nludataset(
 
 
 def from_json(
-    path=None,
-    examples=None,
-    text_key="text",
-    intent_key="intent",
-    entities_key="entities",
-    entity_type_key="entity",
-    entity_start_key="start",
-    entity_end_key="end",
-    end_index_add_1=False,
+    path: Optional[Union[Path, str]] = None,
+    examples: Optional[List[Dict]] = None,
+    text_key: str = "text",
+    intent_key: str = "intent",
+    entities_key: str = "entities",
+    entity_type_key: str = "entity",
+    entity_start_key: str = "start",
+    entity_end_key: str = "end",
+    end_index_add_1: Optional[bool] = False,
 ):
     """
     Load the dataset form a json string.
@@ -73,7 +75,7 @@ def from_json(
             examples = json.load(f)
 
     texts, intents, entities = [], [], []
-    for example in examples:
+    for example in examples:  # type: ignore[union-attr]
         texts.append(example[text_key])
         intents.append(example[intent_key])
         example_entities = _convert_entities_for_nludataset(

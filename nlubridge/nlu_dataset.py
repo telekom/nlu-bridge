@@ -57,11 +57,13 @@ class NluDataset:
         Class for managing NLU data with intent and entity annotations.
 
         :param texts: A list of utterances
-        :param intents: A list of intents for each text. If intents is not
-            empty then there needs to be an intent for each text.
-        :param entities: If intents is not empty then there needs to be an
-            intent for each text.
-        :param n_best_intents: List of dicts with predicted intent and confidence
+        :param intents: A list of intents, one for each text. If intents is
+            not None then there needs to be an intent for each text.
+        :param entities: List of entities for each text. If not None then
+            there needs to be a List for each text.
+        :param n_best_intents: List of n-best results (each denoted as a dict
+            having intent and confidence keys) for each text. If not None then
+            there needs to be a List for each text.
         :param max_intent_length: If given the intents will be trimmed to
             the first `max_intent_length` chars. This is required
             because some vendors like LUIS don't accept very long intent names.
@@ -311,7 +313,7 @@ class NluDataset:
 
         :param max_frequency: maximum number of samples per intent to
             include in the returned dataset
-        :param min_frequency: maximum number of samples per intent to
+        :param min_frequency: minimum number of samples per intent to
             include in the returned dataset. If an intent has less
             samples, it will be dropped.
 
