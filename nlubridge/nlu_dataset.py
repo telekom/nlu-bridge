@@ -217,7 +217,6 @@ class NluDataset:
         random.shuffle(self._data)
         return self
 
-    # TODO: arguments should not have these defaults
     def sample(
         self,
         size: Union[float, int],
@@ -280,7 +279,6 @@ class NluDataset:
         ds = self.filter_by_intent_name(allowed=allowed)
         return ds
 
-    # TODO: Fix docstring
     def clip_by_intent_frequency(
         self, max_frequency: int, min_frequency: int = None
     ) -> NluDataset:

@@ -5,16 +5,14 @@
 import collections
 import csv
 import json
-from typing import Dict, List, Optional, Union
 from pathlib import Path
+from typing import Dict, List, Optional, Union
 
 from nlubridge.nlu_dataset import EntityKeys, NluDataset
 
 
 def from_csv(
-    path: Union[Path, str],
-    text_col: Union[str, int],
-    intent_col: Union[str, int]
+    path: Union[Path, str], text_col: Union[str, int], intent_col: Union[str, int]
 ) -> NluDataset:
     """
     Load dataset (only text and intents) from a csv file.
