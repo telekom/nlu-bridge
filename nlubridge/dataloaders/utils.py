@@ -11,11 +11,21 @@ from pathlib import Path
 from nlubridge.nlu_dataset import EntityKeys, NluDataset
 
 
-def from_csv(filepath, text_col, intent_col) -> NluDataset:
-    """Load dataset (only text and intents) from a csv file."""
+def from_csv(
+    path: Union[Path, str],
+    text_col: Union[str, int],
+    intent_col: Union[str, int]
+) -> NluDataset:
+    """
+    Load dataset (only text and intents) from a csv file.
+
+    text_col and intent_col can be either integer indices of the respective columns
+    (start index is 0), or, if the first row of the file holds the column names, the
+    repective column name strings.
+    """
     columns = collections.defaultdict(list)
 
-    with open(filepath) as f:
+    with open(path) as f:
         reader = csv.DictReader(f)
         for row in reader:
             for (k, v) in row.items():
@@ -24,10 +34,14 @@ def from_csv(filepath, text_col, intent_col) -> NluDataset:
     if isinstance(text_col, int):
         key = list(columns.keys())[text_col]
         texts = [key, *columns[key]]
+    else:
+        texts = columns[text_col]
 
     if isinstance(intent_col, int):
         key = list(columns.keys())[intent_col]
         intents = [key, *columns[key]]
+    else:
+        intents = columns[intent_col]
 
     ds = NluDataset(texts, intents)
     return ds
@@ -60,7 +74,7 @@ def from_json(
     entity_type_key: str = "entity",
     entity_start_key: str = "start",
     entity_end_key: str = "end",
-    end_index_add_1: Optional[bool] = False,
+    end_index_add_1: bool = False,
 ):
     """
     Load the dataset form a json string.
