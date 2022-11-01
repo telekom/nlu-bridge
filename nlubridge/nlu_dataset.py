@@ -24,6 +24,62 @@ from sklearn.model_selection import (
 OUT_OF_SCOPE_TOKEN = "out_of_scope"
 
 
+class Entity:
+    def __init__(
+        self,
+        entity_type: str,
+        start: int,
+        end: int,
+        confidence: float = None,
+        data: Dict = None,
+    ):
+        """
+        Class for managing entity data.
+
+        Entities are mainly represented by the entity type and the start and end
+        indices within the message text. For recognition results, a confidence
+        can be specified. Other data should be passed as dictionary under the
+        data argument.
+
+        Comparison of entities is based on the data returned by
+        self._comparison_dict(): entity type, start, and end index.
+        """
+        self.type = entity_type
+        self.start = start
+        self.end = end
+        self.confidence = confidence
+        self.data = data if data else {}
+
+    def as_dict(self):
+        """Return entity attributes as dictionary."""
+        as_dict = self.data
+        as_dict.update({"entity": self.type, "start": self.start, "end": self.end})
+        if self.confidence:
+            as_dict.update({"confidence": self.confidence})
+        return as_dict
+
+    def _comparison_dict(self):
+        """Return data that are relevant for comparison of entities as dict."""
+        return {"entity": self.type, "start": self.start, "end": self.end}
+
+    def __eq__(self, other):
+        """Determine equality based on self._comparison_dict()."""
+        if isinstance(other, self.__class__):
+            return self._comparison_dict() == other._comparison_dict()
+        return NotImplemented
+
+    def __ne__(self, other):
+        """Override the default implementation (unnecessary in Python 3)."""
+        x = self.__eq__(other)
+        if x is not NotImplemented:
+            return not x
+        return NotImplemented
+
+    def __hash__(self):
+        """Provide hash key based on self._comparison_dict()."""
+        return hash(tuple(sorted(self._comparison_dict().items())))
+
+
 class EntityKeys:
     """Keys for entity dicts in NLUdataset."""
 
@@ -164,11 +220,7 @@ class NluDataset:
 
     def _get_unique_entities(self):
         it = itertools.chain.from_iterable(self.entities)
-        entity_types = [
-            entity[EntityKeys.TYPE]
-            for entity in it
-            if isinstance(entity, dict) and EntityKeys.TYPE in entity
-        ]
+        entity_types = [entity.type for entity in it]
         return sorted(list(set(entity_types)))
 
     @staticmethod
@@ -435,7 +487,12 @@ class NluDataset:
         :param path: optional path under which to save the JSON file
         """
         records = [
-            {"text": text, "intent": intent, "entities": entities, "n_best_list": nbest}
+            {
+                "text": text,
+                "intent": intent,
+                "entities": [e.as_dict() for e in entities],
+                "n_best_list": nbest,
+            }
             for text, intent, entities, nbest in self._data
         ]
 

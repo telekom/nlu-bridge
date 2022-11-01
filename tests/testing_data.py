@@ -1,6 +1,6 @@
 import uuid
 
-from nlubridge.nlu_dataset import NluDataset
+from nlubridge.nlu_dataset import Entity, NluDataset
 
 
 class ToyDataset(NluDataset):
@@ -13,10 +13,10 @@ class ToyDataset(NluDataset):
         intents = ["BookFlight", "GetWeather"]
         entities = [
             [
-                {"entity": "LocationFrom", "start": 22, "end": 27},
-                {"entity": "LocationTo", "start": 31, "end": 38},
+                Entity("LocationFrom", 22, 27),
+                Entity("LocationTo", 31, 38),
             ],
-            [{"entity": "Location", "start": 27, "end": 34}],
+            [Entity("Location", 27, 34)],
         ]
         super().__init__(texts, intents, entities, **kw_args)
 

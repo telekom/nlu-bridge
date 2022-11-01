@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from .dataloaders.watson_assistant import from_watson_assistant  # noqa: F401
     from .nlu_dataset import (  # noqa: F401
         OUT_OF_SCOPE_TOKEN,
-        EntityKeys,
+        Entity,
         NBestKeys,
         NluDataset,
         concat,
@@ -37,7 +37,7 @@ else:
         "dataloaders.watson_assistant": ["from_watson_assistant"],
         "nlu_dataset": [
             "OUT_OF_SCOPE_TOKEN",
-            "EntityKeys",
+            "Entity",
             "NBestKeys",
             "NluDataset",
             "concat",
