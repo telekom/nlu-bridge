@@ -28,16 +28,20 @@ def test_from_rasa_json():
     assert ds.intents[0] == "restaurant_search"
     assert ds.intents[3] == "affirm"
     assert ds.entities[0] == []
-    assert ds.entities[1] == [
-        {"start": 31, "end": 36, "value": "north", "entity": "location"}
-    ]
+    assert len(ds.entities[1]) == 1
+    assert ds.entities[1][0].as_dict() == {
+        "start": 31,
+        "end": 36,
+        "value": "north",
+        "entity": "location",
+    }
     assert len(ds.entities[4]) == 2
     # make sure the custom "role" key is in dataset
-    assert ds.entities[4][0].get("role", False)
+    assert ds.entities[4][0].data.get("role", False)
     # check assumptions about indexes hold
-    idx1 = ds.entities[4][0]["start"]
-    idx2 = ds.entities[4][0]["end"]
-    value = ds.entities[4][0]["value"]
+    idx1 = ds.entities[4][0].start
+    idx2 = ds.entities[4][0].end
+    value = ds.entities[4][0].data["value"]
     assert ds.texts[4][idx1:idx2] == value
 
 
@@ -53,11 +57,11 @@ def test_from_rasa3_yml():
     assert ds.entities[1] == []
     assert len(ds.entities[3]) == 2
     # make sure the custom "role" key is in dataset
-    assert ds.entities[3][1].get("role", False)
+    assert ds.entities[3][1].data.get("role", False)
     # check assumptions about indexes hold
-    idx1 = ds.entities[3][1]["start"]
-    idx2 = ds.entities[3][1]["end"]
-    value = ds.entities[3][1]["value"]
+    idx1 = ds.entities[3][1].start
+    idx2 = ds.entities[3][1].end
+    value = ds.entities[3][1].data["value"]
     assert ds.texts[3][idx1:idx2] == value
 
 
@@ -70,14 +74,19 @@ def test_from_luis():
     assert ds.intents[0] == "restaurant_search"
     assert ds.intents[3] == "affirm"
     assert ds.entities[0] == []
-    assert ds.entities[1] == [
-        {"start": 31, "end": 36, "value": "north", "entity": "location"}
-    ]
+    assert len(ds.entities[1]) == 1
+    assert ds.entities[1][0].as_dict() == {
+        "start": 31,
+        "end": 36,
+        "value": "north",
+        "entity": "location",
+    }
+
     assert len(ds.entities[4]) == 2
     # make sure the custom "role" key is in dataset
-    assert ds.entities[4][0].get("role", False)
+    assert ds.entities[4][0].data.get("role", False)
     # check assumptions about indexes hold
-    idx1 = ds.entities[4][0]["start"]
-    idx2 = ds.entities[4][0]["end"]
-    value = ds.entities[4][0]["value"]
+    idx1 = ds.entities[4][0].start
+    idx2 = ds.entities[4][0].end
+    value = ds.entities[4][0].data["value"]
     assert ds.texts[4][idx1:idx2] == value

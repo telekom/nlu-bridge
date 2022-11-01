@@ -50,7 +50,7 @@ class Entity:
         self.confidence = confidence
         self.data = data if data else {}
 
-    def as_dict(self):
+    def as_dict(self) -> Dict:
         """Return entity attributes as dictionary."""
         as_dict = self.data
         as_dict.update({"entity": self.type, "start": self.start, "end": self.end})
@@ -58,7 +58,7 @@ class Entity:
             as_dict.update({"confidence": self.confidence})
         return as_dict
 
-    def _comparison_dict(self):
+    def _comparison_dict(self) -> Dict:
         """Return data that are relevant for comparison of entities as dict."""
         return {"entity": self.type, "start": self.start, "end": self.end}
 
@@ -102,7 +102,7 @@ class NluDataset:
         texts: List[str],
         intents: Optional[List[str]] = None,
         entities: Optional[
-            List[List[Dict]]
+            List[List[Entity]]
         ] = None,  # TODO: Better code entities as custom objects?
         n_best_intents: Optional[
             List[List[Dict]]
@@ -166,7 +166,7 @@ class NluDataset:
         return [record[1] for record in self._data]
 
     @property
-    def entities(self) -> List[List[Dict]]:  # noqa: D102
+    def entities(self) -> List[List[Entity]]:  # noqa: D102
         return [record[2] for record in self._data]
 
     @property
