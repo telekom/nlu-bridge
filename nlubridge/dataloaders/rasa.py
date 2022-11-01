@@ -5,7 +5,8 @@
 from __future__ import annotations
 
 import pathlib
-from typing import Union
+from copy import deepcopy
+from typing import Dict, List, Union
 
 from rasa.shared.nlu.constants import (
     ENTITIES,
@@ -25,7 +26,7 @@ from rasa.shared.nlu.training_data.message import Message
 from rasa.shared.nlu.training_data.training_data import TrainingData
 from rasa.shared.utils.io import write_yaml
 
-from nlubridge.nlu_dataset import EntityKeys, NluDataset
+from nlubridge.nlu_dataset import Entity, NluDataset
 
 
 def from_rasa(filepath: Union[str, pathlib.Path], format: str = "yml") -> NluDataset:
@@ -51,23 +52,41 @@ def from_rasa(filepath: Union[str, pathlib.Path], format: str = "yml") -> NluDat
         intents.append(message.get(INTENT))
         es = []
         for e in message.get(ENTITIES, []):
-            entity = {
-                EntityKeys.TYPE: e.get(ENTITY_ATTRIBUTE_TYPE),
-                EntityKeys.START: e.get(ENTITY_ATTRIBUTE_START),
-                EntityKeys.END: e.get(ENTITY_ATTRIBUTE_END),
-            }
-            # Add any custom keys defined in the source structure
-            for key in e.keys():
-                if key not in [
-                    ENTITY_ATTRIBUTE_TYPE,
-                    ENTITY_ATTRIBUTE_START,
-                    ENTITY_ATTRIBUTE_END,
-                ]:
-                    entity[key] = e[key]
-            es.append(entity)
+            entity = deepcopy(e)
+            entity_type = entity.pop(ENTITY_ATTRIBUTE_TYPE)
+            start = entity.pop(ENTITY_ATTRIBUTE_START)
+            end = entity.pop(ENTITY_ATTRIBUTE_END)
+            es.append(Entity(entity_type, start, end, data=entity))
         entities.append(es)
 
     return NluDataset(texts, intents, entities)
+
+
+def convert_example_to_rasa_json(
+    text: str, intent: str, entities: List[Entity]
+) -> Dict:
+    """Convert text, intent, and entities from a NluDataset record to Rasa JSON."""
+    formatted_entities = []
+    for e in entities:
+        formatted_entity = {
+            ENTITY_ATTRIBUTE_TYPE: e.type,
+            ENTITY_ATTRIBUTE_START: e.start,
+            ENTITY_ATTRIBUTE_END: e.end,
+            # Please note: This sets just the default 'value' (if the input dataset
+            # provides an explicit 'value' parameter, it will be adapted accordingly
+            # in the section for custom keys below)
+            ENTITY_ATTRIBUTE_VALUE: text[e.start : e.end],
+        }
+        # Add any custom keys defined in the source structure
+        formatted_entity.update(e.data)
+        # NOTE: Do not include entity confidence as only relevant for evaluation!
+        formatted_entities.append(formatted_entity)
+    example = {
+        TEXT: text,
+        INTENT: intent if intent is not None else "default_intent",
+        ENTITIES: formatted_entities,
+    }
+    return example
 
 
 def to_rasa(
@@ -83,27 +102,7 @@ def to_rasa(
     # TODO: This method should share code with the Rasa._convert() method
     messages = []
     for text, intent, entities in zip(dataset.texts, dataset.intents, dataset.entities):
-        formatted_entities = []
-        for e in entities:
-            formatted_entity = {
-                ENTITY_ATTRIBUTE_TYPE: e[EntityKeys.TYPE],
-                ENTITY_ATTRIBUTE_START: e[EntityKeys.START],
-                ENTITY_ATTRIBUTE_END: e[EntityKeys.END],
-                # Please note: This sets just the default 'value' (if the input dataset
-                # provides an explicit 'value' parameter, it will be adapted accordingly
-                # in the section for custom keys below)
-                ENTITY_ATTRIBUTE_VALUE: text[e[EntityKeys.START] : e[EntityKeys.END]],
-            }
-            # Add any custom keys defined in the source structure
-            for key in e.keys():
-                if key not in [EntityKeys.TYPE, EntityKeys.START, EntityKeys.END]:
-                    formatted_entity[key] = e[key]
-            formatted_entities.append(formatted_entity)
-        example = {
-            TEXT: text,
-            INTENT: intent if intent is not None else "default_intent",
-            ENTITIES: formatted_entities,
-        }
+        example = convert_example_to_rasa_json(text, intent, entities)
         message = Message(data=example)
         messages.append(message)
 

@@ -6,7 +6,7 @@ import pytest
 from sklearn.model_selection import KFold
 from testing_data import SyntheticDataset, ToyDataset
 
-from nlubridge import EntityKeys, NBestKeys, NluDataset, concat, from_json
+from nlubridge import Entity, NBestKeys, NluDataset, concat, from_json
 
 
 FIXTURE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fixtures")
@@ -20,11 +20,11 @@ texts = [
 intents = ["BookFlight", "GetWeather", "GetWeather"]
 entities = [
     [
-        {EntityKeys.TYPE: "Location::From", EntityKeys.START: 22, EntityKeys.END: 27},
-        {EntityKeys.TYPE: "Location::To", EntityKeys.START: 31, EntityKeys.END: 38},
+        Entity("Location::From", 22, 27),
+        Entity("Location::To", 31, 38),
     ],
-    [{EntityKeys.TYPE: "Location", EntityKeys.START: 27, EntityKeys.END: 34}],
-    [{EntityKeys.TYPE: "Location", EntityKeys.START: 22, EntityKeys.END: 28}],
+    [Entity("Location", 27, 34)],
+    [Entity("Location", 22, 28)],
 ]
 n_best_intents = [
     [

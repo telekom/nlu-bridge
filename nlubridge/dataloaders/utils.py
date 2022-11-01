@@ -5,10 +5,11 @@
 import collections
 import csv
 import json
+from copy import deepcopy
 from pathlib import Path
 from typing import Dict, List, Optional, Union
 
-from nlubridge.nlu_dataset import EntityKeys, NluDataset
+from nlubridge.nlu_dataset import Entity, NluDataset
 
 
 def from_csv(
@@ -49,17 +50,14 @@ def _convert_entities_for_nludataset(
     entities, type_key, start_key, end_key, end_index_add_1: bool
 ):
     ex_entities = []
-    for entity in entities:
-        formatted_entity = {
-            EntityKeys.TYPE: entity[type_key],
-            EntityKeys.START: entity[start_key],
-            EntityKeys.END: entity[end_key] + end_index_add_1,
-        }
-        # Add any custom keys defined in the source json
-        for key in entity.keys():
-            if key not in [type_key, start_key, end_key]:
-                formatted_entity[key] = entity[key]
-        ex_entities.append(formatted_entity)
+    for e in entities:
+        entity = deepcopy(e)
+        entity_type = entity.pop(type_key)
+        start = entity.pop(start_key)
+        end = entity.pop(end_key)
+        ex_entities.append(
+            Entity(entity_type, start, end + end_index_add_1, data=entity)
+        )
     return ex_entities
 
 

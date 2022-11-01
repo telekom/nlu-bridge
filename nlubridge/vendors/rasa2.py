@@ -15,17 +15,16 @@ from rasa.shared.nlu.constants import (
     ENTITY_ATTRIBUTE_END,
     ENTITY_ATTRIBUTE_START,
     ENTITY_ATTRIBUTE_TYPE,
-    ENTITY_ATTRIBUTE_VALUE,
     INTENT,
     INTENT_NAME_KEY,
     INTENT_RANKING_KEY,
     PREDICTED_CONFIDENCE_KEY,
-    TEXT,
 )
 from rasa.shared.nlu.training_data.formats.rasa import RasaReader
 from rasa.shared.nlu.training_data.training_data import TrainingData
 
-from nlubridge.nlu_dataset import EntityKeys, NBestKeys, NluDataset
+from nlubridge.dataloaders.rasa import convert_example_to_rasa_json
+from nlubridge.nlu_dataset import Entity, NBestKeys, NluDataset
 from nlubridge.vendors import Vendor
 
 
@@ -98,11 +97,11 @@ class Rasa2(Vendor):
             result = self.interpreter.parse(text)
             intent = result.get(INTENT, {}).get(INTENT_NAME_KEY)
             entities = [
-                {
-                    EntityKeys.TYPE: e.get(ENTITY_ATTRIBUTE_TYPE),
-                    EntityKeys.START: e.get(ENTITY_ATTRIBUTE_START),
-                    EntityKeys.END: e.get(ENTITY_ATTRIBUTE_END),
-                }
+                Entity(
+                    e.get(ENTITY_ATTRIBUTE_TYPE),
+                    e.get(ENTITY_ATTRIBUTE_START),
+                    e.get(ENTITY_ATTRIBUTE_END),
+                )
                 for e in result.get(ENTITIES, [])
             ]
             nbest = [
@@ -160,28 +159,7 @@ class Rasa2(Vendor):
         for text, intent, entities in zip(
             dataset.texts, dataset.intents, dataset.entities
         ):
-            example = {
-                TEXT: text,
-                INTENT: intent if intent is not None else "default_intent",
-                ENTITIES: [],
-            }
-            for entity in entities:
-                formatted_entity = {
-                    ENTITY_ATTRIBUTE_TYPE: entity[EntityKeys.TYPE],
-                    ENTITY_ATTRIBUTE_START: entity[EntityKeys.START],
-                    ENTITY_ATTRIBUTE_END: entity[EntityKeys.END],
-                    # Please note: This sets just the default 'value' (if the input
-                    # dataset provides an explicit 'value' parameter, it will be adapted
-                    # accordingly in the section for custom keys below)
-                    ENTITY_ATTRIBUTE_VALUE: text[
-                        entity[EntityKeys.START] : entity[EntityKeys.END]
-                    ],
-                }
-                # Add any custom keys defined in the source structure
-                for key in entity.keys():
-                    if key not in [EntityKeys.TYPE, EntityKeys.START, EntityKeys.END]:
-                        formatted_entity[key] = entity[key]
-                example[ENTITIES].append(formatted_entity)  # type: ignore[attr-defined]
+            example = convert_example_to_rasa_json(text, intent, entities)
             examples.append(example)
 
         training_data = {

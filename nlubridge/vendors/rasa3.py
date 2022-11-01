@@ -23,7 +23,7 @@ from rasa.shared.nlu.constants import (
     PREDICTED_CONFIDENCE_KEY,
 )
 
-from nlubridge import EntityKeys, NBestKeys, NluDataset, to_rasa
+from nlubridge import Entity, NBestKeys, NluDataset, to_rasa
 
 from .vendor import Vendor
 
@@ -109,11 +109,11 @@ class Rasa3(Vendor):
             )  # agent's parse method is a coroutine
             intent = result.get(INTENT, {}).get(INTENT_NAME_KEY)
             entities = [
-                {
-                    EntityKeys.TYPE: e.get(ENTITY_ATTRIBUTE_TYPE),
-                    EntityKeys.START: e.get(ENTITY_ATTRIBUTE_START),
-                    EntityKeys.END: e.get(ENTITY_ATTRIBUTE_END),
-                }
+                Entity(
+                    e.get(ENTITY_ATTRIBUTE_TYPE),
+                    e.get(ENTITY_ATTRIBUTE_START),
+                    e.get(ENTITY_ATTRIBUTE_END),
+                )
                 for e in result.get(ENTITIES, [])
             ]
             nbest = [

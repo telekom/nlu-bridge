@@ -3,7 +3,7 @@ from test_datasets import entities as sample_entities
 from test_datasets import intents as sample_intents
 from test_datasets import texts as sample_texts
 
-from nlubridge import EntityKeys, NBestKeys, NluDataset
+from nlubridge import Entity, NBestKeys, NluDataset
 
 
 # Following functions are run by all vendor tests to test
@@ -90,8 +90,8 @@ def test_rasa(train_data):
     assert preds.n_best_intents[0][0][NBestKeys.INTENT] in train_ds.unique_intents
     assert len(preds.entities) == 2
     assert isinstance(preds.entities[0], list)
-    assert isinstance(preds.entities[0][0], dict)
-    assert preds.entities[0][0][EntityKeys.TYPE] in train_ds.unique_entities
+    assert isinstance(preds.entities[0][0], Entity)
+    assert preds.entities[0][0].type in train_ds.unique_entities
 
 
 def test_telekom(train_data):
