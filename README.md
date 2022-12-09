@@ -23,7 +23,7 @@ applications.
 
 ### Installation
 
-The core package including NLUdataset and Baseline vendors can be installed for Python<=3.8
+The core package including NLUdataset and Baseline vendors can be installed for Python\<=3.8
 using pip
 
 ```
@@ -37,6 +37,7 @@ pip install nlubridge[watson]
 ```
 
 Following install options are available:
+
 - `watson`
 - `fasttext`
 - `luis`
