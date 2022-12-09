@@ -36,6 +36,17 @@ To include optional dependencies for the vendors, e.g. Watson Assistant, type
 pip install nlubridge[watson]
 ```
 
+Following install options are available:
+- `watson`
+- `fasttext`
+- `luis`
+- `rasa2`
+- `rasa3`
+- `spacy`
+- `huggingface`
+
+Development tools can be installed with option `develop`.
+
 Some vendors require access credentials like API tokens, URLs etc. These can be passed
 on construction of the objects. Alternatively, such arguments can be passed as
 environment variables, where the vendor will look for variables named variable
