@@ -23,7 +23,7 @@ applications.
 
 ### Installation
 
-The core package including NLUdataset and Baseline vendors can be installed
+The core package including NLUdataset and Baseline vendors can be installed for Python<=3.8
 using pip
 
 ```
