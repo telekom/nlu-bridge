@@ -280,7 +280,7 @@ class NluDataset:
         return ds
 
     def clip_by_intent_frequency(
-        self, max_frequency: int, min_frequency: int = None
+        self, max_frequency: int, min_frequency: Optional[int] = None
     ) -> NluDataset:
         """
         Sample the dataset leaving only `max_freq` samples per intent.
@@ -425,7 +425,7 @@ class NluDataset:
             d[record[1]].append(record[0])
         return dict(d)
 
-    def to_json(self, path: Union[Path, str] = None) -> Optional[List[Dict]]:
+    def to_json(self, path: Optional[Union[Path, str]] = None) -> Optional[List[Dict]]:
         """
         Convert dataset to JSON.
 
