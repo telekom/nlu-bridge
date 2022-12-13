@@ -58,7 +58,7 @@ setup(
     },
     packages=find_packages(),
     python_requires=">=3, <3.9",
-    install_requires=["sklearn", "python-dotenv", "lazy-imports", "ratelimit"],
+    install_requires=["scikit-learn", "python-dotenv", "lazy-imports", "ratelimit"],
     extras_require={
         "watson": ["ibm_watson", "tqdm", "requests"],
         "fasttext": ["fasttext"],
