@@ -5,13 +5,12 @@
 import random
 
 import numpy as np
-from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.metrics import accuracy_score, classification_report, f1_score
 
 from ..nlu_dataset import OUT_OF_SCOPE_TOKEN, NluDataset
 
 
-class Vendor():
+class Vendor:
     """Abstract class for a vendor."""
 
     # TODO: Is this really a reliable method for the purpose?
