@@ -49,8 +49,8 @@ class Rasa3(Vendor):
         :param model_config: filepath to a Rasa config file
         """
         self._alias = self.name
-        self.config = model_config
-        self.agent = None
+        self._config = model_config
+        self._agent = None
 
     def train(self, dataset: NluDataset) -> Rasa3:
         """
@@ -59,18 +59,18 @@ class Rasa3(Vendor):
         :param dataset: Training data
         :return: It's own Rasa3 object
         """
-        self.config = self.config if self.config else DEFAULT_INTENT_RASA_CONFIG_PATH
+        self._config = self._config if self._config else DEFAULT_INTENT_RASA_CONFIG_PATH
         with tempfile.TemporaryDirectory() as tmpdirname:
             nlu_yml_file = os.path.join(
                 pathlib.Path(tmpdirname), "nlu.yml"
             )  # output path for temporary nlu.yml
             to_rasa(dataset, nlu_yml_file)
-            logger.info(f"Start training (using {self.config!r})...")
-            model_archive = train_nlu(self.config, nlu_yml_file, tmpdirname)
+            logger.info(f"Start training (using {self._config!r})...")
+            model_archive = train_nlu(self._config, nlu_yml_file, tmpdirname)
             logger.info("Training completed!")
 
             logger.info("Load model...")
-            self.agent = Agent.load(model_path=model_archive)
+            self._agent = Agent.load(model_path=model_archive)
             logger.info("Model loaded!")
         return self
 
@@ -98,14 +98,14 @@ class Rasa3(Vendor):
             the predicted intent classification probabilities are accessible via the
             additional attribute 'probs' (List[float]).
         """
-        if self.agent is None:
+        if self._agent is None:
             raise RuntimeError("Rasa3 classifier has to be trained first!")
         intents = []
         n_best_lists = []
         entities_list = []
         for text in dataset.texts:
             result = asyncio.run(
-                self.agent.parse_message(text)
+                self._agent.parse_message(text)
             )  # agent's parse method is a coroutine
             intent = result.get(INTENT, {}).get(INTENT_NAME_KEY)
             entities = [
@@ -144,13 +144,13 @@ class Rasa3(Vendor):
             predicted intent classification and probabilites results (depeding on
             argument 'return_probs')
         """
-        if self.agent is None:
+        if self._agent is None:
             raise RuntimeError("Rasa3 classifier has to be trained first!")
         intents = []
         probs = []
         for text in dataset.texts:
             result = asyncio.run(
-                self.agent.parse_message(text)
+                self._agent.parse_message(text)
             )  # agent's parse method is a coroutine
             intent = result.get(INTENT, {}).get(INTENT_NAME_KEY)
             prob = result.get(INTENT, {}).get(PREDICTED_CONFIDENCE_KEY)

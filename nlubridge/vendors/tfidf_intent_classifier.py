@@ -34,7 +34,7 @@ class TfidfIntentClassifier(Vendor):
               embeddings)
         """
         self._alias = self.name
-        self.clf = Pipeline(
+        self._clf = Pipeline(
             [
                 ("vect", CountVectorizer()),
                 ("tfidf", TfidfTransformer()),
@@ -58,18 +58,18 @@ class TfidfIntentClassifier(Vendor):
         logger.info(f"Training on {dataset.n_samples} samples")
         X = dataset.texts
         y = dataset.intents
-        self.clf.fit(X, y)
+        self._clf.fit(X, y)
         return self
 
     def test_intent(self, dataset, return_probs=False):
         """Test intent classifier."""
         logger.info(f"Testing on {dataset.n_samples} samples")
         X = dataset.texts
-        probs = self.clf.predict_proba(X)
+        probs = self._clf.predict_proba(X)
         pred_idxs = probs.argmax(axis=1)
         winner_class_probs = probs.max(axis=1)
         winner_class_probs = list(winner_class_probs)
-        intents = self.clf.classes_[pred_idxs]
+        intents = self._clf.classes_[pred_idxs]
         intents = list(intents)
 
         if return_probs:

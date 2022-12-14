@@ -69,25 +69,25 @@ class Luis(Vendor):
                 "app_id not passed and not found under environment variable "
                 "LUIS_APP_ID"
             )
-        self.endpoint = endpoint
-        self.subscription_key = subscription_key
-        self.app_id = app_id
-        self.version = version
-        self.session = requests.Session()
-        self.session.headers.update({"Ocp-Apim-Subscription-Key": authoring_key})
-        logger.debug(f"Created new app with id {self.app_id}")
+        self._endpoint = endpoint
+        self._subscription_key = subscription_key
+        self._app_id = app_id
+        self._version = version
+        self._session = requests.Session()
+        self._session.headers.update({"Ocp-Apim-Subscription-Key": authoring_key})
+        logger.debug(f"Created new app with id {self._app_id}")
 
     @property  # type: ignore
     @rate_limited(AUTHORING_RATE_LIMIT)
     def requests(self):
         """Util method to access self.session."""
-        return self.session
+        return self._session
 
     def _get_base_url(self, cmd, add_version=True):
-        base_url = requests.compat.urljoin(self.endpoint, self.app_id)
+        base_url = requests.compat.urljoin(self._endpoint, self._app_id)
         base_url += "/"
         if add_version:
-            base_url += f"versions/{self.version}/"
+            base_url += f"versions/{self._version}/"
         base_url += f"{cmd}"
         return base_url
 
@@ -126,10 +126,10 @@ class Luis(Vendor):
             "culture": "de-de",
             "usageScenario": "",
             "domain": "",
-            "initialVersionId": self.version,
+            "initialVersionId": self._version,
         }
 
-        response = self.requests.post(self.endpoint, data=body)
+        response = self.requests.post(self._endpoint, data=body)
         app_id = response.json()
         return app_id
 
@@ -141,9 +141,9 @@ class Luis(Vendor):
         Otherwise `self.app_id
         """
         if app_id is None:
-            app_id = self.app_id
+            app_id = self._app_id
 
-        url = requests.compat.urljoin(self.endpoint, app_id)
+        url = requests.compat.urljoin(self._endpoint, app_id)
         response = self.requests.delete(url)
         return response.json()
 
@@ -154,7 +154,7 @@ class Luis(Vendor):
         The version '0.1' is kept empty and used as a blank state.
         Then cloned versions are used for the tests.
         """
-        self.version = old_version
+        self._version = old_version
         url = self._get_base_url("clone", add_version=True)
         body = {"version": new_version}
         response = self.requests.post(url, data=body)
@@ -162,7 +162,7 @@ class Luis(Vendor):
 
         if response == new_version:
             # clone created successfully
-            self.version = new_version
+            self._version = new_version
             logger.debug(f"Created new version {response}")
 
         return response
@@ -170,14 +170,14 @@ class Luis(Vendor):
     def _delete_app_version(self, version="perf_test"):
         """Delete an application version."""
         if version is None:
-            version = self.version
+            version = self._version
 
         if version == "0.1":
             raise Exception("You cant delete the main version")
-        self.version = "perf_test"
+        self._version = "perf_test"
         url = self._get_base_url("", add_version=True)
 
-        return self.session.delete(url)
+        return self._session.delete(url)
 
     def _create_intents(self, dataset):
         """Add intent classifiers to the application."""
@@ -270,7 +270,7 @@ class Luis(Vendor):
     def _publish(self, staging=True):
         """Publish a specific version of the application."""
         url = self._get_base_url("publish", add_version=False)
-        body = {"versionId": self.version, "isStaging": staging}
+        body = {"versionId": self._version, "isStaging": staging}
         response = self.requests.post(url, data=body)
         return response
 
@@ -308,7 +308,7 @@ class Luis(Vendor):
             "q": query,
             "staging": "true",
             "log": False,
-            "subscription-key": self.subscription_key,
+            "subscription-key": self._subscription_key,
         }
         # here we dont use the session because the auth key headers
         # take preference over the subscription key

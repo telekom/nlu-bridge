@@ -64,17 +64,17 @@ class FastText(Vendor):
         :type config: dict
         """
         self._alias = self.name
-        self.epochs = epochs
-        self.lr = lr
-        self.model = None
-        self.config = config
+        self._epochs = epochs
+        self._lr = lr
+        self._model = None
+        self._config = config
 
     def train_intent(self, dataset):
         """Train intent classifier."""
         train_data = self._convert(dataset)
         logger.info(f"Training on {dataset.n_samples} samples")
-        self.model = train_supervised(
-            input=train_data, epoch=self.epochs, lr=self.lr, **self.config
+        self._model = train_supervised(
+            input=train_data, epoch=self._epochs, lr=self._lr, **self._config
         )
         # remove tempfile
         os.remove(train_data)
@@ -88,7 +88,7 @@ class FastText(Vendor):
         for text in dataset.texts:
             text = self._clean_text(text)
             text = "".join(text.splitlines())
-            result = self.model.predict(text)
+            result = self._model.predict(text)
             intent = result[0][0]
             intent = intent[len("__label__") :]
             prob = result[1][0]
