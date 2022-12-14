@@ -24,7 +24,6 @@ logger = logging.getLogger(__name__)
 
 
 class WatsonAssistant(Vendor):
-
     def __init__(
         self,
         api_key=None,

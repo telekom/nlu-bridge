@@ -36,7 +36,6 @@ DEFAULT_INTENT_RASA_CONFIG_PATH = os.path.join(
 
 
 class Rasa3(Vendor):
-
     def __init__(self, model_config: Optional[str] = None):
         """
         Interface for the `Rasa NLU <https://github.com/RasaHQ/rasa>`_.

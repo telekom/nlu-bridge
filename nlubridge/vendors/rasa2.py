@@ -36,7 +36,6 @@ ENTITY_KEY_VALUE = "value"  # Rasa provides an explicit value parameter for its 
 
 
 class Rasa2(Vendor):
-
     def __init__(self, model_config: Optional[str] = None):
         """
         Interface for the `Rasa NLU <https://github.com/RasaHQ/rasa>`_.

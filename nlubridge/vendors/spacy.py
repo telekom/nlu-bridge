@@ -16,7 +16,6 @@ logger = logging.getLogger(__name__)
 
 
 class Spacy(Vendor):
-
     def __init__(self, n_iter=10, config=None, language="en"):
         """
         Interface for the Spacy intent classifier.

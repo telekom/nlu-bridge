@@ -29,7 +29,6 @@ DEFAULT_CONFIG = {
 
 
 class FastText(Vendor):
-
     def __init__(self, epochs=10000, lr=0.1, config=DEFAULT_CONFIG):
         """
         Interface for the FastText classifier.

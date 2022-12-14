@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 
 
 class TfidfIntentClassifier(Vendor):
-
     def __init__(self):
         """
         Interface to a TFIDF text classifier.

@@ -19,7 +19,6 @@ logger = logging.getLogger(__name__)
 
 
 class CharNgramIntentClassifier(Vendor):
-
     def __init__(self, anomaly_clf_nu=0):
         """
         Interface to a custom intent classifier based on character n-grams.
