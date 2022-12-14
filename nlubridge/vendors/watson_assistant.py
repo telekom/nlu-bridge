@@ -24,7 +24,6 @@ logger = logging.getLogger(__name__)
 
 
 class WatsonAssistant(Vendor):
-    alias = "watson_assistant"
 
     def __init__(
         self,
@@ -66,6 +65,7 @@ class WatsonAssistant(Vendor):
         :param use_bulk: if True (default) uses bulk_classify method
         :type use_bulk: bool
         """
+        self._alias = self.name
         api_key = api_key or os.getenv("WATSON_API_KEY")
         if api_key is None:
             ValueError(

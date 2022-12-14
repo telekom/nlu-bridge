@@ -36,7 +36,6 @@ DEFAULT_INTENT_RASA_CONFIG_PATH = os.path.join(
 
 
 class Rasa3(Vendor):
-    alias = "rasa3"
 
     def __init__(self, model_config: Optional[str] = None):
         """
@@ -49,6 +48,7 @@ class Rasa3(Vendor):
 
         :param model_config: filepath to a Rasa config file
         """
+        self._alias = self.name
         self.config = model_config
         self.agent = None
 

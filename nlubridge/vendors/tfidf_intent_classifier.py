@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 
 
 class TfidfIntentClassifier(Vendor):
-    alias = "tfidf"
 
     def __init__(self):
         """
@@ -34,6 +33,7 @@ class TfidfIntentClassifier(Vendor):
             * Can't use external information (ex: pretrained word
               embeddings)
         """
+        self._alias = self.name
         self.clf = Pipeline(
             [
                 ("vect", CountVectorizer()),

@@ -28,7 +28,6 @@ def _unwrap_self(arg, **kwarg):
 
 
 class Luis(Vendor):
-    alias = "luis"
 
     AUTHORING_RATE_LIMIT = 4.99  # queries per second
     SUBSCRIPTION_RATE_LIMIT = 4.9  # queries per second
@@ -45,6 +44,7 @@ class Luis(Vendor):
         version="0.1",
     ):
         """Interface for Microsoft LUIS."""
+        self._alias = self.name
         endpoint = endpoint or os.getenv("LUIS_ENDPOINT")
         if endpoint is None:
             ValueError(

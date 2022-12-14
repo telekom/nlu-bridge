@@ -29,7 +29,6 @@ DEFAULT_CONFIG = {
 
 
 class FastText(Vendor):
-    alias = "fasttext"
 
     def __init__(self, epochs=10000, lr=0.1, config=DEFAULT_CONFIG):
         """
@@ -64,6 +63,7 @@ class FastText(Vendor):
         :param config: dictionary with additional parameters
         :type config: dict
         """
+        self._alias = self.name
         self.epochs = epochs
         self.lr = lr
         self.model = None

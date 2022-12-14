@@ -19,7 +19,6 @@ logger = logging.getLogger(__name__)
 
 
 class CharNgramIntentClassifier(Vendor):
-    alias = "char_ngram"
 
     def __init__(self, anomaly_clf_nu=0):
         """
@@ -35,6 +34,7 @@ class CharNgramIntentClassifier(Vendor):
             off)
         :type anomaly_clf_nu: float
         """
+        self._alias = self.name
         self.clf = Model1(
             none_class=OUT_OF_SCOPE_TOKEN, verbose=False, anomaly_clf_nu=anomaly_clf_nu
         )

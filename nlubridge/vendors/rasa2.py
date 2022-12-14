@@ -36,7 +36,6 @@ ENTITY_KEY_VALUE = "value"  # Rasa provides an explicit value parameter for its 
 
 
 class Rasa2(Vendor):
-    alias = "rasa2"
 
     def __init__(self, model_config: Optional[str] = None):
         """
@@ -49,6 +48,7 @@ class Rasa2(Vendor):
 
         :param model_config: filepath to a Rasa config file
         """
+        self._alias = self.name
         self.config = model_config
         self.interpreter = None
 

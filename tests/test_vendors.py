@@ -39,6 +39,16 @@ def assert_multiple_utterances_predicted(vendor, train_data):
 # -----------------------------
 
 
+def test_vendor_attributes():
+    from nlubridge.vendors.tfidf_intent_classifier import TfidfIntentClassifier
+
+    clf = TfidfIntentClassifier()
+    assert clf.name == "TfidfIntentClassifier"
+    assert clf.alias == "TfidfIntentClassifier"
+    clf.alias = "tfidf"
+    assert clf.alias == "tfidf"
+
+
 def test_tfidf(train_data):
     from nlubridge.vendors.tfidf_intent_classifier import TfidfIntentClassifier
 

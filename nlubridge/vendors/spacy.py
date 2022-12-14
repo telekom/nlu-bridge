@@ -16,7 +16,6 @@ logger = logging.getLogger(__name__)
 
 
 class Spacy(Vendor):
-    alias = "spacy"
 
     def __init__(self, n_iter=10, config=None, language="en"):
         """
@@ -30,6 +29,7 @@ class Spacy(Vendor):
         :param language: Language string (default: "en")
         :type language: str
         """
+        self._alias = self.name
         self.nlp = spacy.blank(language)
         if not config:
             config = {
