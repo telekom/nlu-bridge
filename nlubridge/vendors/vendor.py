@@ -15,10 +15,12 @@ class Vendor:
 
     @property
     def alias(self):
+        """Return alias, which is a customizable name of the instance"""
         return self._alias
 
     @alias.setter
     def alias(self, value):
+        """Set alias, which is a customizable name of the instance"""
         self._alias = value
 
     def train(self, dataset: NluDataset):
