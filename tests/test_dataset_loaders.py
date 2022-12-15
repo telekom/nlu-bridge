@@ -1,12 +1,13 @@
-import os
 import json
+import os
 
 from test_datasets import FIXTURE_PATH
 
 
 def test_from_huggingface_intents():
-    from nlubridge import from_huggingface
     from datasets import ClassLabel, Dataset
+
+    from nlubridge import from_huggingface
 
     with open(
         os.path.join(FIXTURE_PATH, "huggingface_banking77.json"), "r", encoding="utf-8"
@@ -34,8 +35,9 @@ def test_from_huggingface_intents():
 
 
 def test_from_huggingface_entities():
-    from nlubridge import from_huggingface
     from datasets import ClassLabel, Dataset
+
+    from nlubridge import from_huggingface
 
     with open(
         os.path.join(FIXTURE_PATH, "huggingface_wnut_17.json"), "r", encoding="utf-8"
