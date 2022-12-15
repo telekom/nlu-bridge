@@ -8,12 +8,16 @@ def test_from_huggingface_intents():
     from nlubridge import from_huggingface
     from datasets import ClassLabel, Dataset
 
-    with open(os.path.join(FIXTURE_PATH, "huggingface_banking77.json"), 'r', encoding='utf-8') as f:
+    with open(
+        os.path.join(FIXTURE_PATH, "huggingface_banking77.json"), "r", encoding="utf-8"
+    ) as f:
         testdata = json.load(f)
 
-    hf_ds = Dataset.from_dict(testdata['data'])
-    hf_ds.features['label'] = ClassLabel(num_classes=len(testdata['label_class_names']),
-                                         names=testdata['label_class_names'])
+    hf_ds = Dataset.from_dict(testdata["data"])
+    hf_ds.features["label"] = ClassLabel(
+        num_classes=len(testdata["label_class_names"]),
+        names=testdata["label_class_names"],
+    )
     ds = from_huggingface(hf_ds, has_intents=True, has_entities=False)
 
     assert len(ds) == 8
@@ -33,12 +37,16 @@ def test_from_huggingface_entities():
     from nlubridge import from_huggingface
     from datasets import ClassLabel, Dataset
 
-    with open(os.path.join(FIXTURE_PATH, "huggingface_wnut_17.json"), 'r', encoding='utf-8') as f:
+    with open(
+        os.path.join(FIXTURE_PATH, "huggingface_wnut_17.json"), "r", encoding="utf-8"
+    ) as f:
         testdata = json.load(f)
 
-    hf_ds = Dataset.from_dict(testdata['data'])
-    hf_ds.features['ner_tags'].feature = ClassLabel(num_classes=len(testdata['ner_tags_class_names']),
-                                                    names=testdata['ner_tags_class_names'])
+    hf_ds = Dataset.from_dict(testdata["data"])
+    hf_ds.features["ner_tags"].feature = ClassLabel(
+        num_classes=len(testdata["ner_tags_class_names"]),
+        names=testdata["ner_tags_class_names"],
+    )
 
     ds = from_huggingface(hf_ds, has_intents=False, has_entities=True)
 
@@ -49,7 +57,7 @@ def test_from_huggingface_entities():
     assert all(len(x) > 0 for x in ds.texts)
     assert len(ds.entities) == len(ds)
     assert all(len(x) >= 0 for x in ds.entities)
-    assert ds.texts[3] == 'today is my last day at the office.'
+    assert ds.texts[3] == "today is my last day at the office."
     assert len(ds.entities[0]) == 2
     assert ds.entities[3] == []
     assert ds.entities[4] == [{"start": 0, "end": 7, "entity": "person"}]
