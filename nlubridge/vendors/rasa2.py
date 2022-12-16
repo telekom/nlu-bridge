@@ -36,8 +36,6 @@ ENTITY_KEY_VALUE = "value"  # Rasa provides an explicit value parameter for its 
 
 
 class Rasa2(Vendor):
-    alias = "rasa2"
-
     def __init__(self, model_config: Optional[str] = None):
         """
         Interface for the `Rasa NLU <https://github.com/RasaHQ/rasa>`_.
@@ -49,8 +47,9 @@ class Rasa2(Vendor):
 
         :param model_config: filepath to a Rasa config file
         """
-        self.config = model_config
-        self.interpreter = None
+        self._alias = self.name
+        self._config = model_config
+        self._interpreter = None
 
     def train(self, dataset: NluDataset) -> Rasa2:
         """
@@ -59,10 +58,10 @@ class Rasa2(Vendor):
         :param dataset: Training data
         :return: It's own Rasa object
         """
-        self.config = self.config if self.config else DEFAULT_INTENT_RASA_CONFIG_PATH
+        self._config = self._config if self._config else DEFAULT_INTENT_RASA_CONFIG_PATH
         training_data = self._convert(dataset)
-        trainer = Trainer(config.load(self.config))
-        self.interpreter = trainer.train(training_data)
+        trainer = Trainer(config.load(self._config))
+        self._interpreter = trainer.train(training_data)
         return self
 
     def train_intent(self, dataset: NluDataset) -> Rasa2:
@@ -92,10 +91,10 @@ class Rasa2(Vendor):
         intents: List[str] = []
         n_best_lists: List[List[dict]] = []
         entities_list: List[List[dict]] = []
-        if self.interpreter is None:
+        if self._interpreter is None:
             raise Exception("Rasa2 classifier has to be trained first!")
         for text in dataset.texts:
-            result = self.interpreter.parse(text)
+            result = self._interpreter.parse(text)
             intent = result.get(INTENT, {}).get(INTENT_NAME_KEY)
             entities = [
                 {
@@ -135,10 +134,10 @@ class Rasa2(Vendor):
         """
         intents: List[str] = []
         probs: List[float] = []
-        if self.interpreter is None:
+        if self._interpreter is None:
             raise Exception("Rasa2 classifier has to be trained first!")
         for text in dataset.texts:
-            result = self.interpreter.parse(text)
+            result = self._interpreter.parse(text)
             intent = result.get(INTENT, {}).get(INTENT_NAME_KEY)
             prob = result.get(INTENT, {}).get(PREDICTED_CONFIDENCE_KEY)
             intents.append(intent)

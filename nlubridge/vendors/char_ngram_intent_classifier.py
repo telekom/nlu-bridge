@@ -19,8 +19,6 @@ logger = logging.getLogger(__name__)
 
 
 class CharNgramIntentClassifier(Vendor):
-    alias = "char_ngram"
-
     def __init__(self, anomaly_clf_nu=0):
         """
         Interface to a custom intent classifier based on character n-grams.
@@ -35,19 +33,20 @@ class CharNgramIntentClassifier(Vendor):
             off)
         :type anomaly_clf_nu: float
         """
-        self.clf = Model1(
+        self._alias = self.name
+        self._clf = Model1(
             none_class=OUT_OF_SCOPE_TOKEN, verbose=False, anomaly_clf_nu=anomaly_clf_nu
         )
 
     def train_intent(self, dataset):  # noqa D102
         X = dataset.texts
         y = dataset.intents
-        self.clf.fit(X, y)
+        self._clf.fit(X, y)
         return self
 
     def test_intent(self, dataset, return_probs=False):  # noqa D102
         X = dataset.texts
-        intents, probs = self.clf.predict(X, return_probs=True)
+        intents, probs = self._clf.predict(X, return_probs=True)
         intents = list(intents)
         probs = list(probs)
         if return_probs:

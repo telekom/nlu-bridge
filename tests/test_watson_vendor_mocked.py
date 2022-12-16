@@ -60,7 +60,7 @@ def test_watson_mocked(train_data, mocker):
 
     # test watson.set_bulk()
     watson.set_bulk(False)
-    assert watson.use_bulk is False
+    assert watson._use_bulk is False
 
 
 class ResultMock:

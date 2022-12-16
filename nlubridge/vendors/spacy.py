@@ -16,8 +16,6 @@ logger = logging.getLogger(__name__)
 
 
 class Spacy(Vendor):
-    alias = "spacy"
-
     def __init__(self, n_iter=10, config=None, language="en"):
         """
         Interface for the Spacy intent classifier.
@@ -30,19 +28,20 @@ class Spacy(Vendor):
         :param language: Language string (default: "en")
         :type language: str
         """
-        self.nlp = spacy.blank(language)
+        self._alias = self.name
+        self._nlp = spacy.blank(language)
         if not config:
             config = {
                 "threshold": 0.5,
                 "model": DEFAULT_SINGLE_TEXTCAT_MODEL,
             }
-        self.textcat = self.nlp.add_pipe("textcat", config=config)
-        self.n_iter = n_iter
+        self._textcat = self._nlp.add_pipe("textcat", config=config)
+        self._n_iter = n_iter
 
     def _convert(self, dataset):
         examples = []
         for text, intent in zip(dataset.texts, dataset.intents):
-            doc = self.nlp.make_doc(text)
+            doc = self._nlp.make_doc(text)
             cats = {
                 intent: True if intent == each else False
                 for each in dataset.unique_intents
@@ -56,18 +55,18 @@ class Spacy(Vendor):
         examples = self._convert(dataset)
 
         get_examples = lambda: examples  # noqa: E731
-        optimizer = self.nlp.initialize(get_examples)
-        for itn in range(self.n_iter):
+        optimizer = self._nlp.initialize(get_examples)
+        for itn in range(self._n_iter):
             random.shuffle(examples)
             for example in examples:
-                self.nlp.update([example], sgd=optimizer)
+                self._nlp.update([example], sgd=optimizer)
 
     def test_intent(self, dataset, return_probs=False):
         """Test intent classifier."""
         intents = []
         probs = []
         for text in dataset.texts:
-            doc = self.nlp(text)
+            doc = self._nlp(text)
             intent = max(doc.cats, key=doc.cats.get)
             prob = doc.cats[intent]
             intents.append(intent)

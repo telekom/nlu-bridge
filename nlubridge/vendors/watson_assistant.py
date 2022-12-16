@@ -24,8 +24,6 @@ logger = logging.getLogger(__name__)
 
 
 class WatsonAssistant(Vendor):
-    alias = "watson_assistant"
-
     def __init__(
         self,
         api_key=None,
@@ -66,6 +64,7 @@ class WatsonAssistant(Vendor):
         :param use_bulk: if True (default) uses bulk_classify method
         :type use_bulk: bool
         """
+        self._alias = self.name
         api_key = api_key or os.getenv("WATSON_API_KEY")
         if api_key is None:
             ValueError(
@@ -84,11 +83,11 @@ class WatsonAssistant(Vendor):
                 "workspace_name not passed and not found under environment "
                 "variable WATSON_WORKSPACE_NAME"
             )
-        self.assistant = self._connect(endpoint, api_key, api_version)
-        self.workspace_name = workspace_name
-        self.workspace_id = self._get_workspace_id()
-        self.max_workers = max_workers
-        self.use_bulk = use_bulk
+        self._assistant = self._connect(endpoint, api_key, api_version)
+        self._workspace_name = workspace_name
+        self._workspace_id = self._get_workspace_id()
+        self._max_workers = max_workers
+        self._use_bulk = use_bulk
 
     def set_bulk(self, use_bulk):
         """
@@ -97,7 +96,7 @@ class WatsonAssistant(Vendor):
         :param use_bulk: True means use bulk method for testing
         :type use_bulk: bool
         """
-        self.use_bulk = use_bulk
+        self._use_bulk = use_bulk
 
     def set_max_workers(self, max_workers):
         """
@@ -108,12 +107,12 @@ class WatsonAssistant(Vendor):
         :param max_workers: max_workers to use for parallel requests
         :type max_workers: int
         """
-        self.max_workers = max_workers
+        self._max_workers = max_workers
 
     @property
     def _is_trained(self):
-        response = self.assistant.get_workspace(
-            workspace_id=self.workspace_id, export=False
+        response = self._assistant.get_workspace(
+            workspace_id=self._workspace_id, export=False
         ).get_result()
         return response["status"] == "Available"
 
@@ -163,7 +162,7 @@ class WatsonAssistant(Vendor):
         if not self._is_trained:
             raise RuntimeError("Watson Assistant workspace has not yet been trained")
 
-        if not self.use_bulk:
+        if not self._use_bulk:
             responses = self._get_wa_response_in_session(dataset)
         else:
             responses = self._get_wa_response_in_batches(dataset)
@@ -236,15 +235,15 @@ class WatsonAssistant(Vendor):
         return data_wa_format
 
     def _get_workspace_id(self):
-        response = self.assistant.list_workspaces().get_result()
+        response = self._assistant.list_workspaces().get_result()
         for workspace in response["workspaces"]:
-            if workspace["name"] == self.workspace_name:
+            if workspace["name"] == self._workspace_name:
                 return workspace["workspace_id"]
         raise ValueError("Workspace could not be found.")
 
     def _delete_workspace(self):
         """Delete a workspace by its name."""
-        response = self.assistant.delete_workspace(self.workspace_id)
+        response = self._assistant.delete_workspace(self._workspace_id)
         status_code = response.get_status_code()
         return status_code == "200"
 
@@ -257,13 +256,13 @@ class WatsonAssistant(Vendor):
         workspace and creates a new one under the same name
         (workspace_id is updated).
         """
-        logger.info(f"Clearing workspace {self.workspace_id}")
+        logger.info(f"Clearing workspace {self._workspace_id}")
         # TODO: handle failures of delete_workspace (and fix unused variable 'success')
         success = self._delete_workspace()  # noqa: F841
-        response = self.assistant.create_workspace(
-            name=self.workspace_name, description="created via api", language="de"
+        response = self._assistant.create_workspace(
+            name=self._workspace_name, description="created via api", language="de"
         ).get_result()
-        self.workspace_id = response["workspace_id"]
+        self._workspace_id = response["workspace_id"]
 
     def _upload_samples(self, dataset):
         self._clear_workspace()
@@ -271,8 +270,8 @@ class WatsonAssistant(Vendor):
         logger.info("Uploading samples")
         for intent in intents:
             # TODO: handle failures (and fix unused variable 'response')
-            response = self.assistant.create_intent(  # noqa: F841
-                workspace_id=self.workspace_id,
+            response = self._assistant.create_intent(  # noqa: F841
+                workspace_id=self._workspace_id,
                 intent=intent["intent"],
                 examples=intent["examples"],
             ).get_result()
@@ -280,8 +279,8 @@ class WatsonAssistant(Vendor):
     def _get_wa_response(self, query):
         """Get the NLU result for a single message."""
         query = self.validate_text(query)
-        response = self.assistant.message(
-            workspace_id=self.workspace_id,
+        response = self._assistant.message(
+            workspace_id=self._workspace_id,
             input={"text": query},
             alternate_intents=True,
         )
@@ -309,13 +308,13 @@ class WatsonAssistant(Vendor):
 
         with requests.Session() as session:
             session.auth = requests.auth.HTTPBasicAuth(
-                "apikey", self.assistant.authenticator.token_manager.apikey
+                "apikey", self._assistant.authenticator.token_manager.apikey
             )
             session.headers.update({"Content-Type": "application/json"})
             url = "{url}/v1/workspaces/{ws_id}/bulk_classify?version={version}".format(
-                url=self.assistant.service_url,
-                ws_id=self.workspace_id,
-                version=self.assistant.version,
+                url=self._assistant.service_url,
+                ws_id=self._workspace_id,
+                version=self._assistant.version,
             )
             all_results = []
             for i in range(0, len(dataset.texts), 50):
@@ -338,15 +337,15 @@ class WatsonAssistant(Vendor):
 
         with requests.Session() as session:
             session.auth = requests.auth.HTTPBasicAuth(
-                "apikey", self.assistant.authenticator.token_manager.apikey
+                "apikey", self._assistant.authenticator.token_manager.apikey
             )
             session.headers.update({"Content-Type": "application/json"})
             url = "{url}/v1/workspaces/{ws_id}/message?version={version}".format(
-                url=self.assistant.service_url,
-                ws_id=self.workspace_id,
-                version=self.assistant.version,
+                url=self._assistant.service_url,
+                ws_id=self._workspace_id,
+                version=self._assistant.version,
             )
-            with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
+            with ThreadPoolExecutor(max_workers=self._max_workers) as executor:
                 responses = list(
                     tqdm(
                         executor.map(get_response, dataset.texts),

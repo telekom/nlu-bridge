@@ -35,7 +35,7 @@ def test_watson(train_data):
     # test test_intent() (non-bulk)
     test_ds = NluDataset(["Ich habe kein DSL und telefon"])
     watson.set_bulk(False)
-    assert watson.use_bulk is False
+    assert watson._use_bulk is False
     preds = watson.test_intent(test_ds)
     assert isinstance(preds, list)
     assert len(preds) == 1
