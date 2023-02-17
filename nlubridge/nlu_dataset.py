@@ -11,7 +11,7 @@ import numbers
 import random
 import warnings
 from pathlib import Path
-from typing import Any, Dict, Iterator, List, Optional, Tuple, Union
+from typing import Any, Dict, Iterator, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from sklearn.model_selection import (
@@ -68,6 +68,13 @@ class NluDataset:
             the first `max_intent_length` chars. This is required
             because some vendors like LUIS don't accept very long intent names.
         """
+
+        # Cast to list so we can be a bit more flexible with the inputs, e.g. use a
+        # Pandas Series
+        texts = list(texts) if texts is not None else []
+        intents = list(intents) if intents is not None else None
+        entities = list(entities) if entities is not None else None
+
         ds_intents = (
             self._prepare_intents(max_intent_length, intents)
             if intents
