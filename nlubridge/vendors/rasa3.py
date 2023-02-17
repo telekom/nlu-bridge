@@ -3,7 +3,6 @@
 # which is available at https://opensource.org/licenses/MIT
 from __future__ import annotations
 
-import asyncio
 import logging
 import os
 import pathlib
@@ -11,6 +10,7 @@ import tempfile
 from typing import List, Optional, Tuple, Union
 
 from rasa.core.agent import Agent
+from rasa.core.channels.channel import UserMessage
 from rasa.model_training import train_nlu
 from rasa.shared.nlu.constants import (
     ENTITIES,
@@ -85,6 +85,20 @@ class Rasa3(Vendor):
         """
         return self.train(dataset)
 
+    def _parse_message(self, text):
+
+        # result = asyncio.run(
+        #     self._agent.parse_message(text)
+        # )  # agent's parse method is a coroutine
+
+        # To avoid errors in Jupyter if  an event loop is already running, don't use the
+        # async method from self._agent
+        message = UserMessage(text)
+        parse_data = self._agent.processor._parse_message_with_graph(message)
+        self._agent.processor._check_for_unseen_features(parse_data)
+        result = parse_data
+        return result
+
     def test(self, dataset: NluDataset) -> NluDataset:
         """
         Test a given dataset.
@@ -103,9 +117,7 @@ class Rasa3(Vendor):
         n_best_lists = []
         entities_list = []
         for text in dataset.texts:
-            result = asyncio.run(
-                self._agent.parse_message(text)
-            )  # agent's parse method is a coroutine
+            result = self._parse_message(text)
             intent = result.get(INTENT, {}).get(INTENT_NAME_KEY)
             entities = [
                 {
@@ -148,9 +160,7 @@ class Rasa3(Vendor):
         intents = []
         probs = []
         for text in dataset.texts:
-            result = asyncio.run(
-                self._agent.parse_message(text)
-            )  # agent's parse method is a coroutine
+            result = self._parse_message(text)
             intent = result.get(INTENT, {}).get(INTENT_NAME_KEY)
             prob = result.get(INTENT, {}).get(PREDICTED_CONFIDENCE_KEY)
             intents.append(intent)
