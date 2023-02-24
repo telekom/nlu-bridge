@@ -86,7 +86,6 @@ class Rasa3(Vendor):
         return self.train(dataset)
 
     def _parse_message(self, text):
-
         # result = asyncio.run(
         #     self._agent.parse_message(text)
         # )  # agent's parse method is a coroutine

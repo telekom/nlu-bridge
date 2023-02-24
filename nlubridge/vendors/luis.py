@@ -28,7 +28,6 @@ def _unwrap_self(arg, **kwarg):
 
 
 class Luis(Vendor):
-
     AUTHORING_RATE_LIMIT = 4.99  # queries per second
     SUBSCRIPTION_RATE_LIMIT = 4.9  # queries per second
 

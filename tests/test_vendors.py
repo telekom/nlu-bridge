@@ -65,7 +65,6 @@ def test_tfidf(train_data):
 
 
 def test_rasa(train_data):
-
     from rasa import __version__ as rasa_version
 
     if version.parse(rasa_version) < version.parse("3.0.0"):

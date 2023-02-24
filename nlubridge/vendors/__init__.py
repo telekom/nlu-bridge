@@ -12,7 +12,6 @@ from .vendor import Vendor  # noqa: 401
 
 
 if TYPE_CHECKING:
-
     from .char_ngram_intent_classifier import CharNgramIntentClassifier  # noqa: F401
     from .fasttext import FastText  # noqa: F401
     from .luis import Luis  # noqa: F401

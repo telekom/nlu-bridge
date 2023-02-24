@@ -149,7 +149,6 @@ def iob2dict(tokens, ner_tags, tag_mapper):
     is_in = False
 
     for token, tag in zip(tokens, ner_tags):
-
         # remove trailing blank if certain characters follow
         if need_blank(token, len(text)):
             text += " "

@@ -65,7 +65,6 @@ class Model1:
     def __init__(
         self, none_class="no_intent", verbose=False, anomaly_clf_nu=0.95
     ):  # noqa D102
-
         self.none_class_ = none_class
         self.verbose_ = verbose
         self.anomaly_clf_nu_ = anomaly_clf_nu

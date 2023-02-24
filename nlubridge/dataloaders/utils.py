@@ -26,7 +26,7 @@ def from_csv(
     with open(path) as f:
         reader = csv.DictReader(f)
         for row in reader:
-            for (k, v) in row.items():
+            for k, v in row.items():
                 columns[k].append(v)
 
     if isinstance(text_col, int):
