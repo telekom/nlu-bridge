@@ -11,7 +11,7 @@ import numbers
 import random
 import warnings
 from pathlib import Path
-from typing import Any, Dict, Iterator, List, Optional, Sequence, Tuple, Union
+from typing import Any, Dict, Iterator, List, Optional, Tuple, Union
 
 import numpy as np
 from sklearn.model_selection import (
@@ -45,12 +45,8 @@ class NluDataset:
         self,
         texts: List[str],
         intents: Optional[List[str]] = None,
-        entities: Optional[
-            List[List[Dict]]
-        ] = None,  # TODO: Better code entities as custom objects?
-        n_best_intents: Optional[
-            List[List[Dict]]
-        ] = None,  # TODO: Better code n-best-list items as custom objects?
+        entities: Optional[List[List[Dict]]] = None,
+        n_best_intents: Optional[List[List[Dict]]] = None,
         max_intent_length=None,
     ) -> None:
         """
@@ -68,7 +64,6 @@ class NluDataset:
             the first `max_intent_length` chars. This is required
             because some vendors like LUIS don't accept very long intent names.
         """
-
         # Cast to list so we can be a bit more flexible with the inputs, e.g. use a
         # Pandas Series
         texts = list(texts) if texts is not None else []
