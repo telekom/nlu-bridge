@@ -7,6 +7,8 @@ from __future__ import annotations
 import pathlib
 from typing import Union
 
+from rasa.shared.data import get_data_files, is_nlu_file
+from rasa.shared.importers.utils import training_data_from_paths
 from rasa.shared.nlu.constants import (
     ENTITIES,
     ENTITY_ATTRIBUTE_END,
@@ -17,10 +19,7 @@ from rasa.shared.nlu.constants import (
     TEXT,
 )
 from rasa.shared.nlu.training_data.formats.rasa import RasaReader, RasaWriter
-from rasa.shared.nlu.training_data.formats.rasa_yaml import (
-    RasaYAMLReader,
-    RasaYAMLWriter,
-)
+from rasa.shared.nlu.training_data.formats.rasa_yaml import RasaYAMLWriter
 from rasa.shared.nlu.training_data.message import Message
 from rasa.shared.nlu.training_data.training_data import TrainingData
 from rasa.shared.utils.io import write_yaml
@@ -28,7 +27,9 @@ from rasa.shared.utils.io import write_yaml
 from nlubridge.nlu_dataset import EntityKeys, NluDataset
 
 
-def from_rasa(filepath: Union[str, pathlib.Path], format: str = "yml") -> NluDataset:
+def from_rasa(
+    filepath: Union[str, pathlib.Path], format: str = "yml", verbose=True
+) -> NluDataset:
     """
     Load data stored in Rasa's yml- resp. json-format as NLUdataset.
 
@@ -37,16 +38,23 @@ def from_rasa(filepath: Union[str, pathlib.Path], format: str = "yml") -> NluDat
     :return: The loaded dataset as NLUdataset object
     """
     if format == "yml":
-        trainingdata = RasaYAMLReader().read(filepath)
+        training_files = get_data_files([filepath], is_nlu_file)
+        # TODO: Replace with log messages!
+        if verbose:
+            print(f"Found {len(training_files)} NLU files")
+            print("Reading data...")
+        # Language tag in this function seems to be meaningless as in Rasa source code
+        # apparently is never set to anything else than default "en"
+        training_data = training_data_from_paths(training_files, "en")
     elif format == "json":
-        trainingdata = RasaReader().read(filename=filepath)
+        training_data = RasaReader().read(filename=filepath)
     else:
         raise ValueError(f"Unknown format {format!r}")
 
     texts = []
     intents = []
     entities = []
-    for message in trainingdata.training_examples:
+    for message in training_data.training_examples:
         texts.append(message.get(TEXT))
         intents.append(message.get(INTENT))
         es = []
