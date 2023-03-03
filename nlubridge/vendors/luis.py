@@ -16,7 +16,6 @@ from ratelimit import rate_limited
 from ..nlu_dataset import OUT_OF_SCOPE_TOKEN
 from .vendor import Vendor
 
-
 sys.path.append("../..")
 logger = logging.getLogger(__name__)
 global n_calls

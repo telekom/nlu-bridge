@@ -142,7 +142,7 @@ logger.addHandler(logging.StreamHandler())
 - **Data Loaders**\
   The [`dataloaders`](/nlubridge/dataloaders/) subpackage provides functions to load
   data that are in a vendor-specific format as NluDataset.
-
+  
 ### List of supported vendors
 
 | Vendor Class | Status | Intents | Entities | Algorithm |
@@ -155,6 +155,7 @@ logger.addHandler(logging.StreamHandler())
 | [CharNgramIntentClassifier](/nlubridge/vendors/char_ngram_intent_classifier.py)  | ✓ | ✓ | ✗ | tf-idf on char n-grams + SGD |
 | [Rasa2](https://github.com/RasaHQ/rasa) | ✓ | ✓ | ✓ |  configurable |
 | [Rasa3](https://github.com/RasaHQ/rasa) | ✓ | ✓ | ✓ |  configurable |
+
 
 ### Features
 
