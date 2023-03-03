@@ -468,7 +468,7 @@ def from_csv(filepath, text_col, intent_col) -> NLUdataset:
     with open(filepath) as f:
         reader = csv.DictReader(f)
         for row in reader:
-            for (k, v) in row.items():
+            for k, v in row.items():
                 columns[k].append(v)
 
     if isinstance(text_col, int):
