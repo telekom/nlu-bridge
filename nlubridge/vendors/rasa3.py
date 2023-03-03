@@ -53,11 +53,21 @@ class Rasa3(Vendor):
         self._agent = None
 
     @classmethod
-    def from_model(cls, model_path):
+    def from_model(cls, model_path: Union[str, pathlib.Path]) -> Rasa3:
+        """
+        Construct a Rasa3 object from a saved model.
+
+        Loading a model can fail if versions of dependencies differ between the
+        environment where the model was trained and the environment where the model
+        is loaded.
+
+        :param model_path: file path to a saved rasa model.
+        :return: Rasa
+        """
         obj = cls()
         # Since we don't know the config used to train the model, make sure we don't
         # add an inconsistent config accidentally should we ever change __init__().
-        assert obj._config == None
+        assert obj._config is None
         model_archive = get_local_model(model_path)
         obj._agent = Agent.load(model_path=model_archive)
         return obj
