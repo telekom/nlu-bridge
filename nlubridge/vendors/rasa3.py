@@ -11,6 +11,7 @@ from typing import List, Optional, Tuple, Union
 
 from rasa.core.agent import Agent
 from rasa.core.channels.channel import UserMessage
+from rasa.model import get_local_model
 from rasa.model_training import train_nlu
 from rasa.shared.nlu.constants import (
     ENTITIES,
@@ -50,6 +51,16 @@ class Rasa3(Vendor):
         self._alias = self.name
         self._config = model_config
         self._agent = None
+
+    @classmethod
+    def from_model(cls, model_path):
+        obj = cls()
+        # Since we don't know the config used to train the model, make sure we don't
+        # add an inconsistent config accidentally should we ever change __init__().
+        assert obj._config == None
+        model_archive = get_local_model(model_path)
+        obj._agent = Agent.load(model_path=model_archive)
+        return obj
 
     def train(self, dataset: NluDataset) -> Rasa3:
         """
