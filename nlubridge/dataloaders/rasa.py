@@ -33,7 +33,9 @@ def from_rasa(
     """
     Load data stored in Rasa's yml- resp. json-format as NLUdataset.
 
-    :param filepath: file path to read data from (Rasa specific yml- or json-format)
+    :param filepath: file path to read data from (Rasa specific yml- or json-format).
+                     If 'yml' format is selected, this can be a directory with several
+                     files.
     :param format: Input format, 'yml' (default) or 'json'
     :return: The loaded dataset as NLUdataset object
     """
