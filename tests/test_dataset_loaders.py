@@ -1,18 +1,75 @@
+import json
 import os
 
-from packaging import version
 from test_datasets import FIXTURE_PATH
 
 
-def test_from_huggingface():
-    # TODO: Figure out how to easily test this with a fixture hugging_ds
-    pass
+def test_from_huggingface_intents():
+    from datasets import ClassLabel, Dataset
+
+    from nlubridge import from_huggingface
+
+    with open(
+        os.path.join(FIXTURE_PATH, "huggingface_banking77.json"), "r", encoding="utf-8"
+    ) as f:
+        testdata = json.load(f)
+
+    hf_ds = Dataset.from_dict(testdata["data"])
+    hf_ds.features["label"] = ClassLabel(
+        num_classes=len(testdata["label_class_names"]),
+        names=testdata["label_class_names"],
+    )
+    ds = from_huggingface(hf_ds, has_intents=True, has_entities=False)
+
+    assert len(ds) == 8
+    assert len(ds.intents) == len(ds)
+    assert all(len(x) > 0 for x in ds.intents)
+    assert len(ds.texts) == len(ds)
+    assert all(len(x) > 0 for x in ds.texts)
+    assert len(ds.entities) == len(ds)
+    assert all(len(x) == 0 for x in ds.entities)
+    assert ds.texts[0] == "I am still waiting on my card?"
+    assert ds.texts[3] == "What is my money worth in other countries?"
+    assert ds.intents[0] == "card_arrival"
+    assert ds.intents[3] == "exchange_rate"
+
+
+def test_from_huggingface_entities():
+    from datasets import ClassLabel, Dataset
+
+    from nlubridge import from_huggingface
+
+    with open(
+        os.path.join(FIXTURE_PATH, "huggingface_wnut_17.json"), "r", encoding="utf-8"
+    ) as f:
+        testdata = json.load(f)
+
+    hf_ds = Dataset.from_dict(testdata["data"])
+    hf_ds.features["ner_tags"].feature = ClassLabel(
+        num_classes=len(testdata["ner_tags_class_names"]),
+        names=testdata["ner_tags_class_names"],
+    )
+
+    ds = from_huggingface(hf_ds, has_intents=False, has_entities=True)
+
+    assert len(ds) == 8
+    assert len(ds.intents) == len(ds)
+    assert all(x is None for x in ds.intents)
+    assert len(ds.texts) == len(ds)
+    assert all(len(x) > 0 for x in ds.texts)
+    assert len(ds.entities) == len(ds)
+    assert all(len(x) >= 0 for x in ds.entities)
+    assert ds.texts[3] == "today is my last day at the office."
+    assert len(ds.entities[0]) == 2
+    assert ds.entities[3] == []
+    assert ds.entities[4] == [{"start": 0, "end": 7, "entity": "person"}]
+    assert ds.entities[6] == [{"start": 18, "end": 43, "entity": "product"}]
 
 
 def test_from_watson():
-    from nlubridge.vendors.watson import load_data
+    from nlubridge import from_watson_assistant
 
-    ds = load_data(os.path.join(FIXTURE_PATH, "watson_intents_export.csv"))
+    ds = from_watson_assistant(os.path.join(FIXTURE_PATH, "watson_intents_export.csv"))
     assert len(ds) == 4
     assert ds.texts[0][0] != '"'
     assert ds.texts[2] == "testing umläuts"
@@ -21,14 +78,9 @@ def test_from_watson():
 
 
 def test_from_rasa_json():
-    from rasa import __version__ as rasa_version
+    from nlubridge import from_rasa
 
-    if version.parse(rasa_version) >= version.parse("3.0.0"):
-        return  # see 'test_from_rasa3_yml' for Rasa 3.x
-
-    from nlubridge.vendors.rasa import load_data
-
-    ds = load_data(os.path.join(FIXTURE_PATH, "rasa_nlu.json"), format="json")
+    ds = from_rasa(os.path.join(FIXTURE_PATH, "rasa_nlu.json"), format="json")
     assert len(ds) == 5
     assert ds.texts[1] == "testing umläuts"
     assert ds.intents[0] == "restaurant_search"
@@ -48,14 +100,9 @@ def test_from_rasa_json():
 
 
 def test_from_rasa3_yml():
-    from rasa import __version__ as rasa_version
+    from nlubridge import from_rasa
 
-    if version.parse(rasa_version) < version.parse("3.0.0"):
-        return  # see 'test_from_rasa_json' for Rasa 2.x
-
-    from nlubridge.vendors.rasa3 import load_data
-
-    ds = load_data(os.path.join(FIXTURE_PATH, "rasa3_nlu.yml"))
+    ds = from_rasa(os.path.join(FIXTURE_PATH, "rasa3_nlu.yml"))
     assert len(ds) == 5
     assert ds.texts[1] == "testing umläuts"
     assert ds.intents[0] == "restaurant_search"
@@ -73,9 +120,9 @@ def test_from_rasa3_yml():
 
 
 def test_from_luis():
-    from nlubridge.vendors.luis import load_data
+    from nlubridge import from_luis
 
-    ds = load_data(os.path.join(FIXTURE_PATH, "luis_nlu.json"))
+    ds = from_luis(os.path.join(FIXTURE_PATH, "luis_nlu.json"))
     assert len(ds) == 5
     assert ds.texts[1] == "testing umläuts"
     assert ds.intents[0] == "restaurant_search"

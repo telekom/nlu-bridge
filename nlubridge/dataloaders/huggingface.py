@@ -1,19 +1,18 @@
 # Copyright (c) 2021 Klaus-Peter Engelbrecht, Deutsche Telekom AG
 # This software is distributed under the terms of the MIT license
 # which is available at https://opensource.org/licenses/MIT
-
 import datasets
 
-from nlubridge.datasets import NLUdataset
+from nlubridge.nlu_dataset import NluDataset
 
 
-def load_data(
+def from_huggingface(
     hugging_ds,
     has_intents=True,
     has_entities=False,
     toks_col="tokens",
     iob_col="ner_tags",
-) -> NLUdataset:
+) -> NluDataset:
     """
     Convert a Huggingface dataset to an NLUdataset.
 
@@ -68,7 +67,7 @@ def load_data(
             )
         intents = [label_mapper.int2str(x) for x in hugging_ds["label"]]
     else:
-        intents = None
+        intents = None  # type: ignore[assignment]
 
     if has_entities:
         # get entities and texts generated from token lists for each example
@@ -106,7 +105,7 @@ def load_data(
         except KeyError:
             raise ValueError("hugging_ds must have a 'text' feature")
 
-    ds = NLUdataset(texts, intents, entities)
+    ds = NluDataset(texts, intents, entities)
 
     return ds
 
@@ -150,7 +149,6 @@ def iob2dict(tokens, ner_tags, tag_mapper):
     is_in = False
 
     for token, tag in zip(tokens, ner_tags):
-
         # remove trailing blank if certain characters follow
         if need_blank(token, len(text)):
             text += " "

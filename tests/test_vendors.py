@@ -3,8 +3,7 @@ from test_datasets import entities as sample_entities
 from test_datasets import intents as sample_intents
 from test_datasets import texts as sample_texts
 
-from nlubridge import NLUdataset
-from nlubridge.datasets import EntityKeys
+from nlubridge import EntityKeys, NBestKeys, NluDataset
 
 
 # Following functions are run by all vendor tests to test
@@ -13,7 +12,7 @@ from nlubridge.datasets import EntityKeys
 
 
 def assert_preds_are_intents(vendor, unique_intents):
-    test_ds = NLUdataset(["Ich habe kein DSL und telefon"])
+    test_ds = NluDataset(["Ich habe kein DSL und telefon"])
     preds = vendor.test_intent(test_ds)
     assert isinstance(preds, list)
     assert len(preds) == 1
@@ -21,7 +20,7 @@ def assert_preds_are_intents(vendor, unique_intents):
 
 
 def assert_return_probs(vendor, unique_intents):
-    test_ds = NLUdataset(["Ich habe kein DSL und telefon"])
+    test_ds = NluDataset(["Ich habe kein DSL und telefon"])
     preds, probs = vendor.test_intent(test_ds, return_probs=True)
     assert preds[0] in unique_intents
     assert isinstance(probs[0], float) or (probs[0] == 1)
@@ -40,6 +39,16 @@ def assert_multiple_utterances_predicted(vendor, train_data):
 # -----------------------------
 
 
+def test_vendor_attributes():
+    from nlubridge.vendors.tfidf_intent_classifier import TfidfIntentClassifier
+
+    clf = TfidfIntentClassifier()
+    assert clf.name == "TfidfIntentClassifier"
+    assert clf.alias == "TfidfIntentClassifier"
+    clf.alias = "tfidf"
+    assert clf.alias == "tfidf"
+
+
 def test_tfidf(train_data):
     from nlubridge.vendors.tfidf_intent_classifier import TfidfIntentClassifier
 
@@ -56,13 +65,12 @@ def test_tfidf(train_data):
 
 
 def test_rasa(train_data):
-
     from rasa import __version__ as rasa_version
 
     if version.parse(rasa_version) < version.parse("3.0.0"):
-        from nlubridge.vendors.rasa import Rasa
+        from nlubridge.vendors.rasa2 import Rasa2
 
-        rasa = Rasa()
+        rasa = Rasa2()
     else:
         from nlubridge.vendors.rasa3 import Rasa3
 
@@ -75,24 +83,30 @@ def test_rasa(train_data):
     assert_multiple_utterances_predicted(rasa, train_data)
 
     # test intent + entity classification
-    train_ds = NLUdataset(sample_texts, sample_intents, sample_entities)
+    train_ds = NluDataset(sample_texts, sample_intents, sample_entities)
     rasa.train(train_ds)
-    test_ds = NLUdataset(
+    test_ds = NluDataset(
         ["I want a flight from Frankfurt to Berlin", "How is the weather in Bonn?"]
     )
     preds = rasa.test(test_ds)
-    assert isinstance(preds, NLUdataset)
+    assert isinstance(preds, NluDataset)
     assert len(preds) == 2
-    for pred_text, pred_intent, pred_entities in preds:
-        assert pred_intent in train_ds.unique_intents
-        for pred_e in pred_entities:
-            assert pred_e[EntityKeys.TYPE] in train_ds.unique_entities
+    assert len(preds.confidences) == 2
+    assert isinstance(preds.confidences[0], float)
+    assert len(preds.n_best_intents) == 2
+    assert isinstance(preds.n_best_intents[0], list)
+    assert isinstance(preds.n_best_intents[0][0], dict)
+    assert preds.n_best_intents[0][0][NBestKeys.INTENT] in train_ds.unique_intents
+    assert len(preds.entities) == 2
+    assert isinstance(preds.entities[0], list)
+    assert isinstance(preds.entities[0][0], dict)
+    assert preds.entities[0][0][EntityKeys.TYPE] in train_ds.unique_entities
 
 
 def test_telekom(train_data):
-    from nlubridge.vendors.telekom import TelekomModel
+    from nlubridge.vendors.char_ngram_intent_classifier import CharNgramIntentClassifier
 
-    model = TelekomModel()
+    model = CharNgramIntentClassifier()
     model.train_intent(train_data)
     assert_preds_are_intents(model, train_data.unique_intents)
     assert_return_probs(model, train_data.unique_intents)
@@ -101,11 +115,11 @@ def test_telekom(train_data):
 
 
 def test_spacy(train_data):
-    from nlubridge.vendors.spacy import SpacyClassifier
+    from nlubridge.vendors.spacy import Spacy
 
     # We train with small number of train iterations to speed up tests
     # (performance not important here)
-    model = SpacyClassifier(n_iter=10)
+    model = Spacy(n_iter=10)
     model.train_intent(train_data)
     predicted = model.test_intent(train_data)
     assert len(predicted) == len(train_data)

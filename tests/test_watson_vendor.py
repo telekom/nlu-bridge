@@ -5,17 +5,17 @@ from test_vendors import (
     assert_return_probs,
 )
 
-from nlubridge import NLUdataset
+from nlubridge import NluDataset
 
 
 def test_watson(train_data):
-    from nlubridge.vendors.watson import Watson
+    from nlubridge.vendors.watson_assistant import WatsonAssistant
 
     # load environment variables so Watson uses them
     load_dotenv()
 
     # test initialization
-    watson = Watson()
+    watson = WatsonAssistant()
 
     # test train_intent()
     watson.train_intent(train_data)
@@ -33,9 +33,9 @@ def test_watson(train_data):
     # TODO: fix vendor for test: assert_oos_prediction()
 
     # test test_intent() (non-bulk)
-    test_ds = NLUdataset(["Ich habe kein DSL und telefon"])
+    test_ds = NluDataset(["Ich habe kein DSL und telefon"])
     watson.set_bulk(False)
-    assert watson.use_bulk is False
+    assert watson._use_bulk is False
     preds = watson.test_intent(test_ds)
     assert isinstance(preds, list)
     assert len(preds) == 1
