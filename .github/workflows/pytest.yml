@@ -26,7 +26,6 @@ jobs:
 
     - name: Full install wit Rasa 2
       run: |
-        python -m pip install -U pip
         pip install --progress-bar off -U ".[rasa2, spacy, watson, fasttext, luis, huggingface]"
         pip install pytest pytest-mock
 
