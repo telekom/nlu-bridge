@@ -25,6 +25,7 @@ from rasa.shared.nlu.constants import (
 from rasa.shared.nlu.training_data.formats.rasa import RasaReader
 from rasa.shared.nlu.training_data.training_data import TrainingData
 
+from nlubridge.dataloaders.rasa import convert_entities_to_nludataset
 from nlubridge.nlu_dataset import EntityKeys, NBestKeys, NluDataset
 from nlubridge.vendors import Vendor
 
@@ -96,14 +97,7 @@ class Rasa2(Vendor):
         for text in dataset.texts:
             result = self._interpreter.parse(text)
             intent = result.get(INTENT, {}).get(INTENT_NAME_KEY)
-            entities = [
-                {
-                    EntityKeys.TYPE: e.get(ENTITY_ATTRIBUTE_TYPE),
-                    EntityKeys.START: e.get(ENTITY_ATTRIBUTE_START),
-                    EntityKeys.END: e.get(ENTITY_ATTRIBUTE_END),
-                }
-                for e in result.get(ENTITIES, [])
-            ]
+            entities = convert_entities_to_nludataset(result)
             nbest = [
                 {
                     NBestKeys.INTENT: ranked.get(INTENT_NAME_KEY),
