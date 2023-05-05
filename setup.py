@@ -66,7 +66,7 @@ setup(
         "rasa2": ["rasa~=2.0"],
         "rasa3": ["rasa~=3.0"],
         "spacy": ["spacy==3.1.3"],
-        "huggingface": ["datasets"],
+        "huggingface": ["datasets~=1.0"],
         "develop": [
             "pytest-cov",
             "pytest-mock",
