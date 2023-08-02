@@ -58,13 +58,13 @@ setup(
     },
     packages=find_packages(),
     python_requires=">=3.8, <3.12",
-    install_requires=["sklearn", "python-dotenv", "lazy-imports", "ratelimit"],
+    install_requires=["scikit-learn", "python-dotenv", "lazy-imports", "ratelimit"],
     extras_require={
         "watson": ["ibm_watson", "tqdm", "requests"],
         "fasttext": ["fasttext"],
         "luis": ["requests", "ratelimit"],
-        "rasa2": ["rasa~=2.8", "websockets~=10.4"],
-        "rasa3": ["rasa~=3.4"],
+        "rasa2": ["rasa~=2.8.0", "websockets~=10.4"],
+        "rasa3": ["rasa~=3.4.0"],
         "spacy": ["spacy==3.1.3"],
         "huggingface": ["datasets~=1.18"],
         "develop": [
