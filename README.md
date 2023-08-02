@@ -23,14 +23,14 @@ applications.
 
 ### Installation
 
-The core package including NLUdataset and Baseline vendors can be installed for 
-Python\>=3.8 using pip
+The core package including NLUdataset and Baseline vendors can be installed for
+Python>=3.8 using pip
 
 ```
 pip install nlubridge
 ```
 
-Note that some vendors come with restrictions regarding the Python version, e.g. Rasa3 
+Note that some vendors come with restrictions regarding the Python version, e.g. Rasa3
 requires Python\<3.11.
 
 To include optional dependencies for the vendors, e.g. Watson Assistant, type
