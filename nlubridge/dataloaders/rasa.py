@@ -5,11 +5,7 @@
 from __future__ import annotations
 
 import pathlib
-<<<<<<< HEAD
-from typing import Union
-=======
 from typing import Dict, List, Union
->>>>>>> main
 
 from rasa.shared.data import get_data_files, is_nlu_file
 from rasa.shared.importers.utils import training_data_from_paths
@@ -63,33 +59,12 @@ def from_rasa(
     for message in training_data.training_examples:
         texts.append(message.get(TEXT))
         intents.append(message.get(INTENT))
-<<<<<<< HEAD
-        es = []
-        for e in message.get(ENTITIES, []):
-            entity = {
-                EntityKeys.TYPE: e.get(ENTITY_ATTRIBUTE_TYPE),
-                EntityKeys.START: e.get(ENTITY_ATTRIBUTE_START),
-                EntityKeys.END: e.get(ENTITY_ATTRIBUTE_END),
-            }
-            # Add any custom keys defined in the source structure
-            for key in e.keys():
-                if key not in [
-                    ENTITY_ATTRIBUTE_TYPE,
-                    ENTITY_ATTRIBUTE_START,
-                    ENTITY_ATTRIBUTE_END,
-                ]:
-                    entity[key] = e[key]
-            es.append(entity)
-=======
         es = convert_entities_to_nludataset(message)
->>>>>>> main
         entities.append(es)
 
     return NluDataset(texts, intents, entities)
 
 
-<<<<<<< HEAD
-=======
 def convert_entities_to_nludataset(message: Message) -> List[Dict]:
     """
     Convert entity dicts from Rasa format to NluDataset format.
@@ -119,7 +94,6 @@ def convert_entities_to_nludataset(message: Message) -> List[Dict]:
     return es
 
 
->>>>>>> main
 def to_rasa(
     dataset: NluDataset, filepath: Union[str, pathlib.Path], format: str = "yml"
 ):
