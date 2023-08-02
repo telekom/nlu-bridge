@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 from lazy_imports import LazyImporter
 
 
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 
 if TYPE_CHECKING:

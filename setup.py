@@ -57,7 +57,7 @@ setup(
         "Code of Conduct": source_code + "/blob/main/CODE_OF_CONDUCT.md",
     },
     packages=find_packages(),
-    python_requires=">=3.8, <3.12",
+    python_requires=">=3.8",
     install_requires=["scikit-learn", "python-dotenv", "lazy-imports", "ratelimit"],
     extras_require={
         "watson": ["ibm_watson", "tqdm", "requests"],
