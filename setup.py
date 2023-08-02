@@ -63,10 +63,10 @@ setup(
         "watson": ["ibm_watson", "tqdm", "requests"],
         "fasttext": ["fasttext"],
         "luis": ["requests", "ratelimit"],
-        "rasa2": ["rasa~=2", "websockets~=10.4"],
-        "rasa3": ["rasa~=3"],
+        "rasa2": ["rasa~=2.8", "websockets~=10.4"],
+        "rasa3": ["rasa~=3.4"],
         "spacy": ["spacy==3.1.3"],
-        "huggingface": ["datasets~=1"],
+        "huggingface": ["datasets~=1.18"],
         "develop": [
             "pytest-cov",
             "pytest-mock",
