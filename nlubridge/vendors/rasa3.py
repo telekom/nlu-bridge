@@ -14,19 +14,15 @@ from rasa.core.channels.channel import UserMessage
 from rasa.model import get_local_model
 from rasa.model_training import train_nlu
 from rasa.shared.nlu.constants import (
-    ENTITIES,
-    ENTITY_ATTRIBUTE_END,
-    ENTITY_ATTRIBUTE_START,
-    ENTITY_ATTRIBUTE_TYPE,
     INTENT,
     INTENT_NAME_KEY,
     INTENT_RANKING_KEY,
     PREDICTED_CONFIDENCE_KEY,
 )
 
-from nlubridge import EntityKeys, NBestKeys, NluDataset, to_rasa
-
-from .vendor import Vendor
+from nlubridge import NBestKeys, NluDataset, to_rasa
+from nlubridge.dataloaders.rasa import convert_entities_to_nludataset
+from nlubridge.vendors.vendor import Vendor
 
 
 logger = logging.getLogger(__name__)
@@ -139,14 +135,7 @@ class Rasa3(Vendor):
         for text in dataset.texts:
             result = self._parse_message(text)
             intent = result.get(INTENT, {}).get(INTENT_NAME_KEY)
-            entities = [
-                {
-                    EntityKeys.TYPE: e.get(ENTITY_ATTRIBUTE_TYPE),
-                    EntityKeys.START: e.get(ENTITY_ATTRIBUTE_START),
-                    EntityKeys.END: e.get(ENTITY_ATTRIBUTE_END),
-                }
-                for e in result.get(ENTITIES, [])
-            ]
+            entities = convert_entities_to_nludataset(result)
             nbest = [
                 {
                     NBestKeys.INTENT: ranked.get(INTENT_NAME_KEY),
