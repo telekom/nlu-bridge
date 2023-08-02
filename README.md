@@ -31,7 +31,7 @@ pip install nlubridge
 ```
 
 Note that some vendors come with restrictions regarding the Python version, e.g. Rasa3 
-requires Python<3.11.
+requires Python\<3.11.
 
 To include optional dependencies for the vendors, e.g. Watson Assistant, type
 
